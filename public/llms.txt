@@ -1,0 +1,22 @@
+# Rigour Labs
+
+Deterministic quality gates for AI-generated code.
+
+## Core Philosophy
+Rigour adds the engineering loops where AI agents usually fail. We provide local-first, zero-telemetry tools that force agents to meet strict engineering standards before marking tasks as done.
+
+## Products
+- **Rigour CLI**: The engine for quality gates. `npx @rigour-labs/cli check`.
+- **MCP Server**: Integration for Cursor, Cline, and Gemini.
+- **VS Code Extension**: Real-time architectural violation feedback (Coming Q2 2026).
+
+## Strategic Values
+- **Local-First**: Code never leaves the developer's machine.
+- **Deterministic**: PASS/FAIL is clear and reproducible.
+- **Agent-Native**: Built to integrate into AI agent loops (Claude Code, etc.).
+
+## Links
+- Website: https://rigour.run
+- Documentation: https://docs.rigour.run
+- GitHub: https://github.com/rigour-labs
+- Contact: hello@rigour.run
