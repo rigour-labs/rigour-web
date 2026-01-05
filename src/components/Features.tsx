@@ -7,33 +7,23 @@ import { Shield, Brain, Cpu, Lock, Globe, MessageSquare } from "lucide-react";
 const features = [
     {
         icon: Shield,
-        title: "Deterministic Gates",
-        description: "Define strict engineering standards that AI agents must pass before merging code."
-    },
-    {
-        icon: Brain,
-        title: "Zero Telemetry",
-        description: "No code ever leaves your machine. Local-first architecture for ultimate privacy."
-    },
-    {
-        icon: Cpu,
-        title: "AST-Based Analysis",
-        description: "Complexity and architectural checks powered by deep static analysis."
+        title: "Quality Gates",
+        description: "Enforce strict engineering standards and checks before code ever reaches a merge request."
     },
     {
         icon: Lock,
-        title: "Safety Rails",
-        description: "Protect critical paths and limit the blast radius of AI-generated changes."
+        title: "Local-only",
+        description: "Your code never leaves your machine. Local-first architecture ensures 100% privacy."
+    },
+    {
+        icon: Brain,
+        title: "Deep Static Analysis",
+        description: "Semantic checks that go deep beyond linting, catching architectural and logic drifts."
     },
     {
         icon: Globe,
-        title: "Open Source Roots",
-        description: "Built for the community. Rigour is and will always be free for individual developers."
-    },
-    {
-        icon: MessageSquare,
-        title: "Team Collaboration",
-        description: "Standardize quality across your team with shared gates and deterministic feedback."
+        title: "Team Rules",
+        description: "Share and standardize quality gates across your entire organization with ease."
     }
 ];
 
