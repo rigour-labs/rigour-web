@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, Outfit } from "next/font/google";
+import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
 
 const inter = Inter({
@@ -45,6 +47,8 @@ export default function RootLayout({
         <div className="fixed inset-0 bg-grid pointer-events-none -z-10" />
         <div className="fixed inset-0 bg-gradient-to-tr from-accent/10 via-transparent to-accent-secondary/10 pointer-events-none -z-10" />
         {children}
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );
