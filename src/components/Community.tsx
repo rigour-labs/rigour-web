@@ -4,6 +4,7 @@ import React from "react";
 import { motion } from "framer-motion";
 import { Github, MessageSquare, Star, Globe } from "lucide-react";
 import Link from "next/link";
+import { track } from "@vercel/analytics";
 
 export const Community = () => {
     return (
@@ -32,6 +33,7 @@ export const Community = () => {
                         <Link
                             href="https://github.com/rigour-labs/rigour"
                             target="_blank"
+                            onClick={() => track('community_github_star_click')}
                             className="w-full sm:w-auto bg-white text-black px-10 py-4 rounded-2xl font-bold flex items-center justify-center gap-2 hover:scale-105 transition-transform"
                         >
                             <Github className="w-5 h-5" /> Star on GitHub <Star className="w-4 h-4 fill-black" />
@@ -39,6 +41,7 @@ export const Community = () => {
                         <Link
                             href="https://docs.rigour.run"
                             target="_blank"
+                            onClick={() => track('cta_get_started', { location: 'community' })}
                             className="w-full sm:w-auto glass px-10 py-4 rounded-2xl font-bold flex items-center justify-center gap-2 hover:bg-white/5 transition-colors"
                         >
                             View Documentation

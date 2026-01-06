@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { ArrowRight, Terminal, Zap } from "lucide-react";
 import Link from "next/link";
+import { track } from "@vercel/analytics";
 import { LiveTerminal } from "./LiveTerminal";
 
 export const Hero = () => {
@@ -63,6 +64,7 @@ export const Hero = () => {
                     <Link
                         href="https://docs.rigour.run"
                         target="_blank"
+                        onClick={() => track('cta_get_started', { location: 'hero' })}
                         className="w-full sm:w-auto px-8 py-4 bg-accent text-background rounded-2xl font-bold text-lg flex items-center justify-center gap-2 hover:scale-105 transition-transform"
                     >
                         Get Started <ArrowRight className="w-5 h-5" />
@@ -70,6 +72,7 @@ export const Hero = () => {
                     <Link
                         href="https://github.com/rigour-labs/rigour"
                         target="_blank"
+                        onClick={() => track('cta_view_cli', { location: 'hero' })}
                         className="w-full sm:w-auto px-8 py-4 glass rounded-2xl font-bold text-lg flex items-center justify-center gap-2 hover:bg-white/5 transition-colors"
                     >
                         <Terminal className="w-5 h-5" /> View CLI

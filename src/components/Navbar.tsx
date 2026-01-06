@@ -4,6 +4,7 @@ import React from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
+import { track } from "@vercel/analytics";
 
 export const Navbar = () => {
     return (
@@ -30,11 +31,18 @@ export const Navbar = () => {
                 <div className="hidden md:flex items-center gap-8">
                     <Link href="#features" className="text-sm font-medium text-foreground/70 hover:text-accent transition-colors">Features</Link>
                     <Link href="#how-it-works" className="text-sm font-medium text-foreground/70 hover:text-accent transition-colors">How it Works</Link>
-                    <Link href="https://docs.rigour.run" className="text-sm font-medium text-foreground/70 hover:text-accent transition-colors">Docs</Link>
+                    <Link
+                        href="https://docs.rigour.run"
+                        onClick={() => track('nav_docs_click')}
+                        className="text-sm font-medium text-foreground/70 hover:text-accent transition-colors"
+                    >
+                        Docs
+                    </Link>
                 </div>
 
                 <Link
                     href="#community"
+                    onClick={() => track('nav_community_click')}
                     className="bg-accent text-background px-5 py-2 rounded-xl text-sm font-bold hover:scale-105 transition-transform active:scale-95"
                 >
                     Community
