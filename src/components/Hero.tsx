@@ -79,27 +79,6 @@ export const Hero = () => {
                     </Link>
                 </motion.div>
 
-                <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ duration: 1, delay: 0.5 }}
-                    className="flex items-center gap-8 mb-16 grayscale opacity-50 hover:grayscale-0 hover:opacity-100 transition-all cursor-default"
-                >
-                    <div className="flex flex-col items-center">
-                        <span className="text-2xl font-bold font-outfit">1.2k+</span>
-                        <span className="text-[10px] uppercase tracking-widest font-bold text-white/40">GitHub Stars</span>
-                    </div>
-                    <div className="w-px h-8 bg-white/10" />
-                    <div className="flex flex-col items-center">
-                        <span className="text-2xl font-bold font-outfit">50+</span>
-                        <span className="text-[10px] uppercase tracking-widest font-bold text-white/40">Contributors</span>
-                    </div>
-                    <div className="w-px h-8 bg-white/10" />
-                    <div className="flex flex-col items-center">
-                        <span className="text-2xl font-bold font-outfit">5k+</span>
-                        <span className="text-[10px] uppercase tracking-widest font-bold text-white/40">Local Audits</span>
-                    </div>
-                </motion.div>
 
                 <motion.div
                     initial={{ opacity: 0, y: 40 }}
