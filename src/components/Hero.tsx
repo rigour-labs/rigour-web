@@ -11,7 +11,7 @@ export const Hero = () => {
     const [version, setVersion] = useState("V2.1");
 
     useEffect(() => {
-        fetch("https://registry.npmjs.org/rigour/latest")
+        fetch("https://registry.npmjs.org/@rigour-labs/cli/latest")
             .then((res) => res.json())
             .then((data) => {
                 if (data.version) {
