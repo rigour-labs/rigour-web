@@ -8,32 +8,22 @@ const features = [
     {
         icon: Shield,
         title: "Quality Gates",
-        description: "Deterministic PASS/FAIL enforcement. No noise, no maybes — just facts."
+        description: "Enforce strict engineering standards and checks before code ever reaches a merge request."
     },
     {
         icon: Lock,
-        title: "Zero Cloud",
-        description: "Your code never leaves your machine. 100% local-first architecture."
+        title: "Local-only",
+        description: "Your code never leaves your machine. Local-first architecture ensures 100% privacy."
     },
     {
         icon: Brain,
-        title: "Context Memory",
-        description: "Rigour remembers your decisions across sessions. No more repeating yourself."
-    },
-    {
-        icon: Cpu,
-        title: "IDE Guardrails",
-        description: "Stop bad code before it's committed. Works in VS Code, Cursor, Windsurf."
+        title: "Deep Static Analysis",
+        description: "Semantic checks that go deep beyond linting, catching architectural and logic drifts."
     },
     {
         icon: Globe,
-        title: "MCP Native",
-        description: "First-class MCP integration. Works seamlessly with GitHub Copilot Chat."
-    },
-    {
-        icon: MessageSquare,
         title: "Team Rules",
-        description: "Share and standardize quality gates across your entire organization."
+        description: "Share and standardize quality gates across your entire organization with ease."
     }
 ];
 
