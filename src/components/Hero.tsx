@@ -33,7 +33,7 @@ export const Hero = () => {
                     className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent/10 border border-accent/20 text-accent text-xs font-bold tracking-wider uppercase mb-8"
                 >
                     <Zap className="w-3 h-3" />
-                    Rigour {version} is Live
+                    Rigour {version} is Live • Free Forever
                 </motion.div>
 
                 <motion.h1
@@ -42,18 +42,29 @@ export const Hero = () => {
                     transition={{ duration: 0.5, delay: 0.1 }}
                     className="text-5xl md:text-7xl font-bold font-outfit leading-tight mb-6 bg-clip-text text-transparent bg-gradient-to-b from-white to-white/50"
                 >
-                    Stop AI Chaos.<br />
-                    <span className="text-accent text-glow">Enforce Engineering.</span>
+                    The Free<br />
+                    <span className="text-accent text-glow">CodeRabbit Alternative.</span>
                 </motion.h1>
 
                 <motion.p
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5, delay: 0.2 }}
-                    className="max-w-3xl text-lg md:text-xl text-foreground/60 mb-10 leading-relaxed"
+                    className="max-w-3xl text-lg md:text-xl text-foreground/60 mb-4 leading-relaxed"
                 >
-                    Ensure every AI-generated code change meets your team’s quality standards — locally, with zero external telemetry.
+                    Quality gates for AI-generated code. 100% deterministic, zero noise, zero cloud.
                 </motion.p>
+
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, delay: 0.25 }}
+                    className="flex items-center gap-4 text-sm text-foreground/40 mb-10"
+                >
+                    <span className="flex items-center gap-1">✓ Open Source</span>
+                    <span className="flex items-center gap-1">✓ Local-First</span>
+                    <span className="flex items-center gap-1">✓ MCP Native</span>
+                </motion.div>
 
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
