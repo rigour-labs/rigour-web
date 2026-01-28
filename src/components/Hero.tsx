@@ -79,6 +79,17 @@ export const Hero = () => {
                     </Link>
                 </motion.div>
 
+                <motion.a
+                    href="https://registry.modelcontextprotocol.io/v0.1/servers?search=rigour"
+                    target="_blank"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.5, delay: 0.35 }}
+                    className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-green-500/10 border border-green-500/20 text-green-400 text-sm font-medium hover:bg-green-500/20 transition-colors mb-8"
+                >
+                    ✓ Listed on MCP Registry
+                </motion.a>
+
 
                 <motion.div
                     initial={{ opacity: 0, y: 40 }}

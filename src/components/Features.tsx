@@ -17,13 +17,23 @@ const features = [
     },
     {
         icon: Brain,
+        title: "Pattern Index",
+        description: "Semantic understanding of your codebase. Search patterns with natural language queries."
+    },
+    {
+        icon: MessageSquare,
+        title: "Context Memory",
+        description: "Persistent memory that survives across AI sessions. Remember decisions and context."
+    },
+    {
+        icon: Cpu,
         title: "Deep Static Analysis",
         description: "Semantic checks that go deep beyond linting, catching architectural and logic drifts."
     },
     {
         icon: Globe,
-        title: "Team Rules",
-        description: "Share and standardize quality gates across your entire organization with ease."
+        title: "MCP Registry Listed",
+        description: "Official listing on the MCP Registry. Works with Claude, Cursor, Cline, and more."
     }
 ];
 
