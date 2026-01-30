@@ -12,8 +12,8 @@ const features = [
     },
     {
         icon: Lock,
-        title: "Local-only",
-        description: "Your code never leaves your machine. Local-first architecture ensures 100% privacy."
+        title: "Local Honest",
+        description: "No login. No telemetry. Your code stays on your machine. We don't even have a 'Signup' button."
     },
     {
         icon: Brain,
