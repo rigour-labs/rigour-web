@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
     Trophy, Activity, ChevronRight, ChevronDown,
     GitBranch, Code2, AlertTriangle, CheckCircle2,
-    XCircle, BarChart3, Layers, Filter
+    XCircle, BarChart3, Layers, Filter, Info, HelpCircle
 } from "lucide-react";
 import Link from "next/link";
 
@@ -26,6 +26,8 @@ interface ModelStats {
     accuracy?: number;
     fpr: number;
     tasks_run: number;
+    tasks_total?: number;
+    false_positives_excluded?: number;
     status: string;
     verified_at?: string;
     rank?: number;
@@ -36,12 +38,18 @@ interface ModelStats {
     };
 }
 
+interface Methodology {
+    false_positive_explanation?: string;
+    scoring?: string;
+}
+
 interface StatsData {
     generated_at?: string;
     version?: string;
     total_tasks?: number;
     repositories?: Record<string, { language: string; tasks: number; full_name: string }>;
     categories?: Record<string, string>;
+    methodology?: Methodology;
     leaderboard: ModelStats[];
 }
 
@@ -67,6 +75,7 @@ export const Leaderboard = () => {
     const [loading, setLoading] = useState(true);
     const [expandedModel, setExpandedModel] = useState<string | null>(null);
     const [breakdownView, setBreakdownView] = useState<BreakdownType>("repo");
+    const [showMethodology, setShowMethodology] = useState(false);
 
     useEffect(() => {
         const apiUrl = "/api/stats";
@@ -447,11 +456,28 @@ export const Leaderboard = () => {
                                                     )}
                                                 </div>
 
-                                                {model.verified_at && (
-                                                    <div className="text-[10px] font-mono text-foreground/20 uppercase tracking-widest mt-2">
-                                                        Verified {model.verified_at}
-                                                    </div>
-                                                )}
+                                                <div className="flex items-center gap-3 mt-2">
+                                                    {model.verified_at && (
+                                                        <div className="text-[10px] font-mono text-foreground/20 uppercase tracking-widest">
+                                                            Verified {model.verified_at}
+                                                        </div>
+                                                    )}
+                                                    {model.false_positives_excluded && model.false_positives_excluded > 0 && (
+                                                        <div className="group/fp relative flex items-center gap-1 px-2 py-0.5 rounded bg-amber-500/10 border border-amber-500/20">
+                                                            <Info className="w-3 h-3 text-amber-400" />
+                                                            <span className="text-[10px] font-mono text-amber-400">
+                                                                {model.false_positives_excluded} FPs excluded
+                                                            </span>
+                                                            {/* Tooltip */}
+                                                            <div className="absolute bottom-full left-0 mb-2 w-64 p-3 rounded-lg bg-zinc-900 border border-zinc-700 shadow-xl opacity-0 invisible group-hover/fp:opacity-100 group-hover/fp:visible transition-all duration-200 z-50">
+                                                                <div className="text-[11px] text-zinc-300 leading-relaxed">
+                                                                    <strong className="text-amber-400">False Positives Excluded:</strong> Structure-check failures for missing docs files (SPEC.md, ARCH.md) that don&apos;t exist in OSS repos. This is a config issue, not a model failure.
+                                                                </div>
+                                                                <div className="absolute -bottom-1 left-4 w-2 h-2 bg-zinc-900 border-r border-b border-zinc-700 transform rotate-45"></div>
+                                                            </div>
+                                                        </div>
+                                                    )}
+                                                </div>
                                             </div>
 
                                             {/* Pass Rate */}
@@ -507,6 +533,35 @@ export const Leaderboard = () => {
 
                     {/* Stats Sidebar */}
                     <div className="lg:col-span-4 flex flex-col gap-6">
+                        {/* Methodology Card */}
+                        {stats?.methodology && (
+                            <div className="p-6 rounded-2xl border border-amber-500/20 bg-amber-500/5 backdrop-blur-md relative overflow-hidden">
+                                <div className="flex items-center gap-3 mb-4">
+                                    <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center">
+                                        <HelpCircle className="w-5 h-5 text-amber-400" />
+                                    </div>
+                                    <div>
+                                        <h3 className="font-bold text-sm uppercase tracking-widest text-amber-300">Scoring Methodology</h3>
+                                        <p className="text-[10px] text-amber-400/60 font-mono mt-0.5">Transparency Note</p>
+                                    </div>
+                                </div>
+
+                                <div className="space-y-3 text-[11px] text-zinc-300 leading-relaxed">
+                                    {stats.methodology.scoring && (
+                                        <p><strong className="text-amber-400">Formula:</strong> {stats.methodology.scoring}</p>
+                                    )}
+                                    {stats.methodology.false_positive_explanation && (
+                                        <div className="p-3 rounded-lg bg-black/20 border border-amber-500/10">
+                                            <p className="text-zinc-400">
+                                                <strong className="text-amber-400 block mb-1">Why exclude false positives?</strong>
+                                                {stats.methodology.false_positive_explanation}
+                                            </p>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        )}
+
                         {/* Verification Protocol Card */}
                         <div className="p-6 rounded-2xl border border-zinc-800 bg-[#0c0c0e]/80 backdrop-blur-md relative overflow-hidden group">
                             <div className="absolute top-0 right-0 w-32 h-32 bg-accent/5 rounded-full blur-[60px] pointer-events-none" />
