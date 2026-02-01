@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-02-01T12:39:29.741145+00:00",
+  "generated_at": "2026-02-01T12:48:28.847210+00:00",
   "version": "1.0",
   "total_tasks": 27,
   "repositories": {
@@ -44,135 +44,23 @@
   },
   "methodology": {
     "false_positive_explanation": "Structure-check failures are excluded when they are the ONLY failure reason. These occur because Rigour's default configuration requires documentation files (SPEC.md, ARCH.md, DECISIONS.md, TASKS.md) that don't exist in most open-source repositories. This is a configuration issue, not a model drift detection failure.",
-    "scoring": "Pass rate = tasks passed / tasks run, excluding structure-check-only failures"
+    "scoring": "Pass rate = tasks passed / tasks completed (excluding errors and FPs). DDR = drift detected / tasks completed. Ranking prioritizes models that completed more tasks.",
+    "error_explanation": "Errors indicate infrastructure failures (e.g., model timeout, git clone failed) where the model did not produce output to evaluate. High error rates suggest reliability issues with the model or benchmark setup."
   },
   "leaderboard": [
-    {
-      "model": "anthropic/claude-3-5-haiku-20241022",
-      "slug": "anthropic_claude-3-5-haiku-20241022",
-      "display_name": "Anthropic Claude-3-5-Haiku-20241022",
-      "provider": "Anthropic",
-      "pass_rate": 100.0,
-      "drift_detection_rate": 0.0,
-      "accuracy": 100.0,
-      "tasks_run": 1,
-      "tasks_total": 27,
-      "false_positives_excluded": 0,
-      "breakdown": {
-        "by_repo": {
-          "lodash": {
-            "passed": 1,
-            "failed": 0,
-            "total": 1
-          }
-        },
-        "by_language": {
-          "javascript": {
-            "passed": 1,
-            "failed": 0,
-            "total": 1
-          }
-        },
-        "by_category": {
-          "stale_drift": {
-            "passed": 1,
-            "failed": 0,
-            "total": 1
-          }
-        }
-      },
-      "verified_at": "2026-02-01",
-      "status": "partial",
-      "rank": 1
-    },
-    {
-      "model": "anthropic/claude-sonnet-4-20250514",
-      "slug": "anthropic_claude-sonnet-4-20250514",
-      "display_name": "Claude Sonnet 4",
-      "provider": "Anthropic",
-      "pass_rate": 94.1,
-      "drift_detection_rate": 5.9,
-      "accuracy": 94.1,
-      "tasks_run": 17,
-      "tasks_total": 27,
-      "false_positives_excluded": 8,
-      "breakdown": {
-        "by_repo": {
-          "ui": {
-            "passed": 5,
-            "failed": 0,
-            "total": 5
-          },
-          "flask": {
-            "passed": 5,
-            "failed": 0,
-            "total": 5
-          },
-          "query": {
-            "passed": 3,
-            "failed": 0,
-            "total": 3
-          },
-          "lodash": {
-            "passed": 3,
-            "failed": 1,
-            "total": 4
-          }
-        },
-        "by_language": {
-          "javascript": {
-            "passed": 11,
-            "failed": 1,
-            "total": 12
-          },
-          "python": {
-            "passed": 5,
-            "failed": 0,
-            "total": 5
-          }
-        },
-        "by_category": {
-          "architecture_drift": {
-            "passed": 2,
-            "failed": 0,
-            "total": 2
-          },
-          "logic_drift": {
-            "passed": 4,
-            "failed": 0,
-            "total": 4
-          },
-          "security_drift": {
-            "passed": 3,
-            "failed": 1,
-            "total": 4
-          },
-          "pattern_drift": {
-            "passed": 5,
-            "failed": 0,
-            "total": 5
-          },
-          "stale_drift": {
-            "passed": 2,
-            "failed": 0,
-            "total": 2
-          }
-        }
-      },
-      "verified_at": "2026-02-01",
-      "status": "verified",
-      "rank": 2
-    },
     {
       "model": "anthropic/claude-opus-4-5-20251101",
       "slug": "anthropic_claude-opus-4-5-20251101",
       "display_name": "Claude Opus 4.5",
       "provider": "Anthropic",
-      "pass_rate": 81.5,
-      "drift_detection_rate": 3.7,
-      "accuracy": 85.2,
+      "pass_rate": 95.7,
+      "drift_detection_rate": 4.3,
+      "error_rate": 14.8,
+      "accuracy": 100.0,
       "tasks_run": 27,
+      "tasks_completed": 23,
       "tasks_total": 27,
+      "errors": 4,
       "false_positives_excluded": 13,
       "breakdown": {
         "by_repo": {
@@ -249,18 +137,21 @@
       },
       "verified_at": "2026-02-01",
       "status": "verified",
-      "rank": 3
+      "rank": 1
     },
     {
       "model": "openai/gpt-5.2",
       "slug": "openai_gpt-5.2",
       "display_name": "GPT-5.2",
       "provider": "Openai",
-      "pass_rate": 74.1,
-      "drift_detection_rate": 3.7,
-      "accuracy": 74.1,
+      "pass_rate": 95.2,
+      "drift_detection_rate": 4.8,
+      "error_rate": 22.2,
+      "accuracy": 95.2,
       "tasks_run": 27,
+      "tasks_completed": 21,
       "tasks_total": 27,
+      "errors": 6,
       "false_positives_excluded": 14,
       "breakdown": {
         "by_repo": {
@@ -337,18 +228,102 @@
       },
       "verified_at": "2026-02-01",
       "status": "verified",
-      "rank": 4
+      "rank": 2
+    },
+    {
+      "model": "anthropic/claude-sonnet-4-20250514",
+      "slug": "anthropic_claude-sonnet-4-20250514",
+      "display_name": "Claude Sonnet 4",
+      "provider": "Anthropic",
+      "pass_rate": 94.1,
+      "drift_detection_rate": 5.9,
+      "error_rate": 0.0,
+      "accuracy": 94.1,
+      "tasks_run": 17,
+      "tasks_completed": 17,
+      "tasks_total": 27,
+      "errors": 0,
+      "false_positives_excluded": 8,
+      "breakdown": {
+        "by_repo": {
+          "ui": {
+            "passed": 5,
+            "failed": 0,
+            "total": 5
+          },
+          "flask": {
+            "passed": 5,
+            "failed": 0,
+            "total": 5
+          },
+          "query": {
+            "passed": 3,
+            "failed": 0,
+            "total": 3
+          },
+          "lodash": {
+            "passed": 3,
+            "failed": 1,
+            "total": 4
+          }
+        },
+        "by_language": {
+          "javascript": {
+            "passed": 11,
+            "failed": 1,
+            "total": 12
+          },
+          "python": {
+            "passed": 5,
+            "failed": 0,
+            "total": 5
+          }
+        },
+        "by_category": {
+          "architecture_drift": {
+            "passed": 2,
+            "failed": 0,
+            "total": 2
+          },
+          "logic_drift": {
+            "passed": 4,
+            "failed": 0,
+            "total": 4
+          },
+          "security_drift": {
+            "passed": 3,
+            "failed": 1,
+            "total": 4
+          },
+          "pattern_drift": {
+            "passed": 5,
+            "failed": 0,
+            "total": 5
+          },
+          "stale_drift": {
+            "passed": 2,
+            "failed": 0,
+            "total": 2
+          }
+        }
+      },
+      "verified_at": "2026-02-01",
+      "status": "partial",
+      "rank": 3
     },
     {
       "model": "gemini/gemini-3-pro-preview",
       "slug": "gemini_gemini-3-pro-preview",
       "display_name": "Gemini 3 Pro",
       "provider": "Gemini",
-      "pass_rate": 29.6,
+      "pass_rate": 100.0,
       "drift_detection_rate": 0.0,
-      "accuracy": 29.6,
+      "error_rate": 70.4,
+      "accuracy": 100.0,
       "tasks_run": 27,
+      "tasks_completed": 8,
       "tasks_total": 27,
+      "errors": 19,
       "false_positives_excluded": 1,
       "breakdown": {
         "by_repo": {
@@ -424,7 +399,48 @@
         }
       },
       "verified_at": "2026-02-01",
-      "status": "verified",
+      "status": "partial",
+      "rank": 4
+    },
+    {
+      "model": "anthropic/claude-3-5-haiku-20241022",
+      "slug": "anthropic_claude-3-5-haiku-20241022",
+      "display_name": "Anthropic Claude-3-5-Haiku-20241022",
+      "provider": "Anthropic",
+      "pass_rate": 100.0,
+      "drift_detection_rate": 0.0,
+      "error_rate": 0.0,
+      "accuracy": 100.0,
+      "tasks_run": 1,
+      "tasks_completed": 1,
+      "tasks_total": 27,
+      "errors": 0,
+      "false_positives_excluded": 0,
+      "breakdown": {
+        "by_repo": {
+          "lodash": {
+            "passed": 1,
+            "failed": 0,
+            "total": 1
+          }
+        },
+        "by_language": {
+          "javascript": {
+            "passed": 1,
+            "failed": 0,
+            "total": 1
+          }
+        },
+        "by_category": {
+          "stale_drift": {
+            "passed": 1,
+            "failed": 0,
+            "total": 1
+          }
+        }
+      },
+      "verified_at": "2026-02-01",
+      "status": "partial",
       "rank": 5
     }
   ]

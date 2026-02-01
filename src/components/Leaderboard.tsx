@@ -26,7 +26,10 @@ interface ModelStats {
     accuracy?: number;
     fpr: number;
     tasks_run: number;
+    tasks_completed?: number;
     tasks_total?: number;
+    errors?: number;
+    error_rate?: number;
     false_positives_excluded?: number;
     status: string;
     verified_at?: string;
@@ -41,6 +44,7 @@ interface ModelStats {
 interface Methodology {
     false_positive_explanation?: string;
     scoring?: string;
+    error_explanation?: string;
 }
 
 interface StatsData {
@@ -481,10 +485,25 @@ export const Leaderboard = () => {
                                                     )}
                                                 </div>
 
-                                                <div className="flex items-center gap-3 mt-2">
+                                                <div className="flex items-center gap-3 mt-2 flex-wrap">
                                                     {model.verified_at && (
                                                         <div className="text-[10px] font-mono text-foreground/20 uppercase tracking-widest">
                                                             Verified {model.verified_at}
+                                                        </div>
+                                                    )}
+                                                    {model.errors && model.errors > 0 && (
+                                                        <div className="group/err relative flex items-center gap-1 px-2 py-0.5 rounded bg-red-500/10 border border-red-500/20">
+                                                            <XCircle className="w-3 h-3 text-red-400" />
+                                                            <span className="text-[10px] font-mono text-red-400">
+                                                                {model.errors} errors
+                                                            </span>
+                                                            {/* Tooltip */}
+                                                            <div className="absolute bottom-full left-0 mb-2 w-64 p-3 rounded-lg bg-zinc-900 border border-zinc-700 shadow-xl opacity-0 invisible group-hover/err:opacity-100 group-hover/err:visible transition-all duration-200 z-50">
+                                                                <div className="text-[11px] text-zinc-300 leading-relaxed">
+                                                                    <strong className="text-red-400">Infrastructure Errors:</strong> Tasks where the model failed to generate output (timeout, API error, etc). Not counted in pass rate calculation.
+                                                                </div>
+                                                                <div className="absolute -bottom-1 left-4 w-2 h-2 bg-zinc-900 border-r border-b border-zinc-700 transform rotate-45"></div>
+                                                            </div>
                                                         </div>
                                                     )}
                                                     {model.false_positives_excluded && model.false_positives_excluded > 0 && (
@@ -508,16 +527,16 @@ export const Leaderboard = () => {
                                             {/* Tasks Completed */}
                                             <div className="col-span-2 flex flex-col items-center justify-center">
                                                 <div className="font-mono text-sm font-bold text-zinc-300 tabular-nums">
-                                                    {model.tasks_run}/{model.tasks_total || totalTasks}
+                                                    {model.tasks_completed ?? model.tasks_run}/{model.tasks_total || totalTasks}
                                                 </div>
                                                 <div className="w-full max-w-[60px] h-1 bg-zinc-800 rounded-full mt-1 overflow-hidden">
                                                     <div
-                                                        className={`h-full ${model.tasks_run === (model.tasks_total || totalTasks) ? 'bg-green-500' : 'bg-blue-500'}`}
-                                                        style={{ width: `${(model.tasks_run / (model.tasks_total || totalTasks)) * 100}%` }}
+                                                        className={`h-full ${(model.tasks_completed ?? model.tasks_run) >= 20 ? 'bg-green-500' : (model.errors && model.errors > 5) ? 'bg-red-500' : 'bg-blue-500'}`}
+                                                        style={{ width: `${((model.tasks_completed ?? model.tasks_run) / (model.tasks_total || totalTasks)) * 100}%` }}
                                                     />
                                                 </div>
                                                 <span className="text-[9px] text-zinc-600 uppercase tracking-wider mt-0.5">
-                                                    {model.tasks_run === (model.tasks_total || totalTasks) ? 'Complete' : 'Partial'}
+                                                    {(model.tasks_completed ?? model.tasks_run) >= 20 ? 'Verified' : (model.errors && model.errors > 5) ? 'Errors' : 'Partial'}
                                                 </span>
                                             </div>
 
