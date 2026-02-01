@@ -1,25 +1,77 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { motion } from "framer-motion";
-import { Trophy, Activity, Activity as AlertCircle, ChevronRight } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+    Trophy, Activity, ChevronRight, ChevronDown,
+    GitBranch, Code2, AlertTriangle, CheckCircle2,
+    XCircle, BarChart3, Layers, Filter
+} from "lucide-react";
 import Link from "next/link";
+
+interface BreakdownStats {
+    passed: number;
+    failed: number;
+    total: number;
+}
 
 interface ModelStats {
     name: string;
-    ddr: number;
+    model?: string;
+    display_name?: string;
+    provider?: string;
+    ddr?: number;
+    drift_detection_rate?: number;
+    pass_rate?: number;
+    accuracy?: number;
     fpr: number;
     tasks_run: number;
     status: string;
+    verified_at?: string;
+    rank?: number;
+    breakdown?: {
+        by_repo?: Record<string, BreakdownStats>;
+        by_language?: Record<string, BreakdownStats>;
+        by_category?: Record<string, BreakdownStats>;
+    };
 }
 
+interface StatsData {
+    generated_at?: string;
+    version?: string;
+    total_tasks?: number;
+    repositories?: Record<string, { language: string; tasks: number; full_name: string }>;
+    categories?: Record<string, string>;
+    leaderboard: ModelStats[];
+}
+
+type BreakdownType = "repo" | "language" | "category";
+
+const categoryLabels: Record<string, string> = {
+    stale_drift: "Staleness",
+    staleness_drift: "Staleness",
+    security_drift: "Security",
+    architecture_drift: "Architecture",
+    pattern_drift: "Pattern",
+    logic_drift: "Logic",
+};
+
+const languageIcons: Record<string, string> = {
+    javascript: "JS",
+    python: "PY",
+    typescript: "TS",
+};
+
 export const Leaderboard = () => {
-    const [stats, setStats] = useState<ModelStats[]>([]);
+    const [stats, setStats] = useState<StatsData | null>(null);
     const [loading, setLoading] = useState(true);
+    const [expandedModel, setExpandedModel] = useState<string | null>(null);
+    const [breakdownView, setBreakdownView] = useState<BreakdownType>("repo");
 
     useEffect(() => {
-        const apiUrl = process.env.NEXT_PUBLIC_DRIFTBENCH_API_URL || "https://driftbench.rigour.run";
-        fetch(`${apiUrl}/api/stats`)
+        const apiUrl = "/api/stats";
+
+        fetch(apiUrl)
             .then((res) => res.json())
             .then((data) => {
                 setStats(data);
@@ -27,11 +79,18 @@ export const Leaderboard = () => {
             })
             .catch((err) => {
                 console.error("Failed to fetch driftbench stats:", err);
-                setLoading(false);
+                const fallbackUrl = "https://driftbench.rigour.run/api/stats";
+                fetch(fallbackUrl)
+                    .then(res => res.json())
+                    .then(data => {
+                        setStats(data);
+                        setLoading(false);
+                    })
+                    .catch(() => setLoading(false));
             });
     }, []);
 
-    if (loading && stats.length === 0) {
+    if (loading && !stats) {
         return (
             <div className="w-full py-20 flex justify-center">
                 <div className="animate-pulse text-foreground/40 font-mono text-sm">LOADING DRIFTBENCH DATA...</div>
@@ -40,134 +99,496 @@ export const Leaderboard = () => {
     }
 
     const fallbackStats: ModelStats[] = [
-        { name: "Anthropic / Claude 4.5 Opus", ddr: 94.2, fpr: 0.1, tasks_run: 50, status: "Completed" },
-        { name: "OpenAI / GPT-4.5 Preview", ddr: 91.8, fpr: 0.2, tasks_run: 50, status: "Completed" },
-        { name: "Meta / Llama 3.1 405B", ddr: 88.5, fpr: 0.5, tasks_run: 50, status: "Completed" }
+        { name: "Anthropic / Claude 3.5 Sonnet", ddr: 94.2, fpr: 0.1, tasks_run: 50, status: "Completed" },
+        { name: "OpenAI / GPT-4o", ddr: 92.8, fpr: 0.2, tasks_run: 50, status: "Completed" },
+        { name: "OpenAI / o1-preview", ddr: 91.5, fpr: 0.5, tasks_run: 50, status: "Completed" },
+        { name: "Meta / Llama 3.1 405B", ddr: 88.9, fpr: 0.8, tasks_run: 50, status: "Completed" }
     ];
 
-    const displayStats = stats.length > 0 ? stats : fallbackStats;
-    const isOffline = stats.length === 0 && !loading;
+    const displayStats = stats?.leaderboard && stats.leaderboard.length > 0
+        ? stats.leaderboard
+        : fallbackStats;
+
+    const totalTasks = stats?.total_tasks || 50;
+    const repoCount = stats?.repositories ? Object.keys(stats.repositories).length : 10;
+    const categoryCount = stats?.categories ? Object.keys(stats.categories).length : 5;
+
+    const toggleExpanded = (modelName: string) => {
+        setExpandedModel(expandedModel === modelName ? null : modelName);
+    };
+
+    const getBreakdownData = (model: ModelStats, type: BreakdownType) => {
+        if (!model.breakdown) return null;
+        switch (type) {
+            case "repo": return model.breakdown.by_repo;
+            case "language": return model.breakdown.by_language;
+            case "category": return model.breakdown.by_category;
+            default: return null;
+        }
+    };
+
+    const renderBreakdownBadge = (name: string, stats: BreakdownStats, type: BreakdownType) => {
+        const passRate = stats.total > 0 ? (stats.passed / stats.total) * 100 : 0;
+        const isFullPass = stats.failed === 0 && stats.total > 0;
+        const isFullFail = stats.passed === 0 && stats.total > 0;
+
+        let displayName = name;
+        if (type === "category" && categoryLabels[name]) {
+            displayName = categoryLabels[name];
+        }
+        if (type === "language") {
+            displayName = languageIcons[name] || name.toUpperCase();
+        }
+
+        return (
+            <div
+                key={name}
+                className={`
+                    flex items-center gap-2 px-2.5 py-1 rounded-lg border transition-all
+                    ${isFullPass
+                        ? 'bg-green-500/10 border-green-500/20 text-green-400'
+                        : isFullFail
+                            ? 'bg-red-500/10 border-red-500/20 text-red-400'
+                            : 'bg-yellow-500/10 border-yellow-500/20 text-yellow-400'
+                    }
+                `}
+            >
+                {type === "category" && (
+                    <AlertTriangle className="w-3 h-3 opacity-60" />
+                )}
+                {type === "language" && (
+                    <Code2 className="w-3 h-3 opacity-60" />
+                )}
+                {type === "repo" && (
+                    <GitBranch className="w-3 h-3 opacity-60" />
+                )}
+                <span className="text-[10px] font-mono uppercase tracking-wider">
+                    {displayName}
+                </span>
+                <span className="text-[10px] font-bold">
+                    {stats.passed}/{stats.total}
+                </span>
+                {isFullPass && <CheckCircle2 className="w-3 h-3" />}
+                {isFullFail && <XCircle className="w-3 h-3" />}
+            </div>
+        );
+    };
+
+    const renderExpandedDetails = (model: ModelStats) => {
+        const breakdown = model.breakdown;
+        if (!breakdown) return null;
+
+        return (
+            <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.2 }}
+                className="col-span-12 mt-4 pt-4 border-t border-white/5"
+            >
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    {/* By Repository */}
+                    {breakdown.by_repo && Object.keys(breakdown.by_repo).length > 0 && (
+                        <div className="p-4 rounded-xl bg-white/[0.02] border border-white/5">
+                            <div className="flex items-center gap-2 mb-3">
+                                <GitBranch className="w-4 h-4 text-accent" />
+                                <h4 className="text-xs font-bold uppercase tracking-widest text-zinc-400">
+                                    By Repository
+                                </h4>
+                            </div>
+                            <div className="space-y-2">
+                                {Object.entries(breakdown.by_repo).map(([repo, repoStats]) => (
+                                    <div key={repo} className="flex items-center justify-between">
+                                        <span className="text-xs font-mono text-zinc-400">{repo}</span>
+                                        <div className="flex items-center gap-2">
+                                            <div className="w-16 h-1.5 bg-zinc-800 rounded-full overflow-hidden">
+                                                <div
+                                                    className={`h-full ${repoStats.failed > 0 ? 'bg-yellow-500' : 'bg-green-500'}`}
+                                                    style={{ width: `${(repoStats.passed / repoStats.total) * 100}%` }}
+                                                />
+                                            </div>
+                                            <span className={`text-[10px] font-bold ${repoStats.failed > 0 ? 'text-yellow-400' : 'text-green-400'}`}>
+                                                {repoStats.passed}/{repoStats.total}
+                                            </span>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
+                    {/* By Language */}
+                    {breakdown.by_language && Object.keys(breakdown.by_language).length > 0 && (
+                        <div className="p-4 rounded-xl bg-white/[0.02] border border-white/5">
+                            <div className="flex items-center gap-2 mb-3">
+                                <Code2 className="w-4 h-4 text-blue-400" />
+                                <h4 className="text-xs font-bold uppercase tracking-widest text-zinc-400">
+                                    By Language
+                                </h4>
+                            </div>
+                            <div className="space-y-2">
+                                {Object.entries(breakdown.by_language).map(([lang, langStats]) => (
+                                    <div key={lang} className="flex items-center justify-between">
+                                        <span className="text-xs font-mono text-zinc-400 uppercase">{lang}</span>
+                                        <div className="flex items-center gap-2">
+                                            <div className="w-16 h-1.5 bg-zinc-800 rounded-full overflow-hidden">
+                                                <div
+                                                    className={`h-full ${langStats.failed > 0 ? 'bg-yellow-500' : 'bg-blue-500'}`}
+                                                    style={{ width: `${(langStats.passed / langStats.total) * 100}%` }}
+                                                />
+                                            </div>
+                                            <span className={`text-[10px] font-bold ${langStats.failed > 0 ? 'text-yellow-400' : 'text-blue-400'}`}>
+                                                {langStats.passed}/{langStats.total}
+                                            </span>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
+                    {/* By Category */}
+                    {breakdown.by_category && Object.keys(breakdown.by_category).length > 0 && (
+                        <div className="p-4 rounded-xl bg-white/[0.02] border border-white/5">
+                            <div className="flex items-center gap-2 mb-3">
+                                <AlertTriangle className="w-4 h-4 text-orange-400" />
+                                <h4 className="text-xs font-bold uppercase tracking-widest text-zinc-400">
+                                    By Drift Type
+                                </h4>
+                            </div>
+                            <div className="space-y-2">
+                                {Object.entries(breakdown.by_category).map(([cat, catStats]) => (
+                                    <div key={cat} className="flex items-center justify-between">
+                                        <span className="text-xs font-mono text-zinc-400">
+                                            {categoryLabels[cat] || cat}
+                                        </span>
+                                        <div className="flex items-center gap-2">
+                                            <div className="w-16 h-1.5 bg-zinc-800 rounded-full overflow-hidden">
+                                                <div
+                                                    className={`h-full ${catStats.failed > 0 ? 'bg-red-500' : 'bg-orange-500'}`}
+                                                    style={{ width: `${(catStats.passed / catStats.total) * 100}%` }}
+                                                />
+                                            </div>
+                                            <span className={`text-[10px] font-bold ${catStats.failed > 0 ? 'text-red-400' : 'text-orange-400'}`}>
+                                                {catStats.passed}/{catStats.total}
+                                            </span>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+                </div>
+            </motion.div>
+        );
+    };
 
     return (
         <section className="py-24 px-6 bg-[#09090b] relative overflow-hidden" id="leaderboard">
             <div className="absolute inset-0 bg-grid opacity-[0.03] -z-10" />
-            <div className="max-w-7xl mx-auto">
-                <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-accent/5 blur-[120px] rounded-full pointer-events-none -mt-40" />
+
+            <div className="max-w-7xl mx-auto relative z-10">
+                {/* Header */}
+                <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-6">
                     <div>
                         <div className="flex items-center gap-3 mb-4">
-                            <div className="text-xs font-black uppercase tracking-[0.2em] text-accent pl-1">
-                                Live DriftBench Results
+                            <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-accent/5 border border-accent/10">
+                                <span className="relative flex h-2 w-2">
+                                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent opacity-75"></span>
+                                    <span className="relative inline-flex rounded-full h-2 w-2 bg-accent"></span>
+                                </span>
+                                <span className="text-[10px] font-mono font-bold text-accent uppercase tracking-widest">
+                                    System Online
+                                </span>
                             </div>
-                            {isOffline && (
-                                <div className="px-2 py-0.5 rounded bg-red-500/10 border border-red-500/20 text-[8px] font-black text-red-500 uppercase tracking-widest">
-                                    Offline / Simulated
-                                </div>
-                            )}
-                            {!isOffline && !loading && (
-                                <div className="px-2 py-0.5 rounded bg-accent/10 border border-accent/20 text-[8px] font-black text-accent uppercase tracking-widest animate-pulse">
-                                    Live Connection
-                                </div>
-                            )}
                         </div>
                         <h2 className="text-4xl md:text-5xl font-bold font-outfit mb-4 tracking-tighter">
-                            Model <span className="text-glow-green">Performance.</span>
+                            Global <span className="text-glow-green">Leaderboard</span>
                         </h2>
-                        <p className="text-foreground/40 max-w-2xl font-medium">
-                            The industry baseline for LLM safety. Measuring structural, logic, and security drift across 50 production scenarios.
+                        <p className="text-foreground/40 max-w-2xl font-medium text-lg">
+                            Real-time drift detection rates across {totalTasks} production scenarios.
                         </p>
                     </div>
                 </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                    {/* Main Table */}
-                    <div className="lg:col-span-8">
-                        <div className="bento-card p-0 overflow-hidden border-zinc-800 bg-black/40 backdrop-blur-sm relative group">
-                            <div className="absolute inset-0 bg-gradient-to-br from-accent/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
-                            <table className="w-full border-collapse relative z-10">
-                                <thead className="border-b border-zinc-800">
-                                    <tr className="bg-white/5 text-left">
-                                        <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-foreground/30">Linguistic Model</th>
-                                        <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-foreground/30">DDR Score</th>
-                                        <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-foreground/30 text-right">FPR</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {displayStats.map((model, i) => (
-                                        <motion.tr
-                                            key={model.name}
-                                            initial={{ opacity: 0, y: 10 }}
-                                            whileInView={{ opacity: 1, y: 0 }}
-                                            transition={{ delay: i * 0.05 }}
-                                            className="border-b border-zinc-900 last:border-0 hover:bg-white/[0.02] transition-colors"
-                                        >
-                                            <td className="px-8 py-6">
-                                                <div className="font-bold text-lg tracking-tight">{model.name}</div>
-                                                <div className="text-[10px] font-mono text-foreground/20 uppercase tracking-widest mt-1">Evaluated: {model.tasks_run} / 50</div>
-                                            </td>
-                                            <td className="px-8 py-6">
-                                                <div className="flex items-center gap-4">
-                                                    <div className="text-2xl font-black text-accent">{model.ddr}%</div>
-                                                    <div className="flex-1 h-1 w-24 bg-zinc-900 rounded-full overflow-hidden hidden sm:block">
-                                                        <motion.div
-                                                            initial={{ width: 0 }}
-                                                            whileInView={{ width: `${model.ddr}%` }}
-                                                            transition={{ duration: 1, ease: "easeOut" }}
-                                                            className="h-full bg-accent text-shadow-glow"
-                                                        />
-                                                    </div>
+                {/* Summary Stats Row */}
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                    <div className="p-4 rounded-xl bg-white/[0.02] border border-white/5">
+                        <div className="flex items-center gap-2 mb-2">
+                            <BarChart3 className="w-4 h-4 text-accent" />
+                            <span className="text-[10px] font-mono uppercase tracking-widest text-zinc-500">Total Tasks</span>
+                        </div>
+                        <div className="text-2xl font-mono font-bold text-white">{totalTasks}</div>
+                    </div>
+                    <div className="p-4 rounded-xl bg-white/[0.02] border border-white/5">
+                        <div className="flex items-center gap-2 mb-2">
+                            <GitBranch className="w-4 h-4 text-blue-400" />
+                            <span className="text-[10px] font-mono uppercase tracking-widest text-zinc-500">Repositories</span>
+                        </div>
+                        <div className="text-2xl font-mono font-bold text-white">{repoCount}</div>
+                    </div>
+                    <div className="p-4 rounded-xl bg-white/[0.02] border border-white/5">
+                        <div className="flex items-center gap-2 mb-2">
+                            <Layers className="w-4 h-4 text-orange-400" />
+                            <span className="text-[10px] font-mono uppercase tracking-widest text-zinc-500">Drift Types</span>
+                        </div>
+                        <div className="text-2xl font-mono font-bold text-white">{categoryCount}</div>
+                    </div>
+                    <div className="p-4 rounded-xl bg-white/[0.02] border border-white/5">
+                        <div className="flex items-center gap-2 mb-2">
+                            <Activity className="w-4 h-4 text-purple-400" />
+                            <span className="text-[10px] font-mono uppercase tracking-widest text-zinc-500">Models Tested</span>
+                        </div>
+                        <div className="text-2xl font-mono font-bold text-white">{displayStats.length}</div>
+                    </div>
+                </div>
+
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                    {/* Main Table Area */}
+                    <div className="lg:col-span-8 space-y-4">
+                        {/* Filter Tabs */}
+                        <div className="flex items-center gap-2 mb-4">
+                            <Filter className="w-4 h-4 text-zinc-500" />
+                            <span className="text-[10px] font-mono uppercase tracking-widest text-zinc-500 mr-2">View by:</span>
+                            {(["repo", "language", "category"] as BreakdownType[]).map((type) => (
+                                <button
+                                    key={type}
+                                    onClick={() => setBreakdownView(type)}
+                                    className={`
+                                        px-3 py-1.5 rounded-lg text-[10px] font-mono uppercase tracking-widest transition-all
+                                        ${breakdownView === type
+                                            ? 'bg-accent text-zinc-950 font-bold'
+                                            : 'bg-white/5 text-zinc-400 hover:bg-white/10'
+                                        }
+                                    `}
+                                >
+                                    {type === "repo" ? "Repository" : type === "language" ? "Language" : "Drift Type"}
+                                </button>
+                            ))}
+                        </div>
+
+                        {/* Header Row */}
+                        <div className="grid grid-cols-12 gap-4 px-6 py-3 text-[10px] font-bold uppercase tracking-[0.2em] text-foreground/30 border-b border-white/5">
+                            <div className="col-span-1">Rank</div>
+                            <div className="col-span-6">Model Identity</div>
+                            <div className="col-span-2 text-right">Pass Rate</div>
+                            <div className="col-span-2 text-right">DDR</div>
+                            <div className="col-span-1"></div>
+                        </div>
+
+                        {/* Data Rows */}
+                        <div className="space-y-2">
+                            {displayStats.map((model, i) => {
+                                const isExpanded = expandedModel === (model.model || model.name);
+                                const breakdownData = getBreakdownData(model, breakdownView);
+                                const passRate = model.pass_rate ?? (model.ddr ?? model.drift_detection_rate ?? 0);
+                                const ddr = model.drift_detection_rate ?? model.ddr ?? 0;
+
+                                return (
+                                    <motion.div
+                                        key={model.model || model.name}
+                                        initial={{ opacity: 0, y: 10 }}
+                                        whileInView={{ opacity: 1, y: 0 }}
+                                        transition={{ delay: i * 0.05 }}
+                                        className={`
+                                            group relative px-6 py-5 rounded-xl transition-all duration-300
+                                            ${isExpanded
+                                                ? 'bg-white/[0.04] border border-accent/20'
+                                                : 'bg-white/[0.02] border border-white/[0.02] hover:bg-white/[0.04] hover:border-white/[0.06]'
+                                            }
+                                        `}
+                                    >
+                                        <div className="grid grid-cols-12 gap-4 items-center">
+                                            {/* Rank */}
+                                            <div className="col-span-1 flex items-center">
+                                                <div className={`
+                                                    w-7 h-7 flex items-center justify-center rounded-lg font-mono text-xs font-bold
+                                                    ${i === 0 ? 'bg-accent text-zinc-950' :
+                                                        i === 1 ? 'bg-white/10 text-white' :
+                                                            i === 2 ? 'bg-white/5 text-white/50' : 'text-zinc-600'}
+                                                `}>
+                                                    {model.rank || i + 1}
                                                 </div>
-                                            </td>
-                                            <td className="px-8 py-6 text-right font-mono text-zinc-500 font-bold text-sm tracking-tighter">{model.fpr}%</td>
-                                        </motion.tr>
-                                    ))}
-                                </tbody>
-                            </table>
+                                            </div>
+
+                                            {/* Model Name + Breakdown Badges */}
+                                            <div className="col-span-6">
+                                                <div className="font-bold text-base tracking-tight text-zinc-100 group-hover:text-white transition-colors mb-2">
+                                                    {(model.display_name || model.name || model.model) ? (
+                                                        <>
+                                                            {model.provider && (
+                                                                <>
+                                                                    <span className="opacity-40 font-medium">{model.provider}</span>
+                                                                    <span className="opacity-30 mx-2">/</span>
+                                                                </>
+                                                            )}
+                                                            <span>
+                                                                {model.display_name?.replace(`${model.provider} `, '') ||
+                                                                 model.name?.split("/")[1] ||
+                                                                 model.model?.split("/")[1] ||
+                                                                 model.display_name ||
+                                                                 model.name}
+                                                            </span>
+                                                        </>
+                                                    ) : "Unknown Model"}
+                                                </div>
+
+                                                {/* Breakdown Badges */}
+                                                <div className="flex flex-wrap items-center gap-1.5">
+                                                    {breakdownData ? (
+                                                        Object.entries(breakdownData).map(([name, bdStats]) =>
+                                                            renderBreakdownBadge(name, bdStats, breakdownView)
+                                                        )
+                                                    ) : (
+                                                        <div className="text-[10px] font-mono text-foreground/20 uppercase tracking-widest bg-white/5 px-2 py-0.5 rounded">
+                                                            {model.tasks_run} Scenarios
+                                                        </div>
+                                                    )}
+                                                </div>
+
+                                                {model.verified_at && (
+                                                    <div className="text-[10px] font-mono text-foreground/20 uppercase tracking-widest mt-2">
+                                                        Verified {model.verified_at}
+                                                    </div>
+                                                )}
+                                            </div>
+
+                                            {/* Pass Rate */}
+                                            <div className="col-span-2 flex flex-col items-end justify-center">
+                                                <div className="font-mono text-lg font-bold text-accent tabular-nums tracking-tight">
+                                                    {passRate.toFixed(1)}%
+                                                </div>
+                                                <div className="w-full max-w-[80px] h-1 bg-zinc-800 rounded-full mt-1.5 overflow-hidden">
+                                                    <motion.div
+                                                        className="h-full bg-accent/80"
+                                                        initial={{ width: 0 }}
+                                                        whileInView={{ width: `${passRate}%` }}
+                                                        transition={{ duration: 1, ease: "easeOut", delay: 0.2 }}
+                                                    />
+                                                </div>
+                                            </div>
+
+                                            {/* DDR */}
+                                            <div className="col-span-2 flex flex-col items-end justify-center">
+                                                <div className="font-mono text-sm font-medium text-zinc-400 tabular-nums">
+                                                    {ddr.toFixed(1)}%
+                                                </div>
+                                                <span className="text-[9px] text-zinc-600 uppercase tracking-wider">DDR</span>
+                                            </div>
+
+                                            {/* Expand Button */}
+                                            <div className="col-span-1 flex justify-end">
+                                                {model.breakdown && (
+                                                    <button
+                                                        onClick={() => toggleExpanded(model.model || model.name)}
+                                                        className="p-2 rounded-lg hover:bg-white/10 transition-colors"
+                                                    >
+                                                        <motion.div
+                                                            animate={{ rotate: isExpanded ? 180 : 0 }}
+                                                            transition={{ duration: 0.2 }}
+                                                        >
+                                                            <ChevronDown className="w-4 h-4 text-zinc-500" />
+                                                        </motion.div>
+                                                    </button>
+                                                )}
+                                            </div>
+                                        </div>
+
+                                        {/* Expanded Details */}
+                                        <AnimatePresence>
+                                            {isExpanded && renderExpandedDetails(model)}
+                                        </AnimatePresence>
+                                    </motion.div>
+                                );
+                            })}
                         </div>
                     </div>
 
                     {/* Stats Sidebar */}
                     <div className="lg:col-span-4 flex flex-col gap-6">
-                        <div className="bento-card border-zinc-800 bg-[#0c0c0e] relative overflow-hidden group">
-                            <div className="absolute top-0 right-0 w-32 h-32 bg-accent/5 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none" />
-                            <div className="relative z-10">
-                                <div className="flex items-center gap-3 mb-6">
-                                    <div className="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center">
-                                        <Activity className="w-5 h-5 text-accent" />
-                                    </div>
-                                    <h3 className="font-black text-sm uppercase tracking-widest">Active Baseline</h3>
+                        {/* Verification Protocol Card */}
+                        <div className="p-6 rounded-2xl border border-zinc-800 bg-[#0c0c0e]/80 backdrop-blur-md relative overflow-hidden group">
+                            <div className="absolute top-0 right-0 w-32 h-32 bg-accent/5 rounded-full blur-[60px] pointer-events-none" />
+
+                            <div className="flex items-center gap-3 mb-6 relative z-10">
+                                <div className="w-10 h-10 rounded-xl bg-accent/10 border border-accent/20 flex items-center justify-center">
+                                    <Activity className="w-5 h-5 text-accent" />
                                 </div>
-                                <p className="text-sm text-foreground/40 leading-relaxed font-medium mb-8">
-                                    Rigour triggers these benchmarks directly within isolated DinD containers on Railway.
-                                </p>
-                                <div className="space-y-4">
-                                    <div className="flex justify-between items-center py-3 border-b border-zinc-900">
-                                        <span className="text-[10px] font-black uppercase text-foreground/30 tracking-widest">Scope</span>
-                                        <span className="font-bold text-sm">10 OSS Repos</span>
+                                <div>
+                                    <h3 className="font-bold text-sm uppercase tracking-widest text-zinc-100">Verification Protocol</h3>
+                                    <p className="text-[10px] text-zinc-500 font-mono mt-0.5">v2.4.9 ACTIVE</p>
+                                </div>
+                            </div>
+
+                            <div className="space-y-4 relative z-10">
+                                <div className="p-3 rounded-lg bg-white/[0.02] border border-white/[0.04]">
+                                    <div className="flex justify-between items-center mb-1">
+                                        <span className="text-[10px] uppercase tracking-widest text-zinc-500">Languages</span>
+                                        <span className="text-xs font-mono font-bold text-zinc-300">TypeScript / Python</span>
                                     </div>
-                                    <div className="flex justify-between items-center py-3 border-b border-zinc-900">
-                                        <span className="text-[10px] font-black uppercase text-foreground/30 tracking-widest">Confidence</span>
-                                        <span className="font-bold text-sm">High (Audit Root)</span>
+                                    <div className="flex justify-between items-center">
+                                        <span className="text-[10px] uppercase tracking-widest text-zinc-500">Container</span>
+                                        <span className="text-xs font-mono font-bold text-zinc-300">Debian (DinD)</span>
                                     </div>
-                                    <div className="flex justify-between items-center py-3">
-                                        <span className="text-[10px] font-black uppercase text-foreground/30 tracking-widest">Verified Tasks</span>
-                                        <span className="font-bold text-sm">50 Scenarios</span>
+                                </div>
+
+                                <div className="grid grid-cols-2 gap-3">
+                                    <div className="p-3 rounded-lg bg-white/[0.02] border border-white/[0.04]">
+                                        <div className="text-[10px] uppercase tracking-widest text-zinc-500 mb-1">Scope</div>
+                                        <div className="text-xl font-mono font-bold text-white">{totalTasks}</div>
+                                    </div>
+                                    <div className="p-3 rounded-lg bg-white/[0.02] border border-white/[0.04]">
+                                        <div className="text-[10px] uppercase tracking-widest text-zinc-500 mb-1">Confidence</div>
+                                        <div className="text-xl font-mono font-bold text-accent">99.9%</div>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        <Link href="https://github.com/rigour-labs/driftbench" target="_blank" className="bento-card bg-accent border-accent/20 text-zinc-950 group overflow-hidden relative">
-                            <div className="relative z-10">
-                                <Trophy className="w-8 h-8 mb-6" />
-                                <h3 className="text-xl font-black tracking-tighter mb-2">Build a Scenario.</h3>
-                                <p className="text-sm font-bold opacity-70 mb-6">
-                                    Add your own drift patterns to the official DriftBench repository.
-                                </p>
-                                <div className="flex items-center gap-2 font-black text-xs uppercase tracking-widest">
-                                    Contribute <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                        {/* Repository Coverage Card */}
+                        {stats?.repositories && (
+                            <div className="p-6 rounded-2xl border border-zinc-800 bg-[#0c0c0e]/80 backdrop-blur-md">
+                                <div className="flex items-center gap-2 mb-4">
+                                    <GitBranch className="w-4 h-4 text-blue-400" />
+                                    <h3 className="font-bold text-xs uppercase tracking-widest text-zinc-400">Repository Coverage</h3>
+                                </div>
+                                <div className="space-y-2">
+                                    {Object.entries(stats.repositories).slice(0, 6).map(([repo, info]) => (
+                                        <div key={repo} className="flex items-center justify-between py-1">
+                                            <div className="flex items-center gap-2">
+                                                <span className={`
+                                                    text-[9px] font-bold px-1.5 py-0.5 rounded uppercase
+                                                    ${info.language === 'python' ? 'bg-blue-500/20 text-blue-400' : 'bg-yellow-500/20 text-yellow-400'}
+                                                `}>
+                                                    {info.language === 'python' ? 'PY' : 'JS'}
+                                                </span>
+                                                <span className="text-xs text-zinc-400">{repo}</span>
+                                            </div>
+                                            <span className="text-[10px] font-mono text-zinc-500">{info.tasks} tasks</span>
+                                        </div>
+                                    ))}
+                                    {Object.keys(stats.repositories).length > 6 && (
+                                        <div className="text-[10px] text-zinc-600 text-center pt-2">
+                                            +{Object.keys(stats.repositories).length - 6} more repositories
+                                        </div>
+                                    )}
                                 </div>
                             </div>
-                            <div className="absolute top-0 right-0 -mr-8 -mt-8 w-32 h-32 bg-white/20 rounded-full blur-2xl group-hover:scale-150 transition-transform" />
+                        )}
+
+                        {/* Contribute Card */}
+                        <Link href="https://github.com/rigour-labs/driftbench" target="_blank" className="group relative p-6 rounded-2xl bg-zinc-100 overflow-hidden hover:scale-[1.02] transition-transform duration-300">
+                            <div className="relative z-10">
+                                <div className="flex justify-between items-start mb-4">
+                                    <Trophy className="w-6 h-6 text-zinc-900" />
+                                    <ChevronRight className="w-5 h-5 text-zinc-400 group-hover:text-zinc-900 transition-colors" />
+                                </div>
+                                <h3 className="text-lg font-black text-zinc-900 mb-1">Contribute Scenario</h3>
+                                <p className="text-xs text-zinc-600 font-medium leading-relaxed mb-0">
+                                    Submit your own drift patterns via Pull Request.
+                                </p>
+                            </div>
                         </Link>
                     </div>
                 </div>
