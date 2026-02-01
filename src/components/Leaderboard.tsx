@@ -17,7 +17,7 @@ export const Leaderboard = () => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const apiUrl = process.env.NEXT_PUBLIC_DRIFTBENCH_API_URL || "https://driftbench-production.up.railway.app";
+        const apiUrl = process.env.NEXT_PUBLIC_DRIFTBENCH_API_URL || "https://driftbench.rigour.run";
         fetch(`${apiUrl}/api/stats`)
             .then((res) => res.json())
             .then((data) => {
