@@ -380,9 +380,34 @@ export const Leaderboard = () => {
                         {/* Header Row */}
                         <div className="grid grid-cols-12 gap-4 px-6 py-3 text-[10px] font-bold uppercase tracking-[0.2em] text-foreground/30 border-b border-white/5">
                             <div className="col-span-1">Rank</div>
-                            <div className="col-span-6">Model Identity</div>
-                            <div className="col-span-2 text-right">Pass Rate</div>
-                            <div className="col-span-2 text-right">DDR</div>
+                            <div className="col-span-5">Model Identity</div>
+                            <div className="col-span-2 text-center">
+                                <div className="group/header relative inline-flex items-center gap-1 cursor-help">
+                                    Tasks
+                                    <HelpCircle className="w-3 h-3 opacity-50" />
+                                    <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 p-2 rounded-lg bg-zinc-800 border border-zinc-700 text-[10px] text-zinc-300 font-normal normal-case tracking-normal opacity-0 invisible group-hover/header:opacity-100 group-hover/header:visible transition-all z-50">
+                                        Number of benchmark tasks completed out of {totalTasks} total scenarios
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="col-span-2 text-right">
+                                <div className="group/header relative inline-flex items-center gap-1 cursor-help">
+                                    Pass Rate
+                                    <HelpCircle className="w-3 h-3 opacity-50" />
+                                    <div className="absolute bottom-full right-0 mb-2 w-56 p-2 rounded-lg bg-zinc-800 border border-zinc-700 text-[10px] text-zinc-300 font-normal normal-case tracking-normal opacity-0 invisible group-hover/header:opacity-100 group-hover/header:visible transition-all z-50">
+                                        % of tasks where the model&apos;s code passed all Rigour quality gates without introducing drift
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="col-span-1 text-right">
+                                <div className="group/header relative inline-flex items-center gap-1 cursor-help">
+                                    DDR
+                                    <HelpCircle className="w-3 h-3 opacity-50" />
+                                    <div className="absolute bottom-full right-0 mb-2 w-56 p-2 rounded-lg bg-zinc-800 border border-zinc-700 text-[10px] text-zinc-300 font-normal normal-case tracking-normal opacity-0 invisible group-hover/header:opacity-100 group-hover/header:visible transition-all z-50">
+                                        <strong className="text-accent">Drift Detection Rate</strong> - % of tasks where Rigour caught code quality issues
+                                    </div>
+                                </div>
+                            </div>
                             <div className="col-span-1"></div>
                         </div>
 
@@ -413,16 +438,16 @@ export const Leaderboard = () => {
                                             <div className="col-span-1 flex items-center">
                                                 <div className={`
                                                     w-7 h-7 flex items-center justify-center rounded-lg font-mono text-xs font-bold
-                                                    ${i === 0 ? 'bg-accent text-zinc-950' :
-                                                        i === 1 ? 'bg-white/10 text-white' :
-                                                            i === 2 ? 'bg-white/5 text-white/50' : 'text-zinc-600'}
+                                                    ${i === 0 ? 'bg-gradient-to-br from-yellow-400 to-amber-500 text-zinc-950 shadow-lg shadow-yellow-500/20' :
+                                                        i === 1 ? 'bg-gradient-to-br from-zinc-300 to-zinc-400 text-zinc-900' :
+                                                            i === 2 ? 'bg-gradient-to-br from-amber-600 to-amber-700 text-white' : 'bg-zinc-800 text-zinc-500'}
                                                 `}>
                                                     {model.rank || i + 1}
                                                 </div>
                                             </div>
 
                                             {/* Model Name + Breakdown Badges */}
-                                            <div className="col-span-6">
+                                            <div className="col-span-5">
                                                 <div className="font-bold text-base tracking-tight text-zinc-100 group-hover:text-white transition-colors mb-2">
                                                     {(model.display_name || model.name || model.model) ? (
                                                         <>
@@ -480,6 +505,22 @@ export const Leaderboard = () => {
                                                 </div>
                                             </div>
 
+                                            {/* Tasks Completed */}
+                                            <div className="col-span-2 flex flex-col items-center justify-center">
+                                                <div className="font-mono text-sm font-bold text-zinc-300 tabular-nums">
+                                                    {model.tasks_run}/{model.tasks_total || totalTasks}
+                                                </div>
+                                                <div className="w-full max-w-[60px] h-1 bg-zinc-800 rounded-full mt-1 overflow-hidden">
+                                                    <div
+                                                        className={`h-full ${model.tasks_run === (model.tasks_total || totalTasks) ? 'bg-green-500' : 'bg-blue-500'}`}
+                                                        style={{ width: `${(model.tasks_run / (model.tasks_total || totalTasks)) * 100}%` }}
+                                                    />
+                                                </div>
+                                                <span className="text-[9px] text-zinc-600 uppercase tracking-wider mt-0.5">
+                                                    {model.tasks_run === (model.tasks_total || totalTasks) ? 'Complete' : 'Partial'}
+                                                </span>
+                                            </div>
+
                                             {/* Pass Rate */}
                                             <div className="col-span-2 flex flex-col items-end justify-center">
                                                 <div className="font-mono text-lg font-bold text-accent tabular-nums tracking-tight">
@@ -496,11 +537,10 @@ export const Leaderboard = () => {
                                             </div>
 
                                             {/* DDR */}
-                                            <div className="col-span-2 flex flex-col items-end justify-center">
+                                            <div className="col-span-1 flex flex-col items-end justify-center">
                                                 <div className="font-mono text-sm font-medium text-zinc-400 tabular-nums">
                                                     {ddr.toFixed(1)}%
                                                 </div>
-                                                <span className="text-[9px] text-zinc-600 uppercase tracking-wider">DDR</span>
                                             </div>
 
                                             {/* Expand Button */}
