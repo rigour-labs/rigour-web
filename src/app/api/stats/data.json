@@ -1,8 +1,7 @@
 {
-  "generated_at": "2026-02-01T18:15:00.000000+00:00",
+  "generated_at": "2026-02-01T12:39:29.741145+00:00",
   "version": "1.0",
   "total_tasks": 27,
-  "note": "Results corrected to exclude structure-check false positives",
   "repositories": {
     "flask": {
       "language": "python",
@@ -43,7 +42,49 @@
     "pattern_drift": "Code deviates from established patterns",
     "logic_drift": "Code has logical inconsistencies"
   },
+  "methodology": {
+    "false_positive_explanation": "Structure-check failures are excluded when they are the ONLY failure reason. These occur because Rigour's default configuration requires documentation files (SPEC.md, ARCH.md, DECISIONS.md, TASKS.md) that don't exist in most open-source repositories. This is a configuration issue, not a model drift detection failure.",
+    "scoring": "Pass rate = tasks passed / tasks run, excluding structure-check-only failures"
+  },
   "leaderboard": [
+    {
+      "model": "anthropic/claude-3-5-haiku-20241022",
+      "slug": "anthropic_claude-3-5-haiku-20241022",
+      "display_name": "Anthropic Claude-3-5-Haiku-20241022",
+      "provider": "Anthropic",
+      "pass_rate": 100.0,
+      "drift_detection_rate": 0.0,
+      "accuracy": 100.0,
+      "tasks_run": 1,
+      "tasks_total": 27,
+      "false_positives_excluded": 0,
+      "breakdown": {
+        "by_repo": {
+          "lodash": {
+            "passed": 1,
+            "failed": 0,
+            "total": 1
+          }
+        },
+        "by_language": {
+          "javascript": {
+            "passed": 1,
+            "failed": 0,
+            "total": 1
+          }
+        },
+        "by_category": {
+          "stale_drift": {
+            "passed": 1,
+            "failed": 0,
+            "total": 1
+          }
+        }
+      },
+      "verified_at": "2026-02-01",
+      "status": "partial",
+      "rank": 1
+    },
     {
       "model": "anthropic/claude-sonnet-4-20250514",
       "slug": "anthropic_claude-sonnet-4-20250514",
@@ -51,22 +92,18 @@
       "provider": "Anthropic",
       "pass_rate": 94.1,
       "drift_detection_rate": 5.9,
+      "accuracy": 94.1,
       "tasks_run": 17,
       "tasks_total": 27,
       "false_positives_excluded": 8,
       "breakdown": {
         "by_repo": {
-          "flask": {
+          "ui": {
             "passed": 5,
             "failed": 0,
             "total": 5
           },
-          "lodash": {
-            "passed": 3,
-            "failed": 1,
-            "total": 4
-          },
-          "ui": {
+          "flask": {
             "passed": 5,
             "failed": 0,
             "total": 5
@@ -75,6 +112,11 @@
             "passed": 3,
             "failed": 0,
             "total": 3
+          },
+          "lodash": {
+            "passed": 3,
+            "failed": 1,
+            "total": 4
           }
         },
         "by_language": {
@@ -118,8 +160,8 @@
         }
       },
       "verified_at": "2026-02-01",
-      "status": "partial",
-      "rank": 1
+      "status": "verified",
+      "rank": 2
     },
     {
       "model": "anthropic/claude-opus-4-5-20251101",
@@ -127,12 +169,18 @@
       "display_name": "Claude Opus 4.5",
       "provider": "Anthropic",
       "pass_rate": 81.5,
-      "drift_detection_rate": 18.5,
+      "drift_detection_rate": 3.7,
+      "accuracy": 85.2,
       "tasks_run": 27,
       "tasks_total": 27,
       "false_positives_excluded": 13,
       "breakdown": {
         "by_repo": {
+          "query": {
+            "passed": 3,
+            "failed": 1,
+            "total": 4
+          },
           "django": {
             "passed": 5,
             "failed": 0,
@@ -140,8 +188,13 @@
           },
           "fastapi": {
             "passed": 0,
-            "failed": 4,
+            "failed": 0,
             "total": 4
+          },
+          "ui": {
+            "passed": 5,
+            "failed": 0,
+            "total": 5
           },
           "flask": {
             "passed": 5,
@@ -152,16 +205,6 @@
             "passed": 4,
             "failed": 0,
             "total": 4
-          },
-          "query": {
-            "passed": 3,
-            "failed": 1,
-            "total": 4
-          },
-          "ui": {
-            "passed": 5,
-            "failed": 0,
-            "total": 5
           }
         },
         "by_language": {
@@ -172,121 +215,34 @@
           },
           "python": {
             "passed": 10,
-            "failed": 4,
+            "failed": 0,
             "total": 14
           }
         },
         "by_category": {
-          "architecture_drift": {
-            "passed": 2,
-            "failed": 0,
-            "total": 2
-          },
           "logic_drift": {
             "passed": 6,
             "failed": 0,
             "total": 6
           },
-          "security_drift": {
-            "passed": 6,
-            "failed": 3,
-            "total": 9
-          },
           "pattern_drift": {
             "passed": 6,
-            "failed": 1,
+            "failed": 0,
             "total": 7
           },
-          "stale_drift": {
-            "passed": 2,
-            "failed": 1,
-            "total": 3
-          }
-        }
-      },
-      "verified_at": "2026-02-01",
-      "status": "verified",
-      "rank": 2
-    },
-    {
-      "model": "openai/gpt-5.2",
-      "slug": "openai_gpt-5.2",
-      "display_name": "GPT-5.2",
-      "provider": "OpenAI",
-      "pass_rate": 74.1,
-      "drift_detection_rate": 25.9,
-      "tasks_run": 27,
-      "tasks_total": 27,
-      "false_positives_excluded": 14,
-      "breakdown": {
-        "by_repo": {
-          "django": {
-            "passed": 5,
-            "failed": 0,
-            "total": 5
-          },
-          "fastapi": {
-            "passed": 0,
-            "failed": 4,
-            "total": 4
-          },
-          "flask": {
-            "passed": 4,
-            "failed": 1,
-            "total": 5
-          },
-          "lodash": {
-            "passed": 2,
-            "failed": 2,
-            "total": 4
-          },
-          "query": {
-            "passed": 4,
-            "failed": 0,
-            "total": 4
-          },
-          "ui": {
-            "passed": 5,
-            "failed": 0,
-            "total": 5
-          }
-        },
-        "by_language": {
-          "javascript": {
-            "passed": 11,
-            "failed": 2,
-            "total": 13
-          },
-          "python": {
-            "passed": 9,
-            "failed": 5,
-            "total": 14
-          }
-        },
-        "by_category": {
           "architecture_drift": {
             "passed": 2,
             "failed": 0,
             "total": 2
           },
-          "logic_drift": {
-            "passed": 5,
-            "failed": 1,
-            "total": 6
-          },
           "security_drift": {
-            "passed": 4,
-            "failed": 5,
+            "passed": 6,
+            "failed": 0,
             "total": 9
           },
-          "pattern_drift": {
-            "passed": 6,
-            "failed": 1,
-            "total": 7
-          },
           "stale_drift": {
-            "passed": 3,
-            "failed": 0,
+            "passed": 2,
+            "failed": 1,
             "total": 3
           }
         }
@@ -296,91 +252,180 @@
       "rank": 3
     },
     {
-      "model": "google/gemini-3-pro-preview",
-      "slug": "gemini_gemini-3-pro-preview",
-      "display_name": "Gemini 3 Pro Preview",
-      "provider": "Google",
-      "pass_rate": 24.0,
-      "drift_detection_rate": 76.0,
-      "tasks_run": 25,
+      "model": "openai/gpt-5.2",
+      "slug": "openai_gpt-5.2",
+      "display_name": "GPT-5.2",
+      "provider": "Openai",
+      "pass_rate": 74.1,
+      "drift_detection_rate": 3.7,
+      "accuracy": 74.1,
+      "tasks_run": 27,
       "tasks_total": 27,
-      "false_positives_excluded": 1,
+      "false_positives_excluded": 14,
       "breakdown": {
         "by_repo": {
+          "query": {
+            "passed": 4,
+            "failed": 0,
+            "total": 4
+          },
           "django": {
-            "passed": 2,
-            "failed": 1,
-            "total": 3
+            "passed": 5,
+            "failed": 0,
+            "total": 5
           },
           "fastapi": {
             "passed": 0,
-            "failed": 4,
-            "total": 4
-          },
-          "flask": {
-            "passed": 1,
-            "failed": 4,
-            "total": 5
-          },
-          "lodash": {
-            "passed": 1,
-            "failed": 3,
-            "total": 4
-          },
-          "query": {
-            "passed": 1,
-            "failed": 3,
+            "failed": 0,
             "total": 4
           },
           "ui": {
-            "passed": 1,
-            "failed": 4,
+            "passed": 5,
+            "failed": 0,
             "total": 5
+          },
+          "flask": {
+            "passed": 4,
+            "failed": 0,
+            "total": 5
+          },
+          "lodash": {
+            "passed": 2,
+            "failed": 1,
+            "total": 4
           }
         },
         "by_language": {
           "javascript": {
-            "passed": 3,
-            "failed": 10,
+            "passed": 11,
+            "failed": 1,
             "total": 13
           },
           "python": {
-            "passed": 3,
-            "failed": 9,
-            "total": 12
+            "passed": 9,
+            "failed": 0,
+            "total": 14
           }
         },
         "by_category": {
-          "architecture_drift": {
-            "passed": 0,
-            "failed": 2,
-            "total": 2
-          },
           "logic_drift": {
-            "passed": 2,
-            "failed": 3,
-            "total": 5
-          },
-          "security_drift": {
-            "passed": 2,
-            "failed": 7,
-            "total": 9
-          },
-          "pattern_drift": {
-            "passed": 1,
-            "failed": 5,
+            "passed": 5,
+            "failed": 0,
             "total": 6
           },
+          "pattern_drift": {
+            "passed": 6,
+            "failed": 0,
+            "total": 7
+          },
+          "architecture_drift": {
+            "passed": 2,
+            "failed": 0,
+            "total": 2
+          },
+          "security_drift": {
+            "passed": 4,
+            "failed": 1,
+            "total": 9
+          },
           "stale_drift": {
-            "passed": 1,
-            "failed": 2,
+            "passed": 3,
+            "failed": 0,
             "total": 3
           }
         }
       },
       "verified_at": "2026-02-01",
-      "status": "partial",
+      "status": "verified",
       "rank": 4
+    },
+    {
+      "model": "gemini/gemini-3-pro-preview",
+      "slug": "gemini_gemini-3-pro-preview",
+      "display_name": "Gemini 3 Pro",
+      "provider": "Gemini",
+      "pass_rate": 29.6,
+      "drift_detection_rate": 0.0,
+      "accuracy": 29.6,
+      "tasks_run": 27,
+      "tasks_total": 27,
+      "false_positives_excluded": 1,
+      "breakdown": {
+        "by_repo": {
+          "query": {
+            "passed": 1,
+            "failed": 0,
+            "total": 4
+          },
+          "django": {
+            "passed": 4,
+            "failed": 0,
+            "total": 5
+          },
+          "fastapi": {
+            "passed": 0,
+            "failed": 0,
+            "total": 4
+          },
+          "ui": {
+            "passed": 1,
+            "failed": 0,
+            "total": 5
+          },
+          "flask": {
+            "passed": 1,
+            "failed": 0,
+            "total": 5
+          },
+          "lodash": {
+            "passed": 1,
+            "failed": 0,
+            "total": 4
+          }
+        },
+        "by_language": {
+          "javascript": {
+            "passed": 3,
+            "failed": 0,
+            "total": 13
+          },
+          "python": {
+            "passed": 5,
+            "failed": 0,
+            "total": 14
+          }
+        },
+        "by_category": {
+          "logic_drift": {
+            "passed": 3,
+            "failed": 0,
+            "total": 6
+          },
+          "pattern_drift": {
+            "passed": 2,
+            "failed": 0,
+            "total": 7
+          },
+          "architecture_drift": {
+            "passed": 0,
+            "failed": 0,
+            "total": 2
+          },
+          "security_drift": {
+            "passed": 2,
+            "failed": 0,
+            "total": 9
+          },
+          "stale_drift": {
+            "passed": 1,
+            "failed": 0,
+            "total": 3
+          }
+        }
+      },
+      "verified_at": "2026-02-01",
+      "status": "verified",
+      "rank": 5
     }
   ]
 }
