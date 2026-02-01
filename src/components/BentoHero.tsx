@@ -99,18 +99,22 @@ export const BentoHero = () => {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5, delay: 0.4 }}
-                    className="md:col-span-12 bento-card p-0 overflow-hidden border-zinc-800 bg-black min-h-[400px]"
+                    className="md:col-span-12 bento-card p-0 overflow-hidden border-zinc-800 bg-black min-h-[400px] relative group"
                 >
-                    <div className="bg-zinc-900 px-4 py-2 border-b border-zinc-800 flex items-center justify-between">
-                        <div className="flex gap-1.5">
-                            <div className="w-3 h-3 rounded-full bg-zinc-800" />
-                            <div className="w-3 h-3 rounded-full bg-zinc-800" />
-                            <div className="w-3 h-3 rounded-full bg-zinc-800" />
+                    <div className="absolute inset-0 bg-grid opacity-[0.02] pointer-events-none" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-accent/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
+                    <div className="relative z-10">
+                        <div className="bg-zinc-900/80 backdrop-blur-md px-4 py-2 border-b border-zinc-800 flex items-center justify-between">
+                            <div className="flex gap-1.5">
+                                <div className="w-3 h-3 rounded-full bg-zinc-800" />
+                                <div className="w-3 h-3 rounded-full bg-zinc-800" />
+                                <div className="w-3 h-3 rounded-full bg-zinc-800" />
+                            </div>
+                            <div className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest">rigour --check --json</div>
                         </div>
-                        <div className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest">rigour --check --json</div>
-                    </div>
-                    <div className="p-4">
-                        <LiveTerminal />
+                        <div className="p-4">
+                            <LiveTerminal />
+                        </div>
                     </div>
                 </motion.div>
 
