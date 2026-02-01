@@ -1,16 +1,14 @@
 import { Navbar } from "@/components/Navbar";
-import { Hero } from "@/components/Hero";
-import { Features } from "@/components/Features";
+import { BentoHero } from "@/components/BentoHero";
 import { Leaderboard } from "@/components/Leaderboard";
 import { Community } from "@/components/Community";
 import { Footer } from "@/components/Footer";
 
 export default function Home() {
   return (
-    <main className="min-h-screen">
+    <main className="min-h-screen bg-grid">
       <Navbar />
-      <Hero />
-      <Features />
+      <BentoHero />
       <Leaderboard />
       <Community />
       <Footer />
