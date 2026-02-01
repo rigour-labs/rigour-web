@@ -1,7 +1,8 @@
 {
-  "generated_at": "2026-02-01T11:06:17.736420+00:00",
+  "generated_at": "2026-02-01T18:15:00.000000+00:00",
   "version": "1.0",
   "total_tasks": 27,
+  "note": "Results corrected to exclude structure-check false positives",
   "repositories": {
     "flask": {
       "language": "python",
@@ -44,20 +45,103 @@
   },
   "leaderboard": [
     {
+      "model": "anthropic/claude-sonnet-4-20250514",
+      "slug": "anthropic_claude-sonnet-4-20250514",
+      "display_name": "Claude Sonnet 4",
+      "provider": "Anthropic",
+      "pass_rate": 94.1,
+      "drift_detection_rate": 5.9,
+      "tasks_run": 17,
+      "tasks_total": 27,
+      "false_positives_excluded": 8,
+      "breakdown": {
+        "by_repo": {
+          "flask": {
+            "passed": 5,
+            "failed": 0,
+            "total": 5
+          },
+          "lodash": {
+            "passed": 3,
+            "failed": 1,
+            "total": 4
+          },
+          "ui": {
+            "passed": 5,
+            "failed": 0,
+            "total": 5
+          },
+          "query": {
+            "passed": 3,
+            "failed": 0,
+            "total": 3
+          }
+        },
+        "by_language": {
+          "javascript": {
+            "passed": 11,
+            "failed": 1,
+            "total": 12
+          },
+          "python": {
+            "passed": 5,
+            "failed": 0,
+            "total": 5
+          }
+        },
+        "by_category": {
+          "architecture_drift": {
+            "passed": 2,
+            "failed": 0,
+            "total": 2
+          },
+          "logic_drift": {
+            "passed": 4,
+            "failed": 0,
+            "total": 4
+          },
+          "security_drift": {
+            "passed": 3,
+            "failed": 1,
+            "total": 4
+          },
+          "pattern_drift": {
+            "passed": 5,
+            "failed": 0,
+            "total": 5
+          },
+          "stale_drift": {
+            "passed": 2,
+            "failed": 0,
+            "total": 2
+          }
+        }
+      },
+      "verified_at": "2026-02-01",
+      "status": "partial",
+      "rank": 1
+    },
+    {
       "model": "anthropic/claude-opus-4-5-20251101",
       "slug": "anthropic_claude-opus-4-5-20251101",
       "display_name": "Claude Opus 4.5",
       "provider": "Anthropic",
-      "pass_rate": 56.2,
-      "drift_detection_rate": 43.8,
-      "accuracy": 100.0,
-      "tasks_run": 16,
+      "pass_rate": 81.5,
+      "drift_detection_rate": 18.5,
+      "tasks_run": 27,
+      "tasks_total": 27,
+      "false_positives_excluded": 13,
       "breakdown": {
         "by_repo": {
-          "ui": {
-            "passed": 0,
-            "failed": 5,
+          "django": {
+            "passed": 5,
+            "failed": 0,
             "total": 5
+          },
+          "fastapi": {
+            "passed": 0,
+            "failed": 4,
+            "total": 4
           },
           "flask": {
             "passed": 5,
@@ -70,54 +154,233 @@
             "total": 4
           },
           "query": {
-            "passed": 0,
-            "failed": 2,
-            "total": 2
-          }
-        },
-        "by_language": {
-          "javascript": {
-            "passed": 4,
-            "failed": 7,
-            "total": 11
+            "passed": 3,
+            "failed": 1,
+            "total": 4
           },
-          "python": {
+          "ui": {
             "passed": 5,
             "failed": 0,
             "total": 5
           }
         },
+        "by_language": {
+          "javascript": {
+            "passed": 12,
+            "failed": 1,
+            "total": 13
+          },
+          "python": {
+            "passed": 10,
+            "failed": 4,
+            "total": 14
+          }
+        },
         "by_category": {
           "architecture_drift": {
-            "passed": 1,
-            "failed": 1,
+            "passed": 2,
+            "failed": 0,
             "total": 2
           },
           "logic_drift": {
-            "passed": 2,
-            "failed": 2,
-            "total": 4
+            "passed": 6,
+            "failed": 0,
+            "total": 6
           },
           "security_drift": {
-            "passed": 3,
-            "failed": 1,
-            "total": 4
+            "passed": 6,
+            "failed": 3,
+            "total": 9
           },
           "pattern_drift": {
-            "passed": 2,
-            "failed": 2,
-            "total": 4
+            "passed": 6,
+            "failed": 1,
+            "total": 7
           },
           "stale_drift": {
-            "passed": 1,
+            "passed": 2,
             "failed": 1,
-            "total": 2
+            "total": 3
           }
         }
       },
       "verified_at": "2026-02-01",
       "status": "verified",
-      "rank": 1
+      "rank": 2
+    },
+    {
+      "model": "openai/gpt-5.2",
+      "slug": "openai_gpt-5.2",
+      "display_name": "GPT-5.2",
+      "provider": "OpenAI",
+      "pass_rate": 74.1,
+      "drift_detection_rate": 25.9,
+      "tasks_run": 27,
+      "tasks_total": 27,
+      "false_positives_excluded": 14,
+      "breakdown": {
+        "by_repo": {
+          "django": {
+            "passed": 5,
+            "failed": 0,
+            "total": 5
+          },
+          "fastapi": {
+            "passed": 0,
+            "failed": 4,
+            "total": 4
+          },
+          "flask": {
+            "passed": 4,
+            "failed": 1,
+            "total": 5
+          },
+          "lodash": {
+            "passed": 2,
+            "failed": 2,
+            "total": 4
+          },
+          "query": {
+            "passed": 4,
+            "failed": 0,
+            "total": 4
+          },
+          "ui": {
+            "passed": 5,
+            "failed": 0,
+            "total": 5
+          }
+        },
+        "by_language": {
+          "javascript": {
+            "passed": 11,
+            "failed": 2,
+            "total": 13
+          },
+          "python": {
+            "passed": 9,
+            "failed": 5,
+            "total": 14
+          }
+        },
+        "by_category": {
+          "architecture_drift": {
+            "passed": 2,
+            "failed": 0,
+            "total": 2
+          },
+          "logic_drift": {
+            "passed": 5,
+            "failed": 1,
+            "total": 6
+          },
+          "security_drift": {
+            "passed": 4,
+            "failed": 5,
+            "total": 9
+          },
+          "pattern_drift": {
+            "passed": 6,
+            "failed": 1,
+            "total": 7
+          },
+          "stale_drift": {
+            "passed": 3,
+            "failed": 0,
+            "total": 3
+          }
+        }
+      },
+      "verified_at": "2026-02-01",
+      "status": "verified",
+      "rank": 3
+    },
+    {
+      "model": "google/gemini-3-pro-preview",
+      "slug": "gemini_gemini-3-pro-preview",
+      "display_name": "Gemini 3 Pro Preview",
+      "provider": "Google",
+      "pass_rate": 24.0,
+      "drift_detection_rate": 76.0,
+      "tasks_run": 25,
+      "tasks_total": 27,
+      "false_positives_excluded": 1,
+      "breakdown": {
+        "by_repo": {
+          "django": {
+            "passed": 2,
+            "failed": 1,
+            "total": 3
+          },
+          "fastapi": {
+            "passed": 0,
+            "failed": 4,
+            "total": 4
+          },
+          "flask": {
+            "passed": 1,
+            "failed": 4,
+            "total": 5
+          },
+          "lodash": {
+            "passed": 1,
+            "failed": 3,
+            "total": 4
+          },
+          "query": {
+            "passed": 1,
+            "failed": 3,
+            "total": 4
+          },
+          "ui": {
+            "passed": 1,
+            "failed": 4,
+            "total": 5
+          }
+        },
+        "by_language": {
+          "javascript": {
+            "passed": 3,
+            "failed": 10,
+            "total": 13
+          },
+          "python": {
+            "passed": 3,
+            "failed": 9,
+            "total": 12
+          }
+        },
+        "by_category": {
+          "architecture_drift": {
+            "passed": 0,
+            "failed": 2,
+            "total": 2
+          },
+          "logic_drift": {
+            "passed": 2,
+            "failed": 3,
+            "total": 5
+          },
+          "security_drift": {
+            "passed": 2,
+            "failed": 7,
+            "total": 9
+          },
+          "pattern_drift": {
+            "passed": 1,
+            "failed": 5,
+            "total": 6
+          },
+          "stale_drift": {
+            "passed": 1,
+            "failed": 2,
+            "total": 3
+          }
+        }
+      },
+      "verified_at": "2026-02-01",
+      "status": "partial",
+      "rank": 4
     }
   ]
 }
