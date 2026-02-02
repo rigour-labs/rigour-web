@@ -43,7 +43,7 @@ export const Features = () => {
             <div className="max-w-7xl mx-auto">
                 <div className="text-center mb-16">
                     <h2 className="text-3xl md:text-5xl font-bold font-outfit mb-4">Engineering First. AI Second.</h2>
-                    <p className="text-foreground/60 text-lg max-w-2xl mx-auto">
+                    <p className="text-zinc-400 text-lg max-w-2xl mx-auto">
                         Rigour provides the guardrails necessary to transition from chaotic AI code to production-ready excellence.
                     </p>
                 </div>
@@ -62,7 +62,7 @@ export const Features = () => {
                                 <feature.icon className="w-6 h-6 text-accent" />
                             </div>
                             <h3 className="text-xl font-bold font-outfit mb-3">{feature.title}</h3>
-                            <p className="text-foreground/60 leading-relaxed">{feature.description}</p>
+                            <p className="text-zinc-400 leading-relaxed">{feature.description}</p>
                         </motion.div>
                     ))}
                 </div>

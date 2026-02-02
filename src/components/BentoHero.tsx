@@ -39,7 +39,7 @@ export const BentoHero = () => {
                         Engineering Rigour for<br />
                         <span className="text-accent text-glow-green">Autonomous AI Teams.</span>
                     </h1>
-                    <p className="max-w-xl text-lg text-foreground/60 leading-relaxed mb-8">
+                    <p className="max-w-xl text-lg text-zinc-400 leading-relaxed mb-8">
                         Enforce your standards, semantic patterns, and architectural rules locally. Zero telemetry. Zero external dependencies.
                     </p>
                     <div className="flex flex-wrap gap-4">
@@ -66,7 +66,7 @@ export const BentoHero = () => {
                     className="md:col-span-4 bento-card flex flex-col gap-6"
                 >
                     <div className="space-y-4">
-                        <h3 className="text-sm font-bold text-foreground/40 uppercase tracking-widest">Core Capabilities</h3>
+                        <h3 className="text-sm font-bold text-zinc-500 uppercase tracking-widest">Core Capabilities</h3>
                         <div className="space-y-4">
                             {[
                                 { icon: Shield, title: "Static Policy Gates" },
@@ -78,18 +78,18 @@ export const BentoHero = () => {
                                     <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center">
                                         <item.icon className="w-4 h-4 text-accent" />
                                     </div>
-                                    <span className="text-sm font-medium">{item.title}</span>
+                                    <span className="text-sm font-medium text-zinc-300">{item.title}</span>
                                 </div>
                             ))}
                         </div>
                     </div>
-                    <div className="mt-auto pt-6 border-t border-white/5">
-                        <div className="text-xs text-foreground/40 mb-2">INTEGRATIONS</div>
-                        <div className="flex gap-4 grayscale opacity-50">
-                            <span className="text-xs font-mono">CLAUDE</span>
-                            <span className="text-xs font-mono">CURSOR</span>
-                            <span className="text-xs font-mono">CLINE</span>
-                            <span className="text-xs font-mono">VSCODE</span>
+                    <div className="mt-auto pt-6 border-t border-zinc-800">
+                        <div className="text-xs text-zinc-500 mb-2 uppercase tracking-widest">Integrations</div>
+                        <div className="flex gap-4">
+                            <span className="text-xs font-mono text-zinc-400">CLAUDE</span>
+                            <span className="text-xs font-mono text-zinc-400">CURSOR</span>
+                            <span className="text-xs font-mono text-zinc-400">CLINE</span>
+                            <span className="text-xs font-mono text-zinc-400">VSCODE</span>
                         </div>
                     </div>
                 </motion.div>

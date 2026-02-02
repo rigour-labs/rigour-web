@@ -29,9 +29,9 @@ export const Navbar = () => {
                 </Link>
 
                 <div className="hidden md:flex items-center gap-8">
-                    <Link href="#leaderboard" className="text-sm font-bold text-foreground/40 hover:text-foreground transition-colors uppercase tracking-widest">Leaderboard</Link>
-                    <Link href="https://docs.rigour.run" target="_blank" className="text-sm font-bold text-foreground/40 hover:text-foreground transition-colors uppercase tracking-widest">Docs</Link>
-                    <Link href="https://github.com/rigour-labs/rigour" target="_blank" className="text-sm font-bold text-foreground/40 hover:text-foreground transition-colors uppercase tracking-widest">GitHub</Link>
+                    <Link href="#leaderboard" className="text-sm font-bold text-zinc-400 hover:text-white transition-colors uppercase tracking-widest">Leaderboard</Link>
+                    <Link href="https://docs.rigour.run" target="_blank" className="text-sm font-bold text-zinc-400 hover:text-white transition-colors uppercase tracking-widest">Docs</Link>
+                    <Link href="https://github.com/rigour-labs/rigour" target="_blank" className="text-sm font-bold text-zinc-400 hover:text-white transition-colors uppercase tracking-widest">GitHub</Link>
                 </div>
 
                 <Link

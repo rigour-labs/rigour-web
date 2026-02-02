@@ -17,12 +17,12 @@ export const Community = () => {
                     whileInView={{ opacity: 1, scale: 1 }}
                     viewport={{ once: true }}
                 >
-                    <div className="text-xs font-black uppercase tracking-[0.3em] text-foreground/20 mb-8">
+                    <div className="text-xs font-black uppercase tracking-[0.3em] text-zinc-500 mb-8">
                         The Developer First Protocol
                     </div>
 
                     <h2 className="text-4xl md:text-6xl font-black font-outfit mb-6 tracking-tighter italic uppercase text-glow-green">Built for Humans.</h2>
-                    <p className="text-lg text-foreground/40 mb-10 max-w-xl mx-auto leading-relaxed font-medium">
+                    <p className="text-lg text-zinc-400 mb-10 max-w-xl mx-auto leading-relaxed font-medium">
                         Standardizing the autonomous engineering layer. Rigour is free, open source, and built to capture the future of AI drift.
                     </p>
 
@@ -43,18 +43,18 @@ export const Community = () => {
                         </Link>
                     </div>
 
-                    <div className="mt-16 pt-16 border-t border-zinc-900 grid grid-cols-2 md:grid-cols-3 gap-8">
+                    <div className="mt-16 pt-16 border-t border-zinc-800 grid grid-cols-2 md:grid-cols-3 gap-8">
                         <div>
                             <div className="text-3xl font-black font-outfit text-accent">OSS</div>
-                            <div className="text-[10px] text-foreground/20 uppercase font-black tracking-widest mt-2">MIT Licensed</div>
+                            <div className="text-[11px] text-zinc-500 uppercase font-black tracking-widest mt-2">MIT Licensed</div>
                         </div>
                         <div>
                             <div className="text-3xl font-black font-outfit text-accent">100%</div>
-                            <div className="text-[10px] text-foreground/20 uppercase font-black tracking-widest mt-2">Local Audit</div>
+                            <div className="text-[11px] text-zinc-500 uppercase font-black tracking-widest mt-2">Local Audit</div>
                         </div>
                         <div className="hidden md:block">
                             <div className="text-3xl font-black font-outfit text-accent">90%+</div>
-                            <div className="text-[10px] text-foreground/20 uppercase font-black tracking-widest mt-2">DDR Benchmark</div>
+                            <div className="text-[11px] text-zinc-500 uppercase font-black tracking-widest mt-2">DDR Benchmark</div>
                         </div>
                     </div>
                 </motion.div>
