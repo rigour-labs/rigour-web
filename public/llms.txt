@@ -1,22 +1,108 @@
 # Rigour Labs
 
-Deterministic quality gates for AI-generated code.
+> Deterministic quality gates for AI-generated code. The strategic engineering layer that stops AI chaos.
 
-## Core Philosophy
-Rigour adds the engineering loops where AI agents usually fail. We provide local-first, zero-telemetry tools that force agents to meet strict engineering standards before marking tasks as done.
+## What is Rigour?
+
+Rigour is a local-first, zero-telemetry code quality enforcement tool designed specifically for AI coding agents. It provides deterministic PASS/FAIL quality gates that force AI agents (Claude, Cursor, Cline, GitHub Copilot) to meet strict engineering standards before marking tasks as done.
+
+## Core Problem We Solve
+
+AI coding agents ship broken, insecure, and architecturally inconsistent code. They lack engineering rigor. Rigour adds the quality control loop that AI agents are missing.
 
 ## Products
-- **Rigour CLI**: The engine for quality gates. `npx @rigour-labs/cli check`.
-- **MCP Server**: Integration for Cursor, Cline, and Gemini.
-- **VS Code Extension**: Real-time architectural violation feedback (Coming Q2 2026).
+
+### Rigour CLI
+The core engine for quality gates. Runs locally with zero external dependencies.
+- Install: `npx @rigour-labs/cli check`
+- NPM: https://www.npmjs.com/package/@rigour-labs/cli
+- GitHub: https://github.com/rigour-labs/rigour
+
+### Rigour MCP Server
+Model Context Protocol server for direct integration with AI coding assistants.
+- Integrates with: Claude Desktop, Cursor, Cline, Windsurf
+- Provides real-time quality feedback in the AI agent loop
+- Documentation: https://docs.rigour.run/mcp
+
+### Rigour Bot (GitHub App)
+Automatic PR review bot that enforces quality gates on every pull request.
+- GitHub Marketplace: https://github.com/apps/rigour-bot
+- Webhook endpoint: bot.rigour.run
+
+## Key Features
+
+1. **Static Policy Gates**: Enforce coding standards, naming conventions, file structure rules
+2. **Semantic Pattern Index**: Detect architectural violations and anti-patterns
+3. **Security Analysis**: Identify hardcoded secrets, SQL injection, XSS vulnerabilities
+4. **Performance Checks**: Flag N+1 queries, memory leaks, inefficient algorithms
+5. **Dependency Auditing**: Check for vulnerable or deprecated packages
 
 ## Strategic Values
-- **Local-First**: Code never leaves the developer's machine.
-- **Deterministic**: PASS/FAIL is clear and reproducible.
-- **Agent-Native**: Built to integrate into AI agent loops (Claude Code, etc.).
+
+- **Local-First**: Your code never leaves your machine. Zero telemetry.
+- **Deterministic**: PASS/FAIL is clear and reproducible. No ambiguity.
+- **Agent-Native**: Built to integrate into AI agent loops (Claude Code, Cursor Agent, etc.)
+- **Fast**: Sub-second analysis for most codebases
+- **Extensible**: Custom rules via YAML configuration
+
+## Use Cases
+
+- Enforce architectural boundaries in AI-generated code
+- Prevent AI agents from shipping security vulnerabilities
+- Maintain consistent code style across AI-assisted PRs
+- Quality gates in CI/CD pipelines
+- Real-time feedback for AI pair programming
+
+## Technical Specifications
+
+- Written in: TypeScript/Node.js
+- Protocol: Model Context Protocol (MCP)
+- License: MIT (CLI), Proprietary (Bot)
+- Supported Languages: TypeScript, JavaScript, Python, Go, Rust, Java
+
+## Integration Examples
+
+### Claude Desktop (MCP)
+```json
+{
+  "mcpServers": {
+    "rigour": {
+      "command": "npx",
+      "args": ["@rigour-labs/mcp-server"]
+    }
+  }
+}
+```
+
+### GitHub Actions
+```yaml
+- name: Rigour Quality Check
+  run: npx @rigour-labs/cli check --ci
+```
+
+### Pre-commit Hook
+```bash
+npx @rigour-labs/cli check --staged
+```
 
 ## Links
+
 - Website: https://rigour.run
 - Documentation: https://docs.rigour.run
-- GitHub: https://github.com/rigour-labs
+- GitHub Organization: https://github.com/rigour-labs
+- CLI Repository: https://github.com/rigour-labs/rigour
+- NPM Package: https://www.npmjs.com/package/@rigour-labs/cli
 - Contact: hello@rigour.run
+- Legal: legal@rigour.run
+
+## Company
+
+Rigour Labs builds developer tools for the AI-native era. Our mission is to ensure AI-generated code meets the same quality standards as human-written code.
+
+Founded: 2025
+Headquarters: Remote-first
+Parent: DriftBench
+
+## Keywords
+
+AI code quality, AI governance, MCP server, Model Context Protocol, code review automation, AI agent guardrails, deterministic quality gates, local-first development tools, zero telemetry, Claude integration, Cursor integration, GitHub App, PR review bot, static analysis, semantic code analysis, engineering standards enforcement
