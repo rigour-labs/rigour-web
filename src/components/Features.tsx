@@ -2,13 +2,25 @@
 
 import React from "react";
 import { motion } from "framer-motion";
-import { Shield, Brain, Cpu, Lock, Globe, MessageSquare } from "lucide-react";
+import { Shield, Brain, Cpu, Lock, Globe, MessageSquare, Users, AlertTriangle, TrendingUp } from "lucide-react";
 
 const features = [
     {
         icon: Shield,
         title: "Quality Gates",
         description: "Enforce strict engineering standards and checks before code ever reaches a merge request."
+    },
+    {
+        icon: Users,
+        title: "Multi-Agent Governance",
+        description: "Coordinate multiple AI agents on the same codebase with scope conflict detection and verified handoffs.",
+        badge: "v2.14"
+    },
+    {
+        icon: AlertTriangle,
+        title: "Security Pattern Detection",
+        description: "Real-time detection of SQL injection, XSS, hardcoded secrets, and 12+ vulnerability patterns with CWE IDs.",
+        badge: "v2.14"
     },
     {
         icon: Lock,
@@ -24,6 +36,12 @@ const features = [
         icon: MessageSquare,
         title: "Context Memory",
         description: "Persistent memory that survives across AI sessions. Remember decisions and context."
+    },
+    {
+        icon: TrendingUp,
+        title: "Adaptive Thresholds",
+        description: "Dynamic quality thresholds based on project maturity. Lenient for startups, strict for enterprise.",
+        badge: "v2.14"
     },
     {
         icon: Cpu,
@@ -56,8 +74,13 @@ export const Features = () => {
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ duration: 0.5, delay: index * 0.1 }}
-                            className="glass p-8 rounded-3xl group hover:border-accent/40 transition-colors"
+                            className="glass p-8 rounded-3xl group hover:border-accent/40 transition-colors relative"
                         >
+                            {(feature as any).badge && (
+                                <span className="absolute top-4 right-4 px-2 py-1 text-xs font-bold bg-accent/20 text-accent rounded-full">
+                                    {(feature as any).badge}
+                                </span>
+                            )}
                             <div className="w-12 h-12 bg-accent/10 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
                                 <feature.icon className="w-6 h-6 text-accent" />
                             </div>
