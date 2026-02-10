@@ -4,6 +4,7 @@ import React from "react";
 import { Github, Twitter } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
+import { track } from "@vercel/analytics";
 
 export const Footer = () => {
     return (
@@ -28,10 +29,10 @@ export const Footer = () => {
                         Deterministic quality gates that stop chaos and enforce standards at scale.
                     </p>
                     <div className="flex gap-4">
-                        <Link href="https://github.com/rigour-labs" className="p-2 border border-zinc-700 rounded-lg text-zinc-400 hover:text-accent hover:border-accent/40 transition-all">
+                        <Link href="https://github.com/rigour-labs" onClick={() => track('social_click', { platform: 'github', location: 'footer' })} className="p-2 border border-zinc-700 rounded-lg text-zinc-400 hover:text-accent hover:border-accent/40 transition-all">
                             <Github className="w-5 h-5" />
                         </Link>
-                        <Link href="https://twitter.com/rigour_labs" className="p-2 border border-zinc-700 rounded-lg text-zinc-400 hover:text-accent hover:border-accent/40 transition-all">
+                        <Link href="https://twitter.com/rigour_labs" onClick={() => track('social_click', { platform: 'twitter', location: 'footer' })} className="p-2 border border-zinc-700 rounded-lg text-zinc-400 hover:text-accent hover:border-accent/40 transition-all">
                             <Twitter className="w-5 h-5" />
                         </Link>
                     </div>
@@ -40,17 +41,17 @@ export const Footer = () => {
                 <div>
                     <h4 className="font-bold text-xs uppercase tracking-[0.2em] text-zinc-500 mb-6">Protocol</h4>
                     <ul className="space-y-4 text-sm font-bold">
-                        <li><Link href="/" className="text-zinc-400 hover:text-accent transition-colors uppercase tracking-widest text-[11px]">Registry</Link></li>
-                        <li><Link href="https://github.com/rigour-labs/rigour" className="text-zinc-400 hover:text-accent transition-colors uppercase tracking-widest text-[11px]" target="_blank">Open Source</Link></li>
-                        <li><Link href="https://docs.rigour.run" className="text-zinc-400 hover:text-accent transition-colors uppercase tracking-widest text-[11px]" target="_blank">Documentation</Link></li>
+                        <li><Link href="/" onClick={() => track('footer_click', { item: 'registry' })} className="text-zinc-400 hover:text-accent transition-colors uppercase tracking-widest text-[11px]">Registry</Link></li>
+                        <li><Link href="https://github.com/rigour-labs/rigour" onClick={() => track('footer_click', { item: 'open_source' })} className="text-zinc-400 hover:text-accent transition-colors uppercase tracking-widest text-[11px]" target="_blank">Open Source</Link></li>
+                        <li><Link href="https://docs.rigour.run" onClick={() => track('footer_click', { item: 'documentation' })} className="text-zinc-400 hover:text-accent transition-colors uppercase tracking-widest text-[11px]" target="_blank">Documentation</Link></li>
                     </ul>
                 </div>
 
                 <div>
                     <h4 className="font-bold text-xs uppercase tracking-[0.2em] text-zinc-500 mb-6">Company</h4>
                     <ul className="space-y-4 text-sm font-bold">
-                        <li><Link href="#leaderboard" className="text-zinc-400 hover:text-accent transition-colors uppercase tracking-widest text-[11px]">Leaderboard</Link></li>
-                        <li><Link href="mailto:hello@rigour.run" className="text-zinc-400 hover:text-accent transition-colors uppercase tracking-widest text-[11px]">Contact</Link></li>
+                        <li><Link href="#leaderboard" onClick={() => track('footer_click', { item: 'leaderboard' })} className="text-zinc-400 hover:text-accent transition-colors uppercase tracking-widest text-[11px]">Leaderboard</Link></li>
+                        <li><Link href="mailto:hello@rigour.run" onClick={() => track('footer_click', { item: 'contact' })} className="text-zinc-400 hover:text-accent transition-colors uppercase tracking-widest text-[11px]">Contact</Link></li>
                         <li><Link href="/privacy" className="text-zinc-400 hover:text-accent transition-colors uppercase tracking-widest text-[11px]">Privacy Policy</Link></li>
                         <li><Link href="/terms" className="text-zinc-400 hover:text-accent transition-colors uppercase tracking-widest text-[11px]">Terms of Service</Link></li>
                     </ul>

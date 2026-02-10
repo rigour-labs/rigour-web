@@ -29,13 +29,14 @@ export const Navbar = () => {
                 </Link>
 
                 <div className="hidden md:flex items-center gap-8">
-                    <Link href="#leaderboard" className="text-sm font-bold text-zinc-400 hover:text-white transition-colors uppercase tracking-widest">Leaderboard</Link>
-                    <Link href="https://docs.rigour.run" target="_blank" className="text-sm font-bold text-zinc-400 hover:text-white transition-colors uppercase tracking-widest">Docs</Link>
-                    <Link href="https://github.com/rigour-labs/rigour" target="_blank" className="text-sm font-bold text-zinc-400 hover:text-white transition-colors uppercase tracking-widest">GitHub</Link>
+                    <Link href="#leaderboard" onClick={() => track('nav_click', { item: 'leaderboard' })} className="text-sm font-bold text-zinc-400 hover:text-white transition-colors uppercase tracking-widest">Leaderboard</Link>
+                    <Link href="https://docs.rigour.run" target="_blank" onClick={() => track('nav_click', { item: 'docs' })} className="text-sm font-bold text-zinc-400 hover:text-white transition-colors uppercase tracking-widest">Docs</Link>
+                    <Link href="https://github.com/rigour-labs/rigour" target="_blank" onClick={() => track('nav_click', { item: 'github' })} className="text-sm font-bold text-zinc-400 hover:text-white transition-colors uppercase tracking-widest">GitHub</Link>
                 </div>
 
                 <Link
                     href="#community"
+                    onClick={() => track('nav_click', { item: 'registry' })}
                     className="bg-accent text-zinc-950 px-4 py-1.5 rounded-lg text-xs font-black uppercase tracking-widest hover:scale-105 transition-transform"
                 >
                     Registry

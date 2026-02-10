@@ -30,6 +30,7 @@ export const Community = () => {
                         <Link
                             href="https://github.com/rigour-labs/rigour"
                             target="_blank"
+                            onClick={() => track('cta_github', { location: 'community' })}
                             className="bg-accent text-zinc-950 px-8 py-3 rounded-xl font-black uppercase tracking-widest text-xs flex items-center gap-2 hover:scale-105 transition-transform"
                         >
                             <Github className="w-4 h-4" /> GitHub <Star className="w-3 h-3 fill-zinc-950" />
@@ -37,6 +38,7 @@ export const Community = () => {
                         <Link
                             href="https://docs.rigour.run"
                             target="_blank"
+                            onClick={() => track('cta_docs', { location: 'community' })}
                             className="px-8 py-3 border border-zinc-800 rounded-xl font-black uppercase tracking-widest text-xs flex items-center gap-2 hover:bg-white/5 transition-colors"
                         >
                             Documentation
