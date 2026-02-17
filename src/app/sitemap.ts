@@ -27,6 +27,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
             priority: 0.9,
         },
         {
+            url: 'https://rigour.run/nist-ai-rmf',
+            lastModified: new Date(),
+            changeFrequency: 'monthly',
+            priority: 0.8,
+        },
+        {
             url: 'https://rigour.run/privacy',
             lastModified: new Date(),
             changeFrequency: 'monthly',
