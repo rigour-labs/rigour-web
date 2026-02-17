@@ -44,7 +44,9 @@ export const Footer = () => {
                         <li><Link href="/" onClick={() => track('footer_click', { item: 'registry' })} className="text-zinc-400 hover:text-accent transition-colors uppercase tracking-widest text-[11px]">Registry</Link></li>
                         <li><Link href="https://github.com/rigour-labs/rigour" onClick={() => track('footer_click', { item: 'open_source' })} className="text-zinc-400 hover:text-accent transition-colors uppercase tracking-widest text-[11px]" target="_blank">Open Source</Link></li>
                         <li><Link href="https://docs.rigour.run" onClick={() => track('footer_click', { item: 'documentation' })} className="text-zinc-400 hover:text-accent transition-colors uppercase tracking-widest text-[11px]" target="_blank">Documentation</Link></li>
-                        <li><Link href="/audits/openclaw" onClick={() => track('footer_click', { item: 'audit_openclaw' })} className="text-red-400 hover:text-red-300 transition-colors uppercase tracking-widest text-[11px]">OpenClaw Audit</Link></li>
+                        <li><Link href="/audits" onClick={() => track('footer_click', { item: 'audits' })} className="text-red-400 hover:text-red-300 transition-colors uppercase tracking-widest text-[11px]">All Audits</Link></li>
+                        <li><Link href="/audits/openclaw" onClick={() => track('footer_click', { item: 'audit_openclaw' })} className="text-zinc-400 hover:text-accent transition-colors uppercase tracking-widest text-[11px]">OpenClaw Audit</Link></li>
+                        <li><Link href="/audits/bolt-diy" onClick={() => track('footer_click', { item: 'audit_bolt_diy' })} className="text-zinc-400 hover:text-accent transition-colors uppercase tracking-widest text-[11px]">bolt.diy Audit</Link></li>
                     </ul>
                 </div>
 

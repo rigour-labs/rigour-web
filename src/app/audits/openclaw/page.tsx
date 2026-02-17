@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
-import { OpenClawAudit } from "@/components/OpenClawAudit";
+import { AuditDashboard } from "@/components/AuditDashboard";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
+import { openclawAudit } from "@/lib/audits/openclaw";
 
 export const metadata: Metadata = {
     title: "OpenClaw Audit — 180K Stars, 2080 Violations, Score Zero",
@@ -129,6 +130,7 @@ const breadcrumbJsonLd = {
             position: 2,
             name: "Audits",
             item: "https://rigour.run/audits",
+
         },
         {
             "@type": "ListItem",
@@ -182,7 +184,7 @@ export default function OpenClawAuditPage() {
     return (
         <main className="min-h-screen bg-grid">
             <Navbar />
-            <OpenClawAudit />
+            <AuditDashboard audit={openclawAudit} />
             <Footer />
             <script
                 type="application/ld+json"

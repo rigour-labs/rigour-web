@@ -121,14 +121,21 @@ export const AuditShowcase = () => {
                     initial={{ opacity: 0, y: 10 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
-                    className="text-center"
+                    className="flex flex-col sm:flex-row items-center justify-center gap-4"
                 >
                     <Link
                         href="/audits/openclaw"
-                        onClick={() => track("cta_audit", { location: "homepage_showcase" })}
+                        onClick={() => track("cta_audit", { location: "homepage_showcase", audit: "openclaw" })}
                         className="inline-flex items-center gap-2 bg-red-500/10 border border-red-500/20 text-red-400 px-6 py-3 rounded-xl font-black uppercase tracking-widest text-xs hover:bg-red-500/20 transition-colors"
                     >
-                        View Full Audit Report <ArrowRight className="w-4 h-4" />
+                        OpenClaw Report <ArrowRight className="w-4 h-4" />
+                    </Link>
+                    <Link
+                        href="/audits"
+                        onClick={() => track("cta_audit", { location: "homepage_showcase", audit: "all" })}
+                        className="inline-flex items-center gap-2 border border-zinc-800 text-zinc-400 px-6 py-3 rounded-xl font-black uppercase tracking-widest text-xs hover:bg-white/5 transition-colors"
+                    >
+                        All Audits <ArrowRight className="w-4 h-4" />
                     </Link>
                 </motion.div>
             </div>

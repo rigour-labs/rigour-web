@@ -29,7 +29,7 @@ export const Navbar = () => {
                 </Link>
 
                 <div className="hidden md:flex items-center gap-8">
-                    <Link href="/audits/openclaw" onClick={() => track('nav_click', { item: 'audits' })} className="text-sm font-bold text-red-400 hover:text-red-300 transition-colors uppercase tracking-widest">Audit</Link>
+                    <Link href="/audits" onClick={() => track('nav_click', { item: 'audits' })} className="text-sm font-bold text-red-400 hover:text-red-300 transition-colors uppercase tracking-widest">Audits</Link>
                     <Link href="#leaderboard" onClick={() => track('nav_click', { item: 'leaderboard' })} className="text-sm font-bold text-zinc-400 hover:text-white transition-colors uppercase tracking-widest">Leaderboard</Link>
                     <Link href="https://docs.rigour.run" target="_blank" onClick={() => track('nav_click', { item: 'docs' })} className="text-sm font-bold text-zinc-400 hover:text-white transition-colors uppercase tracking-widest">Docs</Link>
                     <Link href="https://github.com/rigour-labs/rigour" target="_blank" onClick={() => track('nav_click', { item: 'github' })} className="text-sm font-bold text-zinc-400 hover:text-white transition-colors uppercase tracking-widest">GitHub</Link>
