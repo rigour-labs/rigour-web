@@ -57,6 +57,8 @@ export const Footer = () => {
                         <li><Link href="mailto:hello@rigour.run" onClick={() => track('footer_click', { item: 'contact' })} className="text-zinc-400 hover:text-accent transition-colors uppercase tracking-widest text-[11px]">Contact</Link></li>
                         <li><Link href="/privacy" className="text-zinc-400 hover:text-accent transition-colors uppercase tracking-widest text-[11px]">Privacy Policy</Link></li>
                         <li><Link href="/terms" className="text-zinc-400 hover:text-accent transition-colors uppercase tracking-widest text-[11px]">Terms of Service</Link></li>
+                        <li><Link href="/nist-ai-rmf" onClick={() => track('footer_click', { item: 'nist_ai_rmf' })} className="text-zinc-400 hover:text-accent transition-colors uppercase tracking-widest text-[11px]">NIST AI RMF</Link></li>
+                        <li><Link href="https://doi.org/10.5281/zenodo.18673564" onClick={() => track('footer_click', { item: 'whitepaper' })} className="text-zinc-400 hover:text-accent transition-colors uppercase tracking-widest text-[11px]" target="_blank">Whitepaper (DOI)</Link></li>
                     </ul>
                 </div>
             </div>
