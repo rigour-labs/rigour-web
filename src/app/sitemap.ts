@@ -9,6 +9,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
             priority: 1,
         },
         {
+            url: 'https://rigour.run/audits/openclaw',
+            lastModified: new Date('2026-02-17'),
+            changeFrequency: 'monthly',
+            priority: 0.9,
+        },
+        {
             url: 'https://rigour.run/privacy',
             lastModified: new Date(),
             changeFrequency: 'monthly',
