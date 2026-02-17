@@ -2,7 +2,7 @@
 
 import React from "react";
 import { motion } from "framer-motion";
-import { Shield, Brain, Cpu, Lock, Globe, MessageSquare, Users, AlertTriangle, TrendingUp } from "lucide-react";
+import { Shield, Brain, Cpu, Lock, Globe, MessageSquare, Users, AlertTriangle, TrendingUp, FileText, Building2, Zap } from "lucide-react";
 
 const features = [
     {
@@ -52,6 +52,24 @@ const features = [
         icon: Globe,
         title: "MCP Registry Listed",
         description: "Official listing on the MCP Registry. Works with Claude, Cursor, Cline, and more."
+    },
+    {
+        icon: TrendingUp,
+        title: "Score Trending",
+        description: "Track quality scores over time with trend analysis. Exportable audit reports for compliance officers.",
+        badge: "v2.17"
+    },
+    {
+        icon: Building2,
+        title: "Industry Presets",
+        description: "One-command setup for healthcare (HIPAA), fintech (SOC2), and government (FedRAMP) compliance gates.",
+        badge: "v2.17"
+    },
+    {
+        icon: Zap,
+        title: "AI Drift Detection",
+        description: "Detect hallucinated imports, unhandled promises, and async safety issues across 6 languages.",
+        badge: "v2.17"
     }
 ];
 
@@ -66,7 +84,7 @@ export const Features = () => {
                     </p>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                     {features.map((feature, index) => (
                         <motion.div
                             key={index}

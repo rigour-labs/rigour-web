@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Terminal, Zap, Shield, Brain, Cpu, Globe } from "lucide-react";
+import { Terminal, Zap, Shield, Brain, Cpu, Globe, Building2 } from "lucide-react";
 import Link from "next/link";
 import { LiveTerminal } from "./LiveTerminal";
 
@@ -72,7 +72,8 @@ export const BentoHero = () => {
                                 { icon: Shield, title: "Static Policy Gates" },
                                 { icon: Brain, title: "Semantic Pattern Index" },
                                 { icon: Globe, title: "MCP Native Integration" },
-                                { icon: Cpu, title: "Local-Only Logic" }
+                                { icon: Cpu, title: "Local-Only Logic" },
+                                { icon: Building2, title: "Compliance Ready" }
                             ].map((item, i) => (
                                 <div key={i} className="flex items-center gap-3">
                                     <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center">
@@ -89,7 +90,8 @@ export const BentoHero = () => {
                             <span className="text-xs font-mono text-zinc-400">CLAUDE</span>
                             <span className="text-xs font-mono text-zinc-400">CURSOR</span>
                             <span className="text-xs font-mono text-zinc-400">CLINE</span>
-                            <span className="text-xs font-mono text-zinc-400">VSCODE</span>
+                            <span className="text-xs font-mono text-zinc-400">GEMINI</span>
+                            <span className="text-xs font-mono text-zinc-400">WINDSURF</span>
                         </div>
                     </div>
                 </motion.div>

@@ -45,7 +45,7 @@ export const Community = () => {
                         </Link>
                     </div>
 
-                    <div className="mt-16 pt-16 border-t border-zinc-800 grid grid-cols-2 md:grid-cols-3 gap-8">
+                    <div className="mt-16 pt-16 border-t border-zinc-800 grid grid-cols-2 md:grid-cols-5 gap-8">
                         <div>
                             <div className="text-3xl font-black font-outfit text-accent">OSS</div>
                             <div className="text-[11px] text-zinc-500 uppercase font-black tracking-widest mt-2">MIT Licensed</div>
@@ -57,6 +57,14 @@ export const Community = () => {
                         <div className="hidden md:block">
                             <div className="text-3xl font-black font-outfit text-accent">90%+</div>
                             <div className="text-[11px] text-zinc-500 uppercase font-black tracking-widest mt-2">DDR Benchmark</div>
+                        </div>
+                        <div className="hidden md:block">
+                            <div className="text-3xl font-black font-outfit text-accent">6</div>
+                            <div className="text-[11px] text-zinc-500 uppercase font-black tracking-widest mt-2">Languages</div>
+                        </div>
+                        <div className="hidden md:block">
+                            <div className="text-3xl font-black font-outfit text-accent">3</div>
+                            <div className="text-[11px] text-zinc-500 uppercase font-black tracking-widest mt-2">Industry Presets</div>
                         </div>
                     </div>
                 </motion.div>

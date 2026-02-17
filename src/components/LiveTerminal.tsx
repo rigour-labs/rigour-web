@@ -85,7 +85,9 @@ export const LiveTerminal = () => {
         if (step === 3) timers.push(setTimeout(() => setStep(4), 1500)); // First check failure pause
         if (step === 5) timers.push(setTimeout(() => setStep(6), 4000)); // Agent active scan duration
         if (step === 7) timers.push(setTimeout(() => setStep(8), 2000)); // CI check pause
-        if (step === 9) timers.push(setTimeout(() => setStep(0), 8000)); // Final pause before reset
+        if (step === 9) timers.push(setTimeout(() => setStep(10), 1500)); // Pause before export
+        if (step === 11) timers.push(setTimeout(() => setStep(12), 1500)); // Export result pause
+        if (step === 12) timers.push(setTimeout(() => setStep(0), 6000)); // Final pause before reset
 
         return () => timers.forEach(clearTimeout);
     }, [step]);
@@ -169,12 +171,30 @@ export const LiveTerminal = () => {
                 <motion.div
                     initial={{ opacity: 0, scale: 0.95, y: 10 }}
                     animate={{ opacity: 1, scale: 1, y: 0 }}
-                    className="text-green-950 bg-accent p-4 rounded-xl w-fit flex items-center gap-3 shadow-[0_0_30px_-5px_rgba(50,255,100,0.3)]"
+                    className="text-green-950 bg-accent p-4 rounded-xl w-fit flex items-center gap-3 shadow-[0_0_30px_-5px_rgba(50,255,100,0.3)] mb-4"
                 >
                     <div className="bg-green-950/20 rounded-full p-1">
                         <span className="text-xl font-black">✓</span>
                     </div>
                     <span className="font-black tracking-tight uppercase text-xs">PASS: Baseline Verified. Codebase Stabilized.</span>
+                </motion.div>
+            )}
+
+            {/* 5. Export Audit */}
+            {step >= 10 && (
+                <div className="text-white/40 mb-2">
+                    <span className="text-accent font-black">$</span>{" "}
+                    <Typewriter
+                        text="rigour export-audit --format md"
+                        active={step === 10}
+                        onComplete={() => setStep(11)}
+                    />
+                </div>
+            )}
+            {step >= 12 && (
+                <motion.div initial={{ opacity: 0, x: -5 }} animate={{ opacity: 1, x: 0 }} className="text-blue-400 mb-2 flex items-center gap-2">
+                    <span className="font-black">✓</span>
+                    <span>Audit report exported: rigour-audit-report.md</span>
                 </motion.div>
             )}
         </div>
