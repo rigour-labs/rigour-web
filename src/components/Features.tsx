@@ -6,9 +6,16 @@ import { Shield, Brain, Cpu, Lock, Globe, MessageSquare, Users, AlertTriangle, T
 
 const features = [
     {
+        icon: Zap,
+        title: "Real-Time Hooks",
+        description: "Catch issues the instant AI writes code — hardcoded secrets, hallucinated imports, floating promises. Works with Claude, Cursor, Cline, and Windsurf.",
+        badge: "v3.0"
+    },
+    {
         icon: Shield,
-        title: "Quality Gates",
-        description: "Enforce strict engineering standards and checks before code ever reaches a merge request."
+        title: "OWASP LLM Top 10: 10/10",
+        description: "Full coverage of all 10 OWASP risks for LLM-generated code — injection, auth, secrets, ReDoS, output handling, and more. All Strong.",
+        badge: "v3.0"
     },
     {
         icon: Users,
@@ -19,8 +26,8 @@ const features = [
     {
         icon: AlertTriangle,
         title: "Security Pattern Detection",
-        description: "Real-time detection of SQL injection, XSS, hardcoded secrets, and 12+ vulnerability patterns with CWE IDs.",
-        badge: "v2.14"
+        description: "25+ vulnerability patterns with CWE IDs — SQL injection, XSS, CORS wildcards, chmod 777, eval injection, and template injection.",
+        badge: "v3.0"
     },
     {
         icon: Lock,
@@ -29,8 +36,9 @@ const features = [
     },
     {
         icon: Brain,
-        title: "Pattern Index",
-        description: "Semantic understanding of your codebase. Search patterns with natural language queries."
+        title: "AI Drift Detection",
+        description: "Detect hallucinated imports, unhandled promises, context window artifacts, and async safety issues across 6 languages.",
+        badge: "v2.17"
     },
     {
         icon: MessageSquare,
@@ -39,25 +47,19 @@ const features = [
     },
     {
         icon: TrendingUp,
-        title: "Adaptive Thresholds",
-        description: "Dynamic quality thresholds based on project maturity. Lenient for startups, strict for enterprise.",
-        badge: "v2.14"
+        title: "Score Trending",
+        description: "Track quality scores over time with trend analysis. Exportable audit reports for compliance officers.",
+        badge: "v2.17"
     },
     {
         icon: Cpu,
         title: "Deep Static Analysis",
-        description: "Semantic checks that go deep beyond linting, catching architectural and logic drifts."
+        description: "AST-level checks beyond linting — catching architectural drifts, SOLID violations, and complexity issues."
     },
     {
         icon: Globe,
         title: "MCP Registry Listed",
-        description: "Official listing on the MCP Registry. Works with Claude, Cursor, Cline, and more."
-    },
-    {
-        icon: TrendingUp,
-        title: "Score Trending",
-        description: "Track quality scores over time with trend analysis. Exportable audit reports for compliance officers.",
-        badge: "v2.17"
+        description: "Official listing on the MCP Registry. Native integration with Claude, Cursor, Cline, Windsurf, and Gemini."
     },
     {
         icon: Building2,
@@ -66,10 +68,10 @@ const features = [
         badge: "v2.17"
     },
     {
-        icon: Zap,
-        title: "AI Drift Detection",
-        description: "Detect hallucinated imports, unhandled promises, and async safety issues across 6 languages.",
-        badge: "v2.17"
+        icon: FileText,
+        title: "Peer-Reviewed Research",
+        description: "Backed by a Zenodo-published whitepaper: Deterministic Quality Gates for AI-Generated Code in Regulated Systems.",
+        badge: "DOI"
     }
 ];
 
