@@ -31,11 +31,26 @@ Automatic PR review bot that enforces quality gates on every pull request.
 
 ## Key Features
 
-1. **Static Policy Gates**: Enforce coding standards, naming conventions, file structure rules
-2. **Semantic Pattern Index**: Detect architectural violations and anti-patterns
-3. **Security Analysis**: Identify hardcoded secrets, SQL injection, XSS vulnerabilities
-4. **Performance Checks**: Flag N+1 queries, memory leaks, inefficient algorithms
-5. **Dependency Auditing**: Check for vulnerable or deprecated packages
+1. **Deep Analysis**: LLM-powered analysis verifying SOLID principles, design patterns, concurrency safety, and architecture quality across 40+ code quality categories
+2. **Static Policy Gates**: Enforce coding standards, naming conventions, file structure rules
+3. **Semantic Pattern Index**: Detect architectural violations and anti-patterns
+4. **Security Analysis**: Identify hardcoded secrets, SQL injection, XSS vulnerabilities
+5. **Performance Checks**: Flag N+1 queries, memory leaks, inefficient algorithms
+6. **Dependency Auditing**: Check for vulnerable or deprecated packages
+
+## Deep Analysis Pipeline
+
+Rigour's deep analysis feature uses a three-step LLM-powered approach:
+1. **AST-Based Parsing**: Extract code structure, patterns, and relationships
+2. **LLM Analysis**: Apply deep reasoning across 40+ quality categories including:
+   - SOLID Principles (Single Responsibility, Open/Closed, Liskov Substitution, Interface Segregation, Dependency Inversion)
+   - Design Pattern Detection (Factory, Singleton, Observer, Strategy, etc.)
+   - Concurrency & Threading Analysis
+   - Architectural Consistency & Layering
+   - Complexity & Maintainability Metrics
+3. **AST Verification**: Validate findings against actual code structure
+
+Supports: Go, TypeScript, Python, Java, C#, Rust
 
 ## Strategic Values
 
@@ -44,6 +59,7 @@ Automatic PR review bot that enforces quality gates on every pull request.
 - **Agent-Native**: Built to integrate into AI agent loops (Claude Code, Cursor Agent, etc.)
 - **Fast**: Sub-second analysis for most codebases
 - **Extensible**: Custom rules via YAML configuration
+- **Deep Intelligence**: LLM-powered analysis verified by AST for semantic code understanding
 
 ## Use Cases
 
@@ -105,4 +121,4 @@ Parent: DriftBench
 
 ## Keywords
 
-AI code quality, AI governance, MCP server, Model Context Protocol, code review automation, AI agent guardrails, deterministic quality gates, local-first development tools, zero telemetry, Claude integration, Cursor integration, GitHub App, PR review bot, static analysis, semantic code analysis, engineering standards enforcement
+AI code quality, AI governance, MCP server, Model Context Protocol, code review automation, AI agent guardrails, deterministic quality gates, local-first development tools, zero telemetry, Claude integration, Cursor integration, GitHub App, PR review bot, static analysis, semantic code analysis, engineering standards enforcement, deep analysis, LLM-powered code review, SOLID principles verification, design pattern detection

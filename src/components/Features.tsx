@@ -2,9 +2,15 @@
 
 import React from "react";
 import { motion } from "framer-motion";
-import { Shield, Brain, Cpu, Lock, Globe, MessageSquare, Users, AlertTriangle, TrendingUp, FileText, Building2, Zap } from "lucide-react";
+import { Shield, Brain, Cpu, Lock, Globe, MessageSquare, Users, AlertTriangle, TrendingUp, FileText, Building2, Zap, AlertCircle } from "lucide-react";
 
 const features = [
+    {
+        icon: Brain,
+        title: "Deep Analysis",
+        description: "LLM-powered analysis across 40+ code quality categories. Verifies SOLID principles, detects design patterns, evaluates concurrency, and assesses architecture. Supports Go, TypeScript, Python, Java, C#, and Rust.",
+        badge: "v3.1"
+    },
     {
         icon: Zap,
         title: "Real-Time Hooks",
@@ -35,7 +41,7 @@ const features = [
         description: "No login. No telemetry. Your code stays on your machine. We don't even have a 'Signup' button."
     },
     {
-        icon: Brain,
+        icon: AlertCircle,
         title: "AI Drift Detection",
         description: "Detect hallucinated imports, unhandled promises, context window artifacts, and async safety issues across 6 languages.",
         badge: "v2.17"

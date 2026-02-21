@@ -42,7 +42,11 @@ export const metadata: Metadata = {
     "Rigour Labs",
     "Rigour CLI",
     "AI coding assistant",
-    "code quality enforcement"
+    "code quality enforcement",
+    "deep analysis",
+    "LLM-powered code review",
+    "SOLID principles",
+    "design pattern detection"
   ],
   authors: [{ name: "Rigour Labs", url: "https://rigour.run" }],
   creator: "Rigour Labs",
@@ -172,6 +176,9 @@ export default function RootLayout({
                 "Static Policy Gates",
                 "Semantic Pattern Index",
                 "Security Analysis",
+                "Deep Analysis with 40+ Categories",
+                "LLM-Powered Code Review",
+                "SOLID & Design Pattern Detection",
                 "MCP Native Integration",
                 "Zero Telemetry",
                 "Local-Only Processing"
