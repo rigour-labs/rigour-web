@@ -159,9 +159,9 @@ export const Leaderboard = () => {
                 className={`
                     flex items-center gap-2 px-2.5 py-1 rounded-lg border transition-all
                     ${isFullPass
-                        ? 'bg-green-500/10 border-green-500/20 text-green-400'
+                        ? 'bg-accent/10 border-accent/20 text-accent'
                         : isFullFail
-                            ? 'bg-red-500/10 border-red-500/20 text-red-400'
+                            ? 'bg-rose-500/10 border-rose-500/20 text-rose-400'
                             : 'bg-yellow-500/10 border-yellow-500/20 text-yellow-400'
                     }
                 `}
@@ -216,11 +216,11 @@ export const Leaderboard = () => {
                                         <div className="flex items-center gap-2">
                                             <div className="w-16 h-1.5 bg-zinc-800 rounded-full overflow-hidden">
                                                 <div
-                                                    className={`h-full ${repoStats.failed > 0 ? 'bg-yellow-500' : 'bg-green-500'}`}
+                                                    className={`h-full ${repoStats.failed > 0 ? 'bg-yellow-500' : 'bg-accent'}`}
                                                     style={{ width: `${(repoStats.passed / repoStats.total) * 100}%` }}
                                                 />
                                             </div>
-                                            <span className={`text-[10px] font-bold ${repoStats.failed > 0 ? 'text-yellow-400' : 'text-green-400'}`}>
+                                            <span className={`text-[10px] font-bold ${repoStats.failed > 0 ? 'text-yellow-400' : 'text-accent'}`}>
                                                 {repoStats.passed}/{repoStats.total}
                                             </span>
                                         </div>
@@ -278,11 +278,11 @@ export const Leaderboard = () => {
                                         <div className="flex items-center gap-2">
                                             <div className="w-16 h-1.5 bg-zinc-800 rounded-full overflow-hidden">
                                                 <div
-                                                    className={`h-full ${catStats.failed > 0 ? 'bg-red-500' : 'bg-orange-500'}`}
+                                                    className={`h-full ${catStats.failed > 0 ? 'bg-rose-500' : 'bg-orange-500'}`}
                                                     style={{ width: `${(catStats.passed / catStats.total) * 100}%` }}
                                                 />
                                             </div>
-                                            <span className={`text-[10px] font-bold ${catStats.failed > 0 ? 'text-red-400' : 'text-orange-400'}`}>
+                                            <span className={`text-[10px] font-bold ${catStats.failed > 0 ? 'text-rose-400' : 'text-orange-400'}`}>
                                                 {catStats.passed}/{catStats.total}
                                             </span>
                                         </div>
@@ -317,7 +317,7 @@ export const Leaderboard = () => {
                             </div>
                         </div>
                         <h2 className="text-4xl md:text-5xl font-bold font-outfit mb-4 tracking-tighter">
-                            Global <span className="text-glow-green">Leaderboard</span>
+                            Global <span className="text-glow">Leaderboard</span>
                         </h2>
                         <p className="text-foreground/40 max-w-2xl font-medium text-lg">
                             Real-time drift detection rates across {totalTasks} production scenarios.
@@ -371,7 +371,7 @@ export const Leaderboard = () => {
                                     className={`
                                         px-3 py-1.5 rounded-lg text-[10px] font-mono uppercase tracking-widest transition-all
                                         ${breakdownView === type
-                                            ? 'bg-accent text-zinc-950 font-bold'
+                                            ? 'bg-accent text-white font-bold'
                                             : 'bg-white/5 text-zinc-400 hover:bg-white/10'
                                         }
                                     `}
@@ -492,15 +492,15 @@ export const Leaderboard = () => {
                                                         </div>
                                                     )}
                                                     {model.errors && model.errors > 0 && (
-                                                        <div className="group/err relative flex items-center gap-1 px-2 py-0.5 rounded bg-red-500/10 border border-red-500/20">
-                                                            <XCircle className="w-3 h-3 text-red-400" />
-                                                            <span className="text-[10px] font-mono text-red-400">
+                                                        <div className="group/err relative flex items-center gap-1 px-2 py-0.5 rounded bg-rose-500/10 border border-rose-500/20">
+                                                            <XCircle className="w-3 h-3 text-rose-400" />
+                                                            <span className="text-[10px] font-mono text-rose-400">
                                                                 {model.errors} errors
                                                             </span>
                                                             {/* Tooltip */}
                                                             <div className="absolute bottom-full left-0 mb-2 w-64 p-3 rounded-lg bg-zinc-900 border border-zinc-700 shadow-xl opacity-0 invisible group-hover/err:opacity-100 group-hover/err:visible transition-all duration-200 z-50">
                                                                 <div className="text-[11px] text-zinc-300 leading-relaxed">
-                                                                    <strong className="text-red-400">Infrastructure Errors:</strong> Tasks where the model failed to generate output (timeout, API error, etc). Not counted in pass rate calculation.
+                                                                    <strong className="text-rose-400">Infrastructure Errors:</strong> Tasks where the model failed to generate output (timeout, API error, etc). Not counted in pass rate calculation.
                                                                 </div>
                                                                 <div className="absolute -bottom-1 left-4 w-2 h-2 bg-zinc-900 border-r border-b border-zinc-700 transform rotate-45"></div>
                                                             </div>
@@ -531,7 +531,7 @@ export const Leaderboard = () => {
                                                 </div>
                                                 <div className="w-full max-w-[60px] h-1 bg-zinc-800 rounded-full mt-1 overflow-hidden">
                                                     <div
-                                                        className={`h-full ${(model.tasks_completed ?? model.tasks_run) >= 20 ? 'bg-green-500' : (model.errors && model.errors > 5) ? 'bg-red-500' : 'bg-blue-500'}`}
+                                                        className={`h-full ${(model.tasks_completed ?? model.tasks_run) >= 20 ? 'bg-accent' : (model.errors && model.errors > 5) ? 'bg-rose-500' : 'bg-blue-500'}`}
                                                         style={{ width: `${((model.tasks_completed ?? model.tasks_run) / (model.tasks_total || totalTasks)) * 100}%` }}
                                                     />
                                                 </div>

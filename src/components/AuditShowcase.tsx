@@ -2,141 +2,69 @@
 
 import React from "react";
 import { motion } from "framer-motion";
-import { AlertTriangle, ArrowRight, Shield, FileCode, Bug } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { track } from "@vercel/analytics";
 
 export const AuditShowcase = () => {
     return (
-        <section className="py-24 px-6 border-t border-zinc-900">
-            <div className="max-w-7xl mx-auto">
-
+        <section className="py-24 px-6 border-t border-zinc-800/50">
+            <div className="max-w-6xl mx-auto">
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
-                    className="text-center mb-12"
+                    className="bento-card p-10 md:p-14 text-center relative overflow-hidden"
                 >
-                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-500/10 border border-red-500/20 text-red-400 text-xs font-bold tracking-wider uppercase mb-6">
-                        <AlertTriangle className="w-3 h-3" />
-                        Featured Audit
-                    </div>
-                    <h2 className="text-3xl md:text-5xl font-black font-outfit tracking-tight mb-4">
-                        We Audited the Most Popular AI Agent.
-                    </h2>
-                    <p className="text-zinc-400 max-w-2xl mx-auto text-lg">
-                        OpenClaw — 180K GitHub stars, acqui-hired by OpenAI. We ran Rigour
-                        quality gates against the full codebase. The scan took 3.9 seconds.
-                    </p>
-                </motion.div>
+                    <div className="absolute inset-0 bg-gradient-to-br from-accent/5 via-transparent to-purple-500/5 pointer-events-none" />
+                    <div className="relative z-10">
+                        <p className="text-xs font-medium text-zinc-500 uppercase tracking-widest mb-4">Proof of concept</p>
+                        <h2 className="text-3xl md:text-4xl font-bold font-outfit mb-4">
+                            We audited <span className="text-accent">OpenClaw</span> — 180K stars, acqui-hired by OpenAI.
+                        </h2>
+                        <p className="text-zinc-400 max-w-xl mx-auto mb-8">
+                            Score: 0/100. 2,080 violations. 7 security vectors. The scan took 3.9 seconds.
+                        </p>
 
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8"
-                >
-                    {[
-                        { value: "0", label: "Score", sub: "/100", color: "text-red-400" },
-                        { value: "2,080", label: "Violations", sub: "total", color: "text-red-400" },
-                        { value: "520", label: "God Files", sub: ">400 lines", color: "text-orange-400" },
-                        { value: "7", label: "Security Flags", sub: "prototype pollution", color: "text-red-400" },
-                    ].map((stat) => (
-                        <div key={stat.label} className="bento-card bg-black border-zinc-800 p-6 text-center">
-                            <div className={`text-3xl md:text-4xl font-black font-outfit ${stat.color}`}>
-                                {stat.value}
-                            </div>
-                            <div className="text-[10px] text-zinc-500 uppercase tracking-widest font-bold mt-2">
-                                {stat.label}
-                            </div>
-                            <div className="text-[10px] text-zinc-600 mt-1">{stat.sub}</div>
+                        <div className="flex flex-wrap items-center justify-center gap-3 mb-10">
+                            {[
+                                { name: "File Size", fail: true },
+                                { name: "AST Analysis", fail: true },
+                                { name: "Content Check", fail: true },
+                                { name: "Context Drift", fail: true },
+                                { name: "Environment", fail: false },
+                                { name: "Dependencies", fail: false },
+                                { name: "Safety Rail", fail: false },
+                            ].map((g) => (
+                                <span
+                                    key={g.name}
+                                    className={`text-[10px] font-medium uppercase tracking-wider px-3 py-1.5 rounded-full border ${g.fail
+                                        ? "border-rose-400/15 bg-rose-400/5 text-rose-300/80"
+                                        : "border-accent/15 bg-accent/5 text-accent/80"
+                                        }`}
+                                >
+                                    {g.fail ? "\u2717" : "\u2713"} {g.name}
+                                </span>
+                            ))}
                         </div>
-                    ))}
-                </motion.div>
 
-                {/* Mini gate strip */}
-                <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    className="bento-card bg-black border-zinc-800 p-6 mb-8"
-                >
-                    <div className="flex flex-wrap items-center gap-3 justify-center">
-                        {[
-                            { name: "File Size", fail: true },
-                            { name: "AST Analysis", fail: true },
-                            { name: "Content Check", fail: true },
-                            { name: "Context Drift", fail: true },
-                            { name: "Environment", fail: false },
-                            { name: "Dependencies", fail: false },
-                            { name: "Safety Rail", fail: false },
-                            { name: "Coverage", fail: false },
-                            { name: "Structure", fail: false },
-                        ].map((g) => (
-                            <span
-                                key={g.name}
-                                className={`text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-full border ${g.fail
-                                    ? "border-red-500/20 bg-red-500/5 text-red-400"
-                                    : "border-green-500/20 bg-green-500/5 text-green-500"
-                                    }`}
+                        <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+                            <Link
+                                href="/audits/openclaw"
+                                onClick={() => track("cta_audit", { location: "homepage_showcase", audit: "openclaw" })}
+                                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-accent/10 border border-accent/20 text-accent text-sm font-medium hover:bg-accent/20 transition-colors"
                             >
-                                {g.fail ? "✗" : "✓"} {g.name}
-                            </span>
-                        ))}
+                                Read Full Report <ArrowRight className="w-4 h-4" />
+                            </Link>
+                            <Link
+                                href="/audits"
+                                onClick={() => track("cta_audit", { location: "homepage_showcase", audit: "all" })}
+                                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-zinc-700 text-zinc-400 text-sm font-medium hover:bg-white/5 transition-colors"
+                            >
+                                All Audits
+                            </Link>
+                        </div>
                     </div>
-                </motion.div>
-
-                {/* Key findings strip */}
-                <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8"
-                >
-                    <div className="bento-card bg-black border-zinc-800 p-6">
-                        <FileCode className="w-5 h-5 text-orange-400 mb-3" />
-                        <div className="text-sm font-bold text-zinc-200 mb-1">520 Oversized Files</div>
-                        <p className="text-xs text-zinc-500 leading-relaxed">
-                            The worst: a single file at 3,333 lines. No human or AI can reason about that.
-                        </p>
-                    </div>
-                    <div className="bento-card bg-black border-zinc-800 p-6">
-                        <Bug className="w-5 h-5 text-red-400 mb-3" />
-                        <div className="text-sm font-bold text-zinc-200 mb-1">1,819 Complexity Violations</div>
-                        <p className="text-xs text-zinc-500 leading-relaxed">
-                            In core modules: agent runner, gateway server, browser automation, memory manager.
-                        </p>
-                    </div>
-                    <div className="bento-card bg-black border-zinc-800 p-6">
-                        <Shield className="w-5 h-5 text-red-400 mb-3" />
-                        <div className="text-sm font-bold text-zinc-200 mb-1">7 Security Vectors</div>
-                        <p className="text-xs text-zinc-500 leading-relaxed">
-                            Prototype pollution in memory, cron runner, and execution pipeline. 135K instances exposed.
-                        </p>
-                    </div>
-                </motion.div>
-
-                {/* CTA */}
-                <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    className="flex flex-col sm:flex-row items-center justify-center gap-4"
-                >
-                    <Link
-                        href="/audits/openclaw"
-                        onClick={() => track("cta_audit", { location: "homepage_showcase", audit: "openclaw" })}
-                        className="inline-flex items-center gap-2 bg-red-500/10 border border-red-500/20 text-red-400 px-6 py-3 rounded-xl font-black uppercase tracking-widest text-xs hover:bg-red-500/20 transition-colors"
-                    >
-                        OpenClaw Report <ArrowRight className="w-4 h-4" />
-                    </Link>
-                    <Link
-                        href="/audits"
-                        onClick={() => track("cta_audit", { location: "homepage_showcase", audit: "all" })}
-                        className="inline-flex items-center gap-2 border border-zinc-800 text-zinc-400 px-6 py-3 rounded-xl font-black uppercase tracking-widest text-xs hover:bg-white/5 transition-colors"
-                    >
-                        All Audits <ArrowRight className="w-4 h-4" />
-                    </Link>
                 </motion.div>
             </div>
         </section>

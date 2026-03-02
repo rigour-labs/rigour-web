@@ -80,7 +80,7 @@ const AUDIT = {
 function ScoreGauge({ score }: { score: number }) {
     const circumference = 2 * Math.PI * 58;
     const offset = circumference - (score / 100) * circumference;
-    const color = score >= 80 ? "#22c55e" : score >= 50 ? "#eab308" : "#ef4444";
+    const color = score >= 80 ? "#818cf8" : score >= 50 ? "#eab308" : "#ef4444";
 
     return (
         <div className="relative w-36 h-36">
@@ -110,8 +110,8 @@ function GatePill({ name, status }: { name: string; status: string }) {
     const pass = status === "PASS";
     return (
         <div className={`flex items-center gap-2 px-3 py-2 rounded-lg border text-xs font-bold uppercase tracking-wider ${pass
-            ? "border-green-500/20 bg-green-500/5 text-green-400"
-            : "border-red-500/20 bg-red-500/5 text-red-400"
+            ? "border-accent/20 bg-accent/5 text-accent"
+            : "border-rose-400/20 bg-rose-400/5 text-rose-400"
             }`}>
             {pass ? <CheckCircle className="w-3.5 h-3.5" /> : <XCircle className="w-3.5 h-3.5" />}
             {name}
@@ -123,7 +123,7 @@ function BreakdownBar({ label, count, total, severity, desc }: {
     label: string; count: number; total: number; severity: string; desc: string;
 }) {
     const pct = Math.min((count / total) * 100, 100);
-    const color = severity === "critical" ? "bg-red-500" : severity === "high" ? "bg-orange-500" : "bg-yellow-500";
+    const color = severity === "critical" ? "bg-rose-500" : severity === "high" ? "bg-orange-500" : "bg-yellow-500";
 
     return (
         <div className="space-y-2">
@@ -173,14 +173,14 @@ export function OpenClawAudit() {
                 animate={{ opacity: 1, y: 0 }}
                 className="mb-16"
             >
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-500/10 border border-red-500/20 text-red-400 text-xs font-bold tracking-wider uppercase mb-6">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent/10 border border-accent/20 text-accent text-xs font-bold tracking-wider uppercase mb-6">
                     <AlertTriangle className="w-3 h-3" />
                     Quality Audit Report
                 </div>
 
                 <h1 className="text-4xl md:text-6xl font-black font-outfit leading-[1.1] mb-6 tracking-tight">
                     OpenClaw: 180K Stars.<br />
-                    <span className="text-red-400">2,080 Violations. Score: Zero.</span>
+                    <span className="text-rose-400">2,080 Violations. Score: Zero.</span>
                 </h1>
 
                 <p className="text-lg text-zinc-400 leading-relaxed max-w-3xl mb-6">
@@ -213,18 +213,18 @@ export function OpenClawAudit() {
                         <ScoreGauge score={AUDIT.score} />
                         <div className="text-center">
                             <div className="text-xs text-zinc-500 uppercase tracking-widest font-bold">Rigour Score</div>
-                            <div className="text-red-400 text-sm font-bold mt-1">FAIL</div>
+                            <div className="text-rose-400 text-sm font-bold mt-1">FAIL</div>
                         </div>
                     </div>
 
                     {/* Key stats */}
                     <div className="grid grid-cols-2 gap-6 col-span-2">
                         {[
-                            { label: "Total Violations", value: "2,080", color: "text-red-400" },
+                            { label: "Total Violations", value: "2,080", color: "text-rose-400" },
                             { label: "Gates Failed", value: "4 / 10", color: "text-orange-400" },
                             { label: "God Files", value: "520", color: "text-yellow-400" },
-                            { label: "Complexity Violations", value: "1,819", color: "text-red-400" },
-                            { label: "Security Flags", value: "7", color: "text-red-400" },
+                            { label: "Complexity Violations", value: "1,819", color: "text-rose-400" },
+                            { label: "Security Flags", value: "7", color: "text-rose-400" },
                             { label: "Context Drift", value: "147", color: "text-yellow-400" },
                         ].map((stat) => (
                             <div key={stat.label} className="text-center md:text-left">
@@ -331,8 +331,8 @@ export function OpenClawAudit() {
                 className="mb-12"
             >
                 <div className="flex items-center gap-3 mb-6">
-                    <div className="w-10 h-10 rounded-xl bg-red-500/10 flex items-center justify-center">
-                        <Bug className="w-5 h-5 text-red-400" />
+                    <div className="w-10 h-10 rounded-xl bg-rose-500/10 flex items-center justify-center">
+                        <Bug className="w-5 h-5 text-rose-400" />
                     </div>
                     <h2 className="text-2xl font-black font-outfit tracking-tight">1,819 Complexity Violations</h2>
                 </div>
@@ -353,13 +353,13 @@ export function OpenClawAudit() {
                 className="mb-12"
             >
                 <div className="flex items-center gap-3 mb-6">
-                    <div className="w-10 h-10 rounded-xl bg-red-500/10 flex items-center justify-center">
-                        <Lock className="w-5 h-5 text-red-400" />
+                    <div className="w-10 h-10 rounded-xl bg-rose-500/10 flex items-center justify-center">
+                        <Lock className="w-5 h-5 text-rose-400" />
                     </div>
                     <h2 className="text-2xl font-black font-outfit tracking-tight">7 Prototype Pollution Vectors</h2>
                 </div>
                 <p className="text-zinc-400 leading-relaxed mb-6 max-w-3xl">
-                    Rigour flagged 7 instances of <code className="text-red-400 bg-red-500/10 px-1.5 py-0.5 rounded text-xs">Object.assign({"{}"}, ...)</code> patterns
+                    Rigour flagged 7 instances of <code className="text-rose-400 bg-rose-500/10 px-1.5 py-0.5 rounded text-xs">Object.assign({"{}"}, ...)</code> patterns
                     that can propagate prototype pollution — a well-known JavaScript security vulnerability.
                     These are in sensitive areas: the memory/embeddings system, the cron agent runner, and
                     the agent execution pipeline.
@@ -377,7 +377,7 @@ export function OpenClawAudit() {
                         <div className="space-y-2 mt-4">
                             {AUDIT.securityVectors.map((v, i) => (
                                 <div key={i} className="flex items-start gap-2 py-2 border-b border-zinc-800/50 last:border-0">
-                                    <Shield className="w-3.5 h-3.5 text-red-400 mt-0.5 shrink-0" />
+                                    <Shield className="w-3.5 h-3.5 text-rose-400 mt-0.5 shrink-0" />
                                     <code className="text-xs text-zinc-400 font-mono">{v}</code>
                                 </div>
                             ))}
@@ -460,7 +460,7 @@ export function OpenClawAudit() {
                 viewport={{ once: true }}
                 className="bento-card bg-black border-accent/20 p-8 md:p-12 text-center"
             >
-                <h2 className="text-2xl md:text-4xl font-black font-outfit tracking-tight mb-4 text-glow-green">
+                <h2 className="text-2xl md:text-4xl font-black font-outfit tracking-tight mb-4 text-glow">
                     Try It On Your Repo.
                 </h2>
                 <p className="text-zinc-400 mb-8 max-w-lg mx-auto">
@@ -478,7 +478,7 @@ export function OpenClawAudit() {
                         href="https://github.com/rigour-labs/rigour"
                         target="_blank"
                         onClick={() => track("cta_github", { location: "audit_openclaw" })}
-                        className="bg-accent text-zinc-950 px-8 py-3 rounded-xl font-black uppercase tracking-widest text-xs flex items-center gap-2 hover:scale-105 transition-transform"
+                        className="bg-accent text-white px-8 py-3 rounded-xl font-black uppercase tracking-widest text-xs flex items-center gap-2 hover:scale-105 transition-transform"
                     >
                         <Terminal className="w-4 h-4" /> View on GitHub
                     </Link>

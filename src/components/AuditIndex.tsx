@@ -10,7 +10,7 @@ import { AUDIT_REGISTRY } from "@/lib/audits";
 function ScoreRing({ score }: { score: number }) {
     const circumference = 2 * Math.PI * 22;
     const offset = circumference - (score / 100) * circumference;
-    const color = score >= 80 ? "#22c55e" : score >= 50 ? "#eab308" : "#ef4444";
+    const color = score >= 80 ? "#818cf8" : score >= 50 ? "#eab308" : "#ef4444";
 
     return (
         <div className="relative w-14 h-14">
@@ -51,7 +51,7 @@ export function AuditIndex() {
                 animate={{ opacity: 1, y: 0 }}
                 className="mb-16"
             >
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-500/10 border border-red-500/20 text-red-400 text-xs font-bold tracking-wider uppercase mb-6">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent/10 border border-accent/20 text-accent text-xs font-bold tracking-wider uppercase mb-6">
                     <Shield className="w-3 h-3" />
                     Public Audits
                 </div>
@@ -83,7 +83,7 @@ export function AuditIndex() {
                         <React.Fragment key={a.slug}>
                             <div className="font-bold text-sm text-zinc-200 flex items-center justify-center">{a.projectName}</div>
                             <div className="flex justify-center">
-                                <span className={`text-lg font-black font-outfit ${a.score >= 80 ? "text-green-400" : a.score >= 50 ? "text-yellow-400" : "text-red-400"}`}>
+                                <span className={`text-lg font-black font-outfit ${a.score >= 80 ? "text-accent" : a.score >= 50 ? "text-yellow-400" : "text-rose-400"}`}>
                                     {a.score}
                                 </span>
                             </div>
@@ -119,7 +119,7 @@ export function AuditIndex() {
                                             {audit.projectName}
                                         </h2>
                                         {audit.featured && (
-                                            <span className="px-2 py-0.5 rounded-full bg-red-500/10 border border-red-500/20 text-red-400 text-[10px] font-bold uppercase tracking-widest">
+                                            <span className="px-2 py-0.5 rounded-full bg-accent/10 border border-accent/20 text-accent text-[10px] font-bold uppercase tracking-widest">
                                                 Featured
                                             </span>
                                         )}
@@ -129,7 +129,7 @@ export function AuditIndex() {
 
                                     <div className="flex flex-wrap items-center gap-4 text-xs text-zinc-500 font-bold">
                                         <span className="flex items-center gap-1.5">
-                                            <AlertTriangle className="w-3 h-3 text-red-400" />
+                                            <AlertTriangle className="w-3 h-3 text-rose-400" />
                                             {audit.totalViolations.toLocaleString()} violations
                                         </span>
                                         <span className="flex items-center gap-1.5">

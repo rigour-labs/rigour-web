@@ -295,7 +295,7 @@ export default function NistAiRmfPage() {
             <Link
               href="https://github.com/rigour-labs/rigour"
               target="_blank"
-              className="bg-accent text-zinc-950 px-6 py-2.5 rounded-xl text-sm font-black uppercase tracking-widest hover:scale-105 transition-transform"
+              className="bg-accent text-white px-6 py-2.5 rounded-xl text-sm font-black uppercase tracking-widest hover:scale-105 transition-transform"
             >
               GitHub Repository
             </Link>

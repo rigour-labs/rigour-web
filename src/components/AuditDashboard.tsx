@@ -29,7 +29,7 @@ import type { AuditData, AuditNarrativeSection } from "@/lib/audit-types";
 function ScoreGauge({ score }: { score: number }) {
     const circumference = 2 * Math.PI * 58;
     const offset = circumference - (score / 100) * circumference;
-    const color = score >= 80 ? "#22c55e" : score >= 50 ? "#eab308" : "#ef4444";
+    const color = score >= 80 ? "#818cf8" : score >= 50 ? "#eab308" : "#ef4444";
 
     return (
         <div className="relative w-36 h-36">
@@ -59,8 +59,8 @@ function GatePill({ name, status }: { name: string; status: string }) {
     const pass = status === "PASS";
     return (
         <div className={`flex items-center gap-2 px-3 py-2 rounded-lg border text-xs font-bold uppercase tracking-wider ${pass
-            ? "border-green-500/20 bg-green-500/5 text-green-400"
-            : "border-red-500/20 bg-red-500/5 text-red-400"
+            ? "border-accent/20 bg-accent/5 text-accent"
+            : "border-rose-400/20 bg-rose-400/5 text-rose-400"
             }`}>
             {pass ? <CheckCircle className="w-3.5 h-3.5" /> : <XCircle className="w-3.5 h-3.5" />}
             {name}
@@ -72,7 +72,7 @@ function BreakdownBar({ label, count, total, severity, desc }: {
     label: string; count: number; total: number; severity: string; desc: string;
 }) {
     const pct = Math.min((count / total) * 100, 100);
-    const color = severity === "critical" ? "bg-red-500" : severity === "high" ? "bg-orange-500" : "bg-yellow-500";
+    const color = severity === "critical" ? "bg-rose-500" : severity === "high" ? "bg-orange-500" : "bg-yellow-500";
 
     return (
         <div className="space-y-2">
@@ -107,8 +107,8 @@ const ICON_MAP: Record<AuditNarrativeSection["icon"], React.ComponentType<{ clas
 
 const ICON_COLOR_MAP: Record<AuditNarrativeSection["icon"], string> = {
     file: "text-orange-400 bg-orange-500/10",
-    bug: "text-red-400 bg-red-500/10",
-    lock: "text-red-400 bg-red-500/10",
+    bug: "text-rose-400 bg-rose-500/10",
+    lock: "text-rose-400 bg-rose-500/10",
     alert: "text-yellow-400 bg-yellow-500/10",
     git: "text-yellow-400 bg-yellow-500/10",
     code: "text-blue-400 bg-blue-500/10",
@@ -140,14 +140,14 @@ export function AuditDashboard({ audit }: { audit: AuditData }) {
                 animate={{ opacity: 1, y: 0 }}
                 className="mb-16"
             >
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-500/10 border border-red-500/20 text-red-400 text-xs font-bold tracking-wider uppercase mb-6">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent/10 border border-accent/20 text-accent text-xs font-bold tracking-wider uppercase mb-6">
                     <AlertTriangle className="w-3 h-3" />
                     Quality Audit Report
                 </div>
 
                 <h1 className="text-4xl md:text-6xl font-black font-outfit leading-[1.1] mb-6 tracking-tight">
                     {audit.projectName}: {audit.projectTagline.split(".")[0]}.<br />
-                    <span className="text-red-400">{audit.totalViolations.toLocaleString()} Violations. Score: {audit.score === 0 ? "Zero" : audit.score}.</span>
+                    <span className="text-rose-400">{audit.totalViolations.toLocaleString()} Violations. Score: {audit.score === 0 ? "Zero" : audit.score}.</span>
                 </h1>
 
                 <p className="text-lg text-zinc-400 leading-relaxed max-w-3xl mb-6">
@@ -178,7 +178,7 @@ export function AuditDashboard({ audit }: { audit: AuditData }) {
                         <ScoreGauge score={audit.score} />
                         <div className="text-center">
                             <div className="text-xs text-zinc-500 uppercase tracking-widest font-bold">Rigour Score</div>
-                            <div className={`text-sm font-bold mt-1 ${audit.score >= 80 ? "text-green-400" : audit.score >= 50 ? "text-yellow-400" : "text-red-400"}`}>
+                            <div className={`text-sm font-bold mt-1 ${audit.score >= 80 ? "text-accent" : audit.score >= 50 ? "text-yellow-400" : "text-rose-400"}`}>
                                 {audit.score >= 80 ? "PASS" : "FAIL"}
                             </div>
                         </div>
@@ -300,7 +300,7 @@ export function AuditDashboard({ audit }: { audit: AuditData }) {
                                     <div className="space-y-2 mt-4">
                                         {audit.securityVectors.map((v, i) => (
                                             <div key={i} className="flex items-start gap-2 py-2 border-b border-zinc-800/50 last:border-0">
-                                                <Shield className="w-3.5 h-3.5 text-red-400 mt-0.5 shrink-0" />
+                                                <Shield className="w-3.5 h-3.5 text-rose-400 mt-0.5 shrink-0" />
                                                 <code className="text-xs text-zinc-400 font-mono">{v}</code>
                                             </div>
                                         ))}
@@ -339,7 +339,7 @@ export function AuditDashboard({ audit }: { audit: AuditData }) {
                 viewport={{ once: true }}
                 className="bento-card bg-black border-accent/20 p-8 md:p-12 text-center"
             >
-                <h2 className="text-2xl md:text-4xl font-black font-outfit tracking-tight mb-4 text-glow-green">
+                <h2 className="text-2xl md:text-4xl font-black font-outfit tracking-tight mb-4 text-glow">
                     Try It On Your Repo.
                 </h2>
                 <p className="text-zinc-400 mb-8 max-w-lg mx-auto">
@@ -357,7 +357,7 @@ export function AuditDashboard({ audit }: { audit: AuditData }) {
                         href="https://github.com/rigour-labs/rigour"
                         target="_blank"
                         onClick={() => track("cta_github", { location: `audit_${audit.slug}` })}
-                        className="bg-accent text-zinc-950 px-8 py-3 rounded-xl font-black uppercase tracking-widest text-xs flex items-center gap-2 hover:scale-105 transition-transform"
+                        className="bg-accent text-white px-8 py-3 rounded-xl font-black uppercase tracking-widest text-xs flex items-center gap-2 hover:scale-105 transition-transform"
                     >
                         <Terminal className="w-4 h-4" /> View on GitHub
                     </Link>

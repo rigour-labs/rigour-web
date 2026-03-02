@@ -162,8 +162,8 @@ export const LiveTerminal = () => {
                 </div>
             )}
             {step >= 8 && (
-                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-green-400 font-bold mb-2 flex items-center gap-2">
-                    <span className="w-1 h-3 bg-green-400 animate-pulse" />
+                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-accent font-bold mb-2 flex items-center gap-2">
+                    <span className="w-1 h-3 bg-accent animate-pulse" />
                     [CI] Analyzing AST... DONE
                 </motion.div>
             )}
@@ -171,9 +171,9 @@ export const LiveTerminal = () => {
                 <motion.div
                     initial={{ opacity: 0, scale: 0.95, y: 10 }}
                     animate={{ opacity: 1, scale: 1, y: 0 }}
-                    className="text-green-950 bg-accent p-4 rounded-xl w-fit flex items-center gap-3 shadow-[0_0_30px_-5px_rgba(50,255,100,0.3)] mb-4"
+                    className="text-white bg-accent p-4 rounded-xl w-fit flex items-center gap-3 shadow-[0_0_30px_-5px_rgba(99,102,241,0.3)] mb-4"
                 >
-                    <div className="bg-green-950/20 rounded-full p-1">
+                    <div className="bg-white/20 rounded-full p-1">
                         <span className="text-xl font-black">✓</span>
                     </div>
                     <span className="font-black tracking-tight uppercase text-xs">PASS: Baseline Verified. Codebase Stabilized.</span>

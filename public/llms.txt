@@ -1,20 +1,50 @@
 # Rigour Labs
 
-> Deterministic quality gates for AI-generated code. The strategic engineering layer that stops AI chaos.
+> AI Agent Governance. One command. Every agent. Block credential leaks, enforce quality gates, control what agents remember.
 
 ## What is Rigour?
 
-Rigour is a local-first, zero-telemetry code quality enforcement tool designed specifically for AI coding agents. It provides deterministic PASS/FAIL quality gates that force AI agents (Claude, Cursor, Cline, GitHub Copilot) to meet strict engineering standards before marking tasks as done.
+Rigour is the governance layer for AI coding agents. It provides three layers of protection: Input DLP (blocks credential leaks with 29 patterns), Quality Gates (deterministic PASS/FAIL on every file write), and Memory Governance (controls what agents remember). Works with Claude, Cursor, Cline, Windsurf, and Copilot. 100% local, zero telemetry.
 
-## Core Problem We Solve
+## Core Problem
 
-AI coding agents ship broken, insecure, and architecturally inconsistent code. They lack engineering rigor. Rigour adds the quality control loop that AI agents are missing.
+AI agents leak credentials, write ungoverned code, and persist data in uncontrolled memory files. Without governance, every AI coding agent is a compliance risk. Rigour adds the missing control layer.
+
+## Three Layers of Protection
+
+### 1. Input DLP (Data Loss Prevention)
+Scans every agent input for credentials before they reach the AI model.
+- 29 credential patterns: AWS keys, GCP service accounts, Azure tokens, API keys (OpenAI, Anthropic, GitHub, Stripe, SendGrid), database URLs, JWTs, private keys
+- Shannon entropy detection catches base64/hex encoded secrets
+- Unicode normalization defeats zero-width character bypass attempts
+- OWASP LLM Top 10: 10/10 coverage
+
+### 2. Quality Gates
+Real-time hooks fire on every file write across all AI agents.
+- Deterministic PASS/FAIL: file size, complexity, security patterns, hallucinated imports, AI drift
+- Deep LLM analysis across 40+ code quality categories
+- Supports: TypeScript, JavaScript, Python, Go, Rust, Java
+
+### 3. Memory & Skills Governance
+Controls what agents persist and where.
+- Blocks writes to native agent memory: .cursorrules, CLAUDE.md, .clinerules
+- Blocks writes to agent skills: .claude/skills/, .cursor/rules/, .windsurf/rules/
+- DLP scanning on recall — blocks tainted stored credentials
+- Configurable via rigour.yml
+
+## Install
+
+```bash
+npx @rigour-labs/cli init
+# or
+brew tap rigour-labs/tap && brew install rigour
+```
 
 ## Products
 
 ### Rigour CLI
-The core engine for quality gates. Runs locally with zero external dependencies.
-- Install: `npx @rigour-labs/cli check`
+Core governance engine. Runs locally with zero external dependencies.
+- Install: `npx @rigour-labs/cli init`
 - NPM: https://www.npmjs.com/package/@rigour-labs/cli
 - GitHub: https://github.com/rigour-labs/rigour
 
@@ -29,52 +59,29 @@ Automatic PR review bot that enforces quality gates on every pull request.
 - GitHub Marketplace: https://github.com/apps/rigour-bot
 - Webhook endpoint: bot.rigour.run
 
-## Key Features
+## Agent Support
 
-1. **Deep Analysis**: LLM-powered analysis verifying SOLID principles, design patterns, concurrency safety, and architecture quality across 40+ code quality categories
-2. **Static Policy Gates**: Enforce coding standards, naming conventions, file structure rules
-3. **Semantic Pattern Index**: Detect architectural violations and anti-patterns
-4. **Security Analysis**: Identify hardcoded secrets, SQL injection, XSS vulnerabilities
-5. **Performance Checks**: Flag N+1 queries, memory leaks, inefficient algorithms
-6. **Dependency Auditing**: Check for vulnerable or deprecated packages
+| Agent | DLP Hook | Quality Gate | Memory Gov | Skills Gov |
+|-------|----------|-------------|------------|------------|
+| Claude | PreToolUse | PostToolUse | Yes | Yes |
+| Cursor | beforeFileEdit | afterFileEdit | Yes | Yes |
+| Cline | beforeWrite | afterWrite | Yes | Yes |
+| Windsurf | beforeWrite | afterWrite | Yes | Yes |
+| Copilot | — | CI/CD | Yes | Yes |
 
-## Deep Analysis Pipeline
+## Industry Presets
 
-Rigour's deep analysis feature uses a three-step LLM-powered approach:
-1. **AST-Based Parsing**: Extract code structure, patterns, and relationships
-2. **LLM Analysis**: Apply deep reasoning across 40+ quality categories including:
-   - SOLID Principles (Single Responsibility, Open/Closed, Liskov Substitution, Interface Segregation, Dependency Inversion)
-   - Design Pattern Detection (Factory, Singleton, Observer, Strategy, etc.)
-   - Concurrency & Threading Analysis
-   - Architectural Consistency & Layering
-   - Complexity & Maintainability Metrics
-3. **AST Verification**: Validate findings against actual code structure
-
-Supports: Go, TypeScript, Python, Java, C#, Rust
-
-## Strategic Values
-
-- **Local-First**: Your code never leaves your machine. Zero telemetry.
-- **Deterministic**: PASS/FAIL is clear and reproducible. No ambiguity.
-- **Agent-Native**: Built to integrate into AI agent loops (Claude Code, Cursor Agent, etc.)
-- **Fast**: Sub-second analysis for most codebases
-- **Extensible**: Custom rules via YAML configuration
-- **Deep Intelligence**: LLM-powered analysis verified by AST for semantic code understanding
-
-## Use Cases
-
-- Enforce architectural boundaries in AI-generated code
-- Prevent AI agents from shipping security vulnerabilities
-- Maintain consistent code style across AI-assisted PRs
-- Quality gates in CI/CD pipelines
-- Real-time feedback for AI pair programming
+- `rigour init --preset healthcare` (HIPAA / FDA)
+- `rigour init --preset fintech` (SOC2 / PCI-DSS)
+- `rigour init --preset government` (FedRAMP / NIST)
 
 ## Technical Specifications
 
 - Written in: TypeScript/Node.js
 - Protocol: Model Context Protocol (MCP)
-- License: MIT (CLI), Proprietary (Bot)
+- License: MIT
 - Supported Languages: TypeScript, JavaScript, Python, Go, Rust, Java
+- Version: 4.2+
 
 ## Integration Examples
 
@@ -105,20 +112,20 @@ npx @rigour-labs/cli check --staged
 
 - Website: https://rigour.run
 - Documentation: https://docs.rigour.run
-- GitHub Organization: https://github.com/rigour-labs
-- CLI Repository: https://github.com/rigour-labs/rigour
-- NPM Package: https://www.npmjs.com/package/@rigour-labs/cli
+- GitHub: https://github.com/rigour-labs/rigour
+- NPM: https://www.npmjs.com/package/@rigour-labs/cli
+- MCP Registry: https://registry.modelcontextprotocol.io/v0.1/servers?search=rigour
+- Whitepaper (DOI): https://doi.org/10.5281/zenodo.18673564
 - Contact: hello@rigour.run
-- Legal: legal@rigour.run
 
 ## Company
 
-Rigour Labs builds developer tools for the AI-native era. Our mission is to ensure AI-generated code meets the same quality standards as human-written code.
+Rigour Labs builds the governance layer for AI-native engineering. Every AI agent governed by default.
 
 Founded: 2025
+License: MIT
 Headquarters: Remote-first
-Parent: DriftBench
 
 ## Keywords
 
-AI code quality, AI governance, MCP server, Model Context Protocol, code review automation, AI agent guardrails, deterministic quality gates, local-first development tools, zero telemetry, Claude integration, Cursor integration, GitHub App, PR review bot, static analysis, semantic code analysis, engineering standards enforcement, deep analysis, LLM-powered code review, SOLID principles verification, design pattern detection
+AI agent governance, AI agent DLP, data loss prevention, credential leak prevention, memory governance, skills governance, quality gates, MCP server, Model Context Protocol, Claude integration, Cursor integration, Cline integration, Windsurf integration, Copilot governance, OWASP LLM Top 10, real-time hooks, zero telemetry, local-first, HIPAA AI compliance, SOC2 AI governance, FedRAMP

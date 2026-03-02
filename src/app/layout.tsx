@@ -17,36 +17,34 @@ const outfit = Outfit({
 export const metadata: Metadata = {
   metadataBase: new URL("https://rigour.run"),
   title: {
-    default: "Rigour Labs | Deterministic Quality Gates for AI Agents",
+    default: "Rigour Labs | AI Agent Governance — DLP, Quality Gates & Memory Control",
     template: "%s | Rigour Labs"
   },
-  description: "Rigour Labs provides local-first, zero-telemetry quality gates that force AI coding agents (Claude, Cursor, Cline) to meet strict engineering standards. Stop AI chaos with deterministic PASS/FAIL code quality enforcement.",
+  description: "Govern every AI coding agent from a single command. Input DLP blocks credential leaks, quality gates enforce standards, memory governance controls what agents remember. Works with Claude, Cursor, Cline, Windsurf, and Copilot. Zero telemetry.",
   keywords: [
+    "AI agent governance",
+    "AI agent DLP",
+    "data loss prevention AI",
+    "credential leak prevention",
     "AI code quality",
-    "AI governance",
     "MCP server",
     "Model Context Protocol",
     "quality gates",
-    "deterministic engineering",
-    "code review automation",
     "AI agent guardrails",
+    "memory governance",
     "Claude integration",
     "Cursor integration",
     "Cline integration",
-    "GitHub App",
-    "PR review bot",
-    "static analysis",
-    "semantic code analysis",
+    "Windsurf integration",
+    "Copilot governance",
     "local-first development",
     "zero telemetry",
     "Rigour Labs",
     "Rigour CLI",
-    "AI coding assistant",
-    "code quality enforcement",
-    "deep analysis",
-    "LLM-powered code review",
-    "SOLID principles",
-    "design pattern detection"
+    "AI drift detection",
+    "OWASP LLM Top 10",
+    "HIPAA AI compliance",
+    "SOC2 AI governance"
   ],
   authors: [{ name: "Rigour Labs", url: "https://rigour.run" }],
   creator: "Rigour Labs",
@@ -60,8 +58,8 @@ export const metadata: Metadata = {
     canonical: "https://rigour.run",
   },
   openGraph: {
-    title: "Rigour Labs | Deterministic Quality Gates for AI Agents",
-    description: "Stop AI chaos and ensure production-ready code. Local-first, zero-telemetry quality gates for Claude, Cursor, Cline, and GitHub.",
+    title: "Rigour Labs | AI Agent Governance — DLP, Quality Gates & Memory Control",
+    description: "Govern every AI coding agent from a single command. Input DLP, quality gates, and memory governance for Claude, Cursor, Cline, Windsurf, and Copilot.",
     url: "https://rigour.run",
     siteName: "Rigour Labs",
     locale: "en_US",
@@ -71,8 +69,8 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     site: "@rigour_labs",
     creator: "@rigour_labs",
-    title: "Rigour Labs | Deterministic Quality Gates for AI Agents",
-    description: "Stop AI chaos. Deterministic quality gates for Claude, Cursor, and Cline. Zero telemetry.",
+    title: "Rigour Labs | AI Agent Governance — DLP + Quality Gates + Memory Control",
+    description: "Govern every AI coding agent. DLP blocks credential leaks, quality gates enforce standards, memory governance controls persistence. Zero telemetry.",
   },
   robots: {
     index: true,
@@ -106,7 +104,7 @@ export default function RootLayout({
         className={`${inter.variable} ${outfit.variable} font-sans antialiased bg-background text-foreground overflow-x-hidden`}
       >
         <div className="fixed inset-0 bg-grid pointer-events-none -z-10" />
-        <div className="fixed inset-0 bg-gradient-to-tr from-accent/10 via-transparent to-accent-secondary/10 pointer-events-none -z-10" />
+        <div className="fixed inset-0 bg-gradient-to-tr from-accent/5 via-transparent to-purple-500/5 pointer-events-none -z-10" />
         {children}
         <script
           type="application/ld+json"
@@ -122,7 +120,7 @@ export default function RootLayout({
                 "https://twitter.com/rigour_labs",
                 "https://www.npmjs.com/package/@rigour-labs/cli"
               ],
-              "description": "Deterministic Quality Gates for AI Agents. Local-first, zero-telemetry governance.",
+              "description": "AI Agent Governance — Input DLP, Quality Gates, and Memory Control for every coding agent. Zero telemetry.",
               "foundingDate": "2025",
               "contactPoint": {
                 "@type": "ContactPoint",
@@ -140,7 +138,7 @@ export default function RootLayout({
               "@type": "WebSite",
               "name": "Rigour Labs",
               "url": "https://rigour.run",
-              "description": "Deterministic quality gates for AI-generated code"
+              "description": "AI Agent Governance — DLP, Quality Gates, and Memory Control for Claude, Cursor, Cline, Windsurf, and Copilot"
             })
           }}
         />
@@ -158,8 +156,8 @@ export default function RootLayout({
                 "price": "0",
                 "priceCurrency": "USD"
               },
-              "description": "Local-first, zero-telemetry quality gates for AI coding agents. Enforce engineering standards with deterministic PASS/FAIL analysis.",
-              "softwareVersion": "2.9",
+              "description": "AI Agent Governance toolkit with Input DLP (29 credential patterns), real-time quality gates, and memory governance. Works with Claude, Cursor, Cline, Windsurf, and Copilot. Zero telemetry.",
+              "softwareVersion": "4.2",
               "url": "https://www.npmjs.com/package/@rigour-labs/cli",
               "downloadUrl": "https://www.npmjs.com/package/@rigour-labs/cli",
               "author": {
@@ -173,15 +171,16 @@ export default function RootLayout({
                 "ratingCount": "50"
               },
               "featureList": [
-                "Static Policy Gates",
-                "Semantic Pattern Index",
-                "Security Analysis",
-                "Deep Analysis with 40+ Categories",
-                "LLM-Powered Code Review",
-                "SOLID & Design Pattern Detection",
+                "Input DLP — 29 credential patterns with entropy detection",
+                "Memory Governance — block native agent memory writes",
+                "Skills Governance — control agent rules and skills paths",
+                "Real-Time Hooks — fire on every file write",
+                "Quality Gates — deterministic PASS/FAIL enforcement",
+                "Deep Analysis — LLM-powered across 40+ categories",
+                "Multi-Agent Governance — scope conflict detection",
                 "MCP Native Integration",
-                "Zero Telemetry",
-                "Local-Only Processing"
+                "Zero Telemetry — 100% local",
+                "OWASP LLM Top 10 — 10/10 coverage"
               ],
               "softwareRequirements": "Node.js 18+",
               "programmingLanguage": ["TypeScript", "JavaScript", "Python", "Go", "Rust", "Java"]
@@ -200,23 +199,23 @@ export default function RootLayout({
                   "name": "What is Rigour Labs?",
                   "acceptedAnswer": {
                     "@type": "Answer",
-                    "text": "Rigour Labs provides deterministic quality gates for AI-generated code. Our tools force AI coding agents like Claude, Cursor, and Cline to meet strict engineering standards before marking tasks as done."
+                    "text": "Rigour Labs provides AI Agent Governance — a three-layer protection system with Input DLP (blocks credential leaks with 29 patterns), Quality Gates (deterministic PASS/FAIL on every file write), and Memory Governance (controls what AI agents remember). It works with Claude, Cursor, Cline, Windsurf, and Copilot."
                   }
                 },
                 {
                   "@type": "Question",
-                  "name": "How does Rigour work with AI coding assistants?",
+                  "name": "What is AI Agent DLP?",
                   "acceptedAnswer": {
                     "@type": "Answer",
-                    "text": "Rigour integrates via the Model Context Protocol (MCP) directly into AI coding assistants like Claude Desktop, Cursor, and Cline. It provides real-time quality feedback in the AI agent loop."
+                    "text": "AI Agent DLP (Data Loss Prevention) scans every input to AI coding agents for credentials — AWS keys, API tokens, database URLs, private keys, and more. Rigour's DLP includes 29 patterns, Shannon entropy detection for encoded secrets, and unicode normalization to defeat zero-width character bypasses."
                   }
                 },
                 {
                   "@type": "Question",
-                  "name": "Is Rigour free to use?",
+                  "name": "How does Memory Governance work?",
                   "acceptedAnswer": {
                     "@type": "Answer",
-                    "text": "Yes, the Rigour CLI is open-source and free to use. Install it with: npx @rigour-labs/cli check"
+                    "text": "Memory Governance blocks AI agents from writing to native memory files like .cursorrules, CLAUDE.md, and .clinerules. All persistence is forced through governed channels with DLP scanning. Skills governance controls agent rules paths separately. Both are configurable via rigour.yml."
                   }
                 },
                 {
@@ -224,7 +223,15 @@ export default function RootLayout({
                   "name": "Does Rigour send my code to external servers?",
                   "acceptedAnswer": {
                     "@type": "Answer",
-                    "text": "No. Rigour is 100% local-first with zero telemetry. Your code never leaves your machine. All analysis happens locally."
+                    "text": "No. Rigour is 100% local-first with zero telemetry. Your code never leaves your machine. All DLP scanning, quality gates, and governance enforcement happens locally. Install with: npx @rigour-labs/cli init"
+                  }
+                },
+                {
+                  "@type": "Question",
+                  "name": "Which AI coding agents does Rigour support?",
+                  "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Rigour supports all major AI coding agents: Claude (Claude Code, Claude Desktop), Cursor, Cline, Windsurf, and GitHub Copilot. It integrates via real-time hooks and the Model Context Protocol (MCP). One command sets up DLP, hooks, and governance for all agents."
                   }
                 }
               ]

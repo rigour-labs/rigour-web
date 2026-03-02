@@ -2,7 +2,7 @@ import { ImageResponse } from 'next/og'
 
 export const runtime = 'edge'
 
-export const alt = 'Rigour Labs - Deterministic Quality Gates for AI Agents'
+export const alt = 'Rigour Labs - AI Agent Governance: DLP, Quality Gates & Memory Control'
 export const size = {
   width: 1200,
   height: 630,
@@ -20,8 +20,8 @@ export default async function Image() {
           flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center',
-          backgroundColor: '#09090b',
-          backgroundImage: 'radial-gradient(circle at 25% 25%, #1a1a2e 0%, transparent 50%), radial-gradient(circle at 75% 75%, #0d3320 0%, transparent 50%)',
+          backgroundColor: '#0a0a0f',
+          backgroundImage: 'radial-gradient(circle at 25% 25%, #1e1b4b 0%, transparent 50%), radial-gradient(circle at 75% 75%, #312e81 0%, transparent 50%)',
         }}
       >
         {/* Grid overlay */}
@@ -62,19 +62,19 @@ export default async function Image() {
                 width: '8px',
                 height: '8px',
                 borderRadius: '50%',
-                backgroundColor: '#22c55e',
+                backgroundColor: '#818cf8',
               }}
             />
             <span
               style={{
-                color: '#22c55e',
+                color: '#818cf8',
                 fontSize: '14px',
                 fontWeight: 700,
                 letterSpacing: '0.1em',
                 textTransform: 'uppercase',
               }}
             >
-              Developer First • Local Only
+              DLP • Quality Gates • Memory Governance
             </span>
           </div>
 
@@ -99,7 +99,7 @@ export default async function Image() {
                 justifyContent: 'center',
               }}
             >
-              <span style={{ fontSize: '32px', color: '#22c55e', fontWeight: 900 }}>R</span>
+              <span style={{ fontSize: '32px', color: '#818cf8', fontWeight: 900 }}>R</span>
             </div>
             <span
               style={{
@@ -109,7 +109,7 @@ export default async function Image() {
                 letterSpacing: '-0.02em',
               }}
             >
-              RIGOUR<span style={{ color: '#22c55e' }}>LABS</span>
+              Rigour<span style={{ color: '#818cf8' }}>Labs</span>
             </span>
           </div>
 
@@ -125,20 +125,20 @@ export default async function Image() {
               marginBottom: '16px',
             }}
           >
-            Deterministic Quality Gates
+            AI Agent Governance
           </h1>
           <h2
             style={{
               fontSize: '48px',
               fontWeight: 800,
-              color: '#22c55e',
+              color: '#818cf8',
               textAlign: 'center',
               lineHeight: 1.2,
               margin: 0,
               marginBottom: '32px',
             }}
           >
-            for AI Agents
+            One Command. Every Agent.
           </h2>
 
           {/* Description */}
@@ -152,7 +152,7 @@ export default async function Image() {
               margin: 0,
             }}
           >
-            Stop AI chaos. Enforce engineering standards locally with zero telemetry.
+            Block credential leaks. Enforce quality gates. Control agent memory. Zero telemetry.
           </p>
 
           {/* Features */}
@@ -163,7 +163,7 @@ export default async function Image() {
               marginTop: '48px',
             }}
           >
-            {['MCP Native', 'Zero Telemetry', 'Sub-second Analysis'].map((feature) => (
+            {['Input DLP', 'Memory Governance', 'Real-Time Hooks', 'Zero Telemetry'].map((feature) => (
               <div
                 key={feature}
                 style={{
@@ -181,7 +181,7 @@ export default async function Image() {
                     width: '6px',
                     height: '6px',
                     borderRadius: '50%',
-                    backgroundColor: '#22c55e',
+                    backgroundColor: '#818cf8',
                   }}
                 />
                 <span style={{ color: '#d4d4d8', fontSize: '16px', fontWeight: 600 }}>
