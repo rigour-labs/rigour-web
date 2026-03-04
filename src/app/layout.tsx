@@ -16,6 +16,11 @@ const outfit = Outfit({
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://rigour.run"),
+  icons: {
+    icon: [{ url: "/logo.png", type: "image/png" }],
+    shortcut: [{ url: "/logo.png", type: "image/png" }],
+    apple: [{ url: "/logo.png", type: "image/png" }],
+  },
   title: {
     default: "Rigour Labs | AI Agent Governance — DLP, Quality Gates & Memory Control",
     template: "%s | Rigour Labs"
@@ -100,6 +105,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="dark scroll-smooth">
+      <head>
+        <link rel="icon" type="image/png" href="/logo.png" />
+        <link rel="shortcut icon" type="image/png" href="/logo.png" />
+        <link rel="apple-touch-icon" href="/logo.png" />
+      </head>
       <body
         className={`${inter.variable} ${outfit.variable} font-sans antialiased bg-background text-foreground overflow-x-hidden`}
       >
