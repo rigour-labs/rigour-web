@@ -114,7 +114,7 @@ export default function RootLayout({
               "@type": "Organization",
               "name": "Rigour Labs",
               "url": "https://rigour.run",
-              "logo": "https://rigour.run/logo.jpg",
+              "logo": "https://rigour.run/logo.png",
               "sameAs": [
                 "https://github.com/rigour-labs",
                 "https://twitter.com/rigour_labs",

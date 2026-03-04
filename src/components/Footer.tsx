@@ -14,7 +14,7 @@ export const Footer = () => {
                     <Link href="/" className="flex items-center gap-3 mb-6 group">
                         <div className="relative w-8 h-8 overflow-hidden rounded border border-zinc-700 group-hover:border-accent/50 transition-colors">
                             <Image
-                                src="/logo.jpg"
+                                src="/logo.png"
                                 alt="Rigour Labs Logo"
                                 fill
                                 className="object-cover"

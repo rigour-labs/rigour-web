@@ -83,7 +83,7 @@ const articleJsonLd = {
         url: "https://rigour.run",
         logo: {
             "@type": "ImageObject",
-            url: "https://rigour.run/logo.jpg",
+            url: "https://rigour.run/logo.png",
         },
     },
     datePublished: "2026-02-17T00:00:00.000Z",
