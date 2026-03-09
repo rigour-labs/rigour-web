@@ -62,6 +62,14 @@ export const BentoHero = () => {
                     className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-8"
                 >
                     <Link
+                        href="/demo"
+                        onClick={() => track('cta_live_demo', { location: 'hero' })}
+                        className="px-8 py-3.5 bg-emerald-600 text-white rounded-2xl font-semibold text-lg flex items-center gap-2 hover:bg-emerald-500 transition-colors"
+                    >
+                        <Play className="w-5 h-5" />
+                        Watch 30s Demo
+                    </Link>
+                    <Link
                         href="https://docs.rigour.run"
                         target="_blank"
                         onClick={() => track('cta_get_started', { location: 'hero' })}

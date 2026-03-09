@@ -29,6 +29,7 @@ export const Navbar = () => {
                 </Link>
 
                 <div className="hidden md:flex items-center gap-8">
+                    <Link href="/demo" onClick={() => track('nav_click', { item: 'demo' })} className="text-sm font-medium text-zinc-400 hover:text-white transition-colors">Live Demo</Link>
                     <Link href="/audits" onClick={() => track('nav_click', { item: 'audits' })} className="text-sm font-medium text-zinc-400 hover:text-white transition-colors">Audits</Link>
                     <Link href="https://docs.rigour.run" target="_blank" onClick={() => track('nav_click', { item: 'docs' })} className="text-sm font-medium text-zinc-400 hover:text-white transition-colors">Docs</Link>
                     <Link href="https://github.com/rigour-labs/rigour" target="_blank" onClick={() => track('nav_click', { item: 'github' })} className="text-sm font-medium text-zinc-400 hover:text-white transition-colors">GitHub</Link>
