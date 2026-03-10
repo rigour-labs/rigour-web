@@ -1,6 +1,7 @@
 import { randomUUID } from "crypto";
 import type {
   DemoEvent,
+  DemoFailure,
   DemoLane,
   DemoMode,
   DemoRunData,
@@ -142,9 +143,20 @@ function summaryFromRunner(run: DemoRunData, snapshot: RunnerSnapshot): DemoRunS
     mode: run.mode,
     beforeScore: asNumberOrNull(summary.beforeScore),
     afterScore: asNumberOrNull(summary.afterScore),
+    aiHealth: asNumberOrNull(summary.aiHealth),
+    structuralScore: asNumberOrNull(summary.structuralScore),
     blockedCount: asNumberOrNull(summary.blockedCount),
     fixedCount: asNumberOrNull(summary.fixedCount),
+    gatesPassed: asNumberOrNull(summary.gatesPassed),
+    gatesFailed: asNumberOrNull(summary.gatesFailed),
+    firstScanMs: asNumberOrNull(summary.firstScanMs),
+    secondScanMs: asNumberOrNull(summary.secondScanMs),
+    cached: typeof summary.cached === "boolean" ? summary.cached : undefined,
     durationMs,
+    scanMeta: summary.scanMeta && typeof summary.scanMeta === "object" ? summary.scanMeta as DemoRunSummary["scanMeta"] : null,
+    severityBreakdown: summary.severityBreakdown && typeof summary.severityBreakdown === "object" ? summary.severityBreakdown as Record<string, number> : null,
+    provenanceBreakdown: summary.provenanceBreakdown && typeof summary.provenanceBreakdown === "object" ? summary.provenanceBreakdown as Record<string, number> : null,
+    failures: Array.isArray(summary.failures) ? summary.failures as DemoRunSummary["failures"] : undefined,
     notes: typeof summary.notes === "string" ? summary.notes : undefined,
     outputTail: typeof summary.outputTail === "string" ? summary.outputTail : undefined,
   };

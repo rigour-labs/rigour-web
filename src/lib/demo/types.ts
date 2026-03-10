@@ -30,14 +30,33 @@ export interface DemoEvent {
   mode: DemoMode;
 }
 
+export interface DemoFailure {
+  id: string;
+  title: string;
+  severity: string;
+  provenance?: string;
+  files?: string[];
+}
+
 export interface DemoRunSummary {
   runId: string;
   mode: DemoMode;
   beforeScore: number | null;
   afterScore: number | null;
+  aiHealth?: number | null;
+  structuralScore?: number | null;
   blockedCount: number | null;
   fixedCount: number | null;
+  gatesPassed?: number | null;
+  gatesFailed?: number | null;
+  firstScanMs?: number | null;
+  secondScanMs?: number | null;
+  cached?: boolean;
   durationMs: number;
+  scanMeta?: { mode?: string; preset?: string; stack?: string } | null;
+  severityBreakdown?: Record<string, number> | null;
+  provenanceBreakdown?: Record<string, number> | null;
+  failures?: DemoFailure[];
   notes?: string;
   outputTail?: string;
 }

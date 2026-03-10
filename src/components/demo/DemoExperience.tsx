@@ -1,8 +1,21 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { motion } from "framer-motion";
-import { AlertTriangle, CheckCircle2, ExternalLink, Play, RotateCcw, Shield, TerminalSquare } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  AlertTriangle,
+  CheckCircle2,
+  ExternalLink,
+  Play,
+  RotateCcw,
+  Shield,
+  TerminalSquare,
+  Zap,
+  XCircle,
+  Activity,
+  Timer,
+  BarChart3,
+} from "lucide-react";
 import type {
   DemoEvent,
   DemoMode,
@@ -13,7 +26,6 @@ import type {
 } from "@/lib/demo/types";
 
 const STAGES: DemoStage[] = ["idle", "preflight", "clone", "scan", "supervise", "fix", "rescan", "pass"];
-const TARGET_DURATION_MS = 30_000;
 
 type RunStatus = "idle" | "running" | "done" | "error";
 
@@ -55,10 +67,214 @@ function modeClass(mode: DemoMode | null): string {
   }
 }
 
+function scoreColor(score: number): string {
+  if (score >= 80) return "text-emerald-400";
+  if (score >= 60) return "text-amber-400";
+  return "text-red-400";
+}
+
+function scoreBorderColor(score: number): string {
+  if (score >= 80) return "border-emerald-500/50";
+  if (score >= 60) return "border-amber-500/50";
+  return "border-red-500/50";
+}
+
+function scoreGlowColor(score: number): string {
+  if (score >= 80) return "shadow-emerald-500/20";
+  if (score >= 60) return "shadow-amber-500/20";
+  return "shadow-red-500/20";
+}
+
 function getStageIndex(stage: DemoStage): number {
   return STAGES.indexOf(stage);
 }
 
+function formatMs(ms: number): string {
+  return ms < 1000 ? `${ms}ms` : `${(ms / 1000).toFixed(1)}s`;
+}
+
+/* ── Results Panel (the "aha moment") ── */
+function ResultsPanel({ summary }: { summary: DemoRunSummary }) {
+  const score = summary.beforeScore;
+  const hasScore = score !== null && score !== undefined;
+  const findings = summary.blockedCount ?? 0;
+  const gatesPassed = summary.gatesPassed ?? 0;
+  const gatesFailed = summary.gatesFailed ?? 0;
+  const totalGates = gatesPassed + gatesFailed;
+  const firstScanMs = summary.firstScanMs;
+  const secondScanMs = summary.secondScanMs;
+  const cached = summary.cached;
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20, scale: 0.97 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      transition={{ duration: 0.5, ease: "easeOut" }}
+      className="space-y-4"
+    >
+      {/* Big score hero */}
+      <div className={`rounded-2xl border ${hasScore ? scoreBorderColor(score!) : "border-zinc-700"} bg-zinc-900/80 p-6 shadow-lg ${hasScore ? scoreGlowColor(score!) : ""}`}>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-lg font-semibold font-outfit">Scan Results</h2>
+          {summary.scanMeta?.stack && (
+            <span className="rounded-full border border-zinc-700 bg-zinc-800 px-2.5 py-0.5 text-xs text-zinc-400">
+              {summary.scanMeta.stack}
+            </span>
+          )}
+        </div>
+
+        <div className="flex items-end gap-6">
+          {/* Score */}
+          <div className="flex-shrink-0">
+            <p className="text-xs text-zinc-500 mb-1">Quality Score</p>
+            <p className={`text-6xl font-bold font-outfit tabular-nums ${hasScore ? scoreColor(score!) : "text-zinc-500"}`}>
+              {hasScore ? score : "—"}
+              <span className="text-2xl text-zinc-600">/100</span>
+            </p>
+          </div>
+
+          {/* Gate bar */}
+          {totalGates > 0 && (
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center justify-between text-xs text-zinc-500 mb-1.5">
+                <span>{totalGates} gates evaluated</span>
+                <span>{gatesPassed} passed, {gatesFailed} failed</span>
+              </div>
+              <div className="h-3 w-full overflow-hidden rounded-full bg-zinc-800 flex">
+                <motion.div
+                  initial={{ width: 0 }}
+                  animate={{ width: `${(gatesPassed / totalGates) * 100}%` }}
+                  transition={{ duration: 0.8, delay: 0.3 }}
+                  className="h-full bg-emerald-500 rounded-l-full"
+                />
+                <motion.div
+                  initial={{ width: 0 }}
+                  animate={{ width: `${(gatesFailed / totalGates) * 100}%` }}
+                  transition={{ duration: 0.8, delay: 0.3 }}
+                  className="h-full bg-red-500 rounded-r-full"
+                />
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Stat cards row */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <div className="rounded-xl border border-zinc-800 bg-zinc-900/70 p-3">
+          <div className="flex items-center gap-1.5 mb-1">
+            <XCircle className="h-3.5 w-3.5 text-red-400" />
+            <span className="text-[10px] uppercase tracking-wide text-zinc-500">Findings</span>
+          </div>
+          <p className="text-2xl font-bold font-outfit text-zinc-100">{findings}</p>
+        </div>
+        <div className="rounded-xl border border-zinc-800 bg-zinc-900/70 p-3">
+          <div className="flex items-center gap-1.5 mb-1">
+            <Activity className="h-3.5 w-3.5 text-blue-400" />
+            <span className="text-[10px] uppercase tracking-wide text-zinc-500">AI Health</span>
+          </div>
+          <p className="text-2xl font-bold font-outfit text-zinc-100">
+            {summary.aiHealth !== null && summary.aiHealth !== undefined ? summary.aiHealth : "—"}
+          </p>
+        </div>
+        <div className="rounded-xl border border-zinc-800 bg-zinc-900/70 p-3">
+          <div className="flex items-center gap-1.5 mb-1">
+            <Timer className="h-3.5 w-3.5 text-amber-400" />
+            <span className="text-[10px] uppercase tracking-wide text-zinc-500">Scan Time</span>
+          </div>
+          <p className="text-2xl font-bold font-outfit text-zinc-100">
+            {firstScanMs ? formatMs(firstScanMs) : "—"}
+          </p>
+        </div>
+        <div className="rounded-xl border border-zinc-800 bg-zinc-900/70 p-3">
+          <div className="flex items-center gap-1.5 mb-1">
+            <Zap className="h-3.5 w-3.5 text-emerald-400" />
+            <span className="text-[10px] uppercase tracking-wide text-zinc-500">Cache</span>
+          </div>
+          <p className="text-2xl font-bold font-outfit text-zinc-100">
+            {cached && secondScanMs ? (
+              <span className="text-emerald-400">{formatMs(secondScanMs)}</span>
+            ) : (
+              "miss"
+            )}
+          </p>
+          {cached && firstScanMs && secondScanMs && secondScanMs > 0 && (
+            <p className="text-[10px] text-emerald-400 mt-0.5">{Math.round(firstScanMs / secondScanMs)}x faster</p>
+          )}
+        </div>
+      </div>
+
+      {/* Severity & provenance breakdown */}
+      {(summary.severityBreakdown || summary.provenanceBreakdown) && (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          {summary.severityBreakdown && Object.keys(summary.severityBreakdown).length > 0 && (
+            <div className="rounded-xl border border-zinc-800 bg-zinc-900/70 p-3">
+              <div className="flex items-center gap-1.5 mb-2">
+                <BarChart3 className="h-3.5 w-3.5 text-zinc-400" />
+                <span className="text-xs font-semibold text-zinc-300">By Severity</span>
+              </div>
+              <div className="space-y-1.5">
+                {Object.entries(summary.severityBreakdown).map(([key, count]) => (
+                  <div key={key} className="flex items-center justify-between">
+                    <span className={`text-xs ${key === "critical" || key === "high" ? "text-red-400" : key === "medium" ? "text-amber-400" : "text-zinc-400"}`}>
+                      {key}
+                    </span>
+                    <span className="text-xs font-mono text-zinc-300">{count}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+          {summary.provenanceBreakdown && Object.keys(summary.provenanceBreakdown).length > 0 && (
+            <div className="rounded-xl border border-zinc-800 bg-zinc-900/70 p-3">
+              <div className="flex items-center gap-1.5 mb-2">
+                <BarChart3 className="h-3.5 w-3.5 text-zinc-400" />
+                <span className="text-xs font-semibold text-zinc-300">By Provenance</span>
+              </div>
+              <div className="space-y-1.5">
+                {Object.entries(summary.provenanceBreakdown).map(([key, count]) => (
+                  <div key={key} className="flex items-center justify-between">
+                    <span className="text-xs text-zinc-400">{key.replace(/_/g, " ")}</span>
+                    <span className="text-xs font-mono text-zinc-300">{count}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Top failures */}
+      {summary.failures && summary.failures.length > 0 && (
+        <div className="rounded-xl border border-zinc-800 bg-zinc-900/70 p-3">
+          <p className="text-xs font-semibold text-zinc-300 mb-2">Top Findings ({Math.min(summary.failures.length, 8)} of {findings})</p>
+          <div className="space-y-1.5 max-h-[200px] overflow-auto">
+            {summary.failures.slice(0, 8).map((f, i) => (
+              <div key={i} className="flex items-start gap-2 text-xs">
+                <span className={`mt-0.5 flex-shrink-0 rounded px-1 py-0.5 text-[10px] font-semibold uppercase ${
+                  f.severity === "critical" || f.severity === "high" ? "bg-red-500/20 text-red-300" :
+                  f.severity === "medium" ? "bg-amber-500/20 text-amber-300" :
+                  "bg-zinc-700 text-zinc-400"
+                }`}>
+                  {f.severity}
+                </span>
+                <span className="text-zinc-300 leading-tight">{f.title}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {summary.notes && (
+        <p className="rounded border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-xs text-amber-200">
+          {summary.notes}
+        </p>
+      )}
+    </motion.div>
+  );
+}
+
+/* ── Main Component ── */
 export function DemoExperience() {
   const [repoUrl, setRepoUrl] = useState("");
   const [status, setStatus] = useState<RunStatus>("idle");
@@ -93,10 +309,9 @@ export function DemoExperience() {
   }, []);
 
   const progressPct = useMemo(() => {
-    const stageWeight = Math.max(getStageIndex(stage), 0) / (STAGES.length - 1);
-    const timeWeight = Math.min(elapsedMs / TARGET_DURATION_MS, 1);
-    return Math.round(Math.max(stageWeight, timeWeight) * 100);
-  }, [elapsedMs, stage]);
+    if (status === "done") return 100;
+    return Math.max(getStageIndex(stage), 0) / (STAGES.length - 1) * 100;
+  }, [stage, status]);
 
   const laneEvents = useMemo(() => {
     const lookup: Partial<Record<"in" | "out" | "persist", DemoEvent>> = {};
@@ -195,9 +410,9 @@ export function DemoExperience() {
       </div>
 
       <div className="bento-card mb-6">
-        <h1 className="text-3xl md:text-4xl font-bold font-outfit mb-3">Rigour Live Supervision Demo</h1>
+        <h1 className="text-3xl md:text-4xl font-bold font-outfit mb-3">Rigour Live Scan</h1>
         <p className="text-zinc-400 mb-5">
-          Show in 30 seconds: real repo scan, IN/OUT/PERSIST supervision, and agent correction to PASS.
+          Paste any public GitHub repo — 27+ quality gates run in real time.
         </p>
         <div className="grid gap-3 md:grid-cols-[1fr_auto_auto]">
           <input
@@ -225,6 +440,7 @@ export function DemoExperience() {
             Reset
           </button>
         </div>
+        {/* Progress bar — no hardcoded time limit */}
         <div className="mt-4 h-2 w-full overflow-hidden rounded bg-zinc-800">
           <motion.div
             animate={{ width: `${progressPct}%` }}
@@ -234,10 +450,19 @@ export function DemoExperience() {
         </div>
         <div className="mt-2 flex items-center justify-between text-xs text-zinc-500">
           <span>Stage: {stage.toUpperCase()}</span>
-          <span>{Math.min(Math.round(elapsedMs / 1000), 30)}s / 30s</span>
+          <span>{Math.round(elapsedMs / 1000)}s elapsed</span>
         </div>
         {error && <p className="mt-3 text-sm text-red-300">{error}</p>}
       </div>
+
+      {/* ── Results Panel (aha moment) — shown when scan is done ── */}
+      <AnimatePresence>
+        {status === "done" && summary && (
+          <div className="mb-6">
+            <ResultsPanel summary={summary} />
+          </div>
+        )}
+      </AnimatePresence>
 
       <div className="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
         <div className="space-y-6">
@@ -290,39 +515,19 @@ export function DemoExperience() {
 
         <div className="space-y-6">
           <div className="bento-card">
-            <h2 className="mb-4 text-lg font-semibold">Score Delta</h2>
-            <div className="rounded-xl border border-zinc-800 bg-zinc-900/70 p-4">
-              <p className="text-xs text-zinc-500 mb-2">Quality Score</p>
-              <p className="text-3xl font-bold font-outfit">
-                {summary && summary.beforeScore !== null && summary.afterScore !== null
-                  ? `${summary.beforeScore} -> ${summary.afterScore}`
-                  : "Awaiting run"}
-              </p>
-              <p className="mt-3 text-xs text-zinc-400">
-                Blocked: {summary?.blockedCount ?? "—"} | Fixed: {summary?.fixedCount ?? "—"}
-              </p>
-              {summary?.notes && (
-                <p className="mt-3 rounded border border-amber-500/30 bg-amber-500/10 px-2 py-1 text-xs text-amber-200">
-                  {summary.notes}
-                </p>
-              )}
-            </div>
-          </div>
-
-          <div className="bento-card">
             <h2 className="mb-4 text-lg font-semibold">Presenter Script</h2>
             <ul className="space-y-2 text-sm text-zinc-300">
               <li className="flex gap-2">
                 <Shield className="mt-0.5 h-4 w-4 text-accent" />
-                1. We scan any public repo and start supervising agent behavior immediately.
+                1. Paste any GitHub repo — Rigour clones and scans it live.
               </li>
               <li className="flex gap-2">
                 <AlertTriangle className="mt-0.5 h-4 w-4 text-amber-300" />
-                2. IN blocks secrets, OUT fails hallucinations, PERSIST controls memory writes.
+                2. 27+ gates catch AI drift: hallucinated imports, leaked secrets, floating promises.
               </li>
               <li className="flex gap-2">
                 <CheckCircle2 className="mt-0.5 h-4 w-4 text-emerald-300" />
-                3. Rigour issues a fix packet, agent retries, and we end in PASS.
+                3. Second scan shows incremental cache — unchanged files skip all gates instantly.
               </li>
             </ul>
           </div>
