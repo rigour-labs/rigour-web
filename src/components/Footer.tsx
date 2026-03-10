@@ -45,6 +45,11 @@ export const Footer = () => {
                         <li><Link href="/audits" onClick={() => track('footer_click', { item: 'audits' })} className="text-zinc-400 hover:text-accent transition-colors text-sm">Audits</Link></li>
                         <li><Link href="/nist-ai-rmf" onClick={() => track('footer_click', { item: 'nist_ai_rmf' })} className="text-zinc-400 hover:text-accent transition-colors text-sm">NIST AI RMF</Link></li>
                     </ul>
+                    <h4 className="text-xs font-medium text-zinc-500 uppercase tracking-wider mb-5 mt-8">Ecosystem</h4>
+                    <ul className="space-y-3">
+                        <li><Link href="https://rigovo.com" onClick={() => track('footer_click', { item: 'rigovo_hr' })} className="text-zinc-400 hover:text-accent transition-colors text-sm" target="_blank">Rigovo HR</Link></li>
+                        <li><Link href="https://github.com/rigovo/rigovo-virtual-team" onClick={() => track('footer_click', { item: 'rigovo_virtual_team' })} className="text-zinc-400 hover:text-accent transition-colors text-sm" target="_blank">Rigovo Virtual Team</Link></li>
+                    </ul>
                 </div>
 
                 <div>

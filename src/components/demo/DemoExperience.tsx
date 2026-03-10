@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { motion } from "framer-motion";
-import { AlertTriangle, CheckCircle2, Play, RotateCcw, Shield, TerminalSquare } from "lucide-react";
+import { AlertTriangle, CheckCircle2, ExternalLink, Play, RotateCcw, Shield, TerminalSquare } from "lucide-react";
 import type {
   DemoEvent,
   DemoMode,
@@ -330,9 +330,73 @@ export function DemoExperience() {
           <div className="bento-card">
             <p className="text-xs text-zinc-500">Real CLI proof (optional):</p>
             <pre className="mt-2 rounded-lg border border-zinc-800 bg-zinc-950/80 p-3 text-xs text-zinc-300 overflow-x-auto">
-{`npx @rigour-labs/cli demo --cinematic\nnpx @rigour-labs/cli demo --cinematic --repo <github-url>`}
+{`npx @rigour-labs/cli scan\nnpx @rigour-labs/cli demo --cinematic --repo <github-url>`}
             </pre>
           </div>
+        </div>
+      </div>
+
+      {/* ── Rigovo Ecosystem ── */}
+      <div className="mt-16">
+        <h2 className="text-2xl font-bold font-outfit mb-2">Rigovo Ecosystem</h2>
+        <p className="text-zinc-400 text-sm mb-6">AI-Native Engineering Platform — from hiring to shipping.</p>
+        <div className="grid gap-4 md:grid-cols-3">
+          {/* Rigour */}
+          <a
+            href="https://github.com/rigour-labs/rigour"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="bento-card group hover:border-emerald-500/40 transition-colors"
+          >
+            <div className="flex items-center justify-between mb-3">
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/40 bg-emerald-500/10 px-2.5 py-0.5 text-xs font-semibold text-emerald-300">
+                Rigour
+              </span>
+              <ExternalLink className="h-3.5 w-3.5 text-zinc-600 group-hover:text-emerald-300 transition-colors" />
+            </div>
+            <p className="text-sm font-semibold text-zinc-200 mb-1">Quality Gates for AI Code</p>
+            <p className="text-xs text-zinc-500 leading-relaxed">
+              27+ deterministic gates + local LLM deep analysis. Zero telemetry, runs offline.
+            </p>
+          </a>
+
+          {/* Rigovo HR */}
+          <a
+            href="https://rigovo.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="bento-card group hover:border-blue-500/40 transition-colors"
+          >
+            <div className="flex items-center justify-between mb-3">
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-blue-500/40 bg-blue-500/10 px-2.5 py-0.5 text-xs font-semibold text-blue-300">
+                Rigovo HR
+              </span>
+              <ExternalLink className="h-3.5 w-3.5 text-zinc-600 group-hover:text-blue-300 transition-colors" />
+            </div>
+            <p className="text-sm font-semibold text-zinc-200 mb-1">AI-Powered Technical Hiring</p>
+            <p className="text-xs text-zinc-500 leading-relaxed">
+              Maya AI interviewer with 15-signal verification, job success prediction, and evidence-based reports.
+            </p>
+          </a>
+
+          {/* Rigovo Virtual Team */}
+          <a
+            href="https://github.com/rigovo/rigovo-virtual-team"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="bento-card group hover:border-purple-500/40 transition-colors"
+          >
+            <div className="flex items-center justify-between mb-3">
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-purple-500/40 bg-purple-500/10 px-2.5 py-0.5 text-xs font-semibold text-purple-300">
+                Rigovo Virtual Team
+              </span>
+              <ExternalLink className="h-3.5 w-3.5 text-zinc-600 group-hover:text-purple-300 transition-colors" />
+            </div>
+            <p className="text-sm font-semibold text-zinc-200 mb-1">Multi-Agent Software Delivery</p>
+            <p className="text-xs text-zinc-500 leading-relaxed">
+              Planning → Coding → Review → QA → Security → DevOps — with deterministic quality gates.
+            </p>
+          </a>
         </div>
       </div>
     </section>
