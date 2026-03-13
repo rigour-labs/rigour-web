@@ -6,24 +6,30 @@ export async function POST(request: Request) {
   try {
     const body = (await request.json()) as Partial<DemoStartRequest>;
     const repoUrl = body.repoUrl?.trim();
+    const scenarioId = body.scenarioId?.trim();
 
-    if (!repoUrl) {
-      return NextResponse.json({ error: "repoUrl is required" }, { status: 400 });
+    if (!repoUrl && !scenarioId) {
+      return NextResponse.json({ error: "scenarioId or repoUrl is required" }, { status: 400 });
     }
 
-    const run = await createDemoRun(repoUrl);
+    const run = await createDemoRun(repoUrl, scenarioId);
 
     const response: DemoStartResponse = {
       runId: run.id,
       mode: run.mode,
       streamUrl: `/api/demo/stream/${run.id}`,
       resultUrl: `/api/demo/result/${run.id}`,
-      repo: {
-        owner: run.owner,
-        name: run.name,
-        url: run.repoUrl,
-      },
+      ...(run.repoUrl
+        ? {
+            repo: {
+              owner: run.owner,
+              name: run.name,
+              url: run.repoUrl,
+            },
+          }
+        : {}),
       verification: run.verification,
+      scenarioId: run.scenarioId,
     };
 
     return NextResponse.json(response);

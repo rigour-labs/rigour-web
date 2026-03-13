@@ -62,7 +62,8 @@ export interface DemoRunSummary {
 }
 
 export interface DemoStartRequest {
-  repoUrl: string;
+  repoUrl?: string;
+  scenarioId?: string;
 }
 
 export interface DemoStartResponse {
@@ -70,19 +71,21 @@ export interface DemoStartResponse {
   mode: DemoMode;
   streamUrl: string;
   resultUrl: string;
-  repo: {
+  repo?: {
     owner: string;
     name: string;
     url: string;
   };
   verification: "verified_public" | "unverified";
+  scenarioId?: string;
 }
 
 export interface DemoRunData {
   id: string;
-  repoUrl: string;
+  repoUrl: string | null;
   owner: string;
   name: string;
+  scenarioId?: string;
   mode: DemoMode;
   verification: "verified_public" | "unverified";
   startedAt: number;

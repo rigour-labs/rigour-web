@@ -15,12 +15,18 @@ export async function GET(
 
   return NextResponse.json({
     runId,
-    repo: {
-      owner: run.owner,
-      name: run.name,
-      url: run.repoUrl,
-    },
+    ...(run.repoUrl
+      ? {
+          repo: {
+            owner: run.owner,
+            name: run.name,
+            url: run.repoUrl,
+          },
+        }
+      : {}),
+    scenarioId: run.scenarioId,
     mode: run.mode,
+    status: run.status,
     verification: run.verification,
     summary,
   });

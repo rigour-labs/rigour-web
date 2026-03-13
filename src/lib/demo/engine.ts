@@ -1,7 +1,6 @@
 import { randomUUID } from "crypto";
 import type {
   DemoEvent,
-  DemoFailure,
   DemoLane,
   DemoMode,
   DemoRunData,
@@ -13,10 +12,17 @@ import type {
 const RUNNER_TIMEOUT_MS = 5_500;
 const QUICK_SCOPE_SIZE_THRESHOLD_KB = 180_000;
 const RUN_TTL_MS = 30 * 60 * 1000;
-const LOCAL_EVENT_INTERVAL_MS = 3_500;
+const LOCAL_EVENT_INTERVAL_MS = 650;
 const RUNNER_POLL_MS = 1_500;
 
-const runs = new Map<string, DemoRunData>();
+declare global {
+  var __rigourDemoRuns: Map<string, DemoRunData> | undefined;
+}
+
+const runs = globalThis.__rigourDemoRuns ?? new Map<string, DemoRunData>();
+if (!globalThis.__rigourDemoRuns) {
+  globalThis.__rigourDemoRuns = runs;
+}
 
 interface ParsedRepo {
   owner: string;
@@ -27,6 +33,17 @@ interface ParsedRepo {
 interface GitHubRepoMeta {
   private: boolean;
   sizeKb: number;
+}
+
+interface GuidedScenario {
+  id: string;
+  owner: string;
+  name: string;
+  repoUrl: string;
+  mode: DemoMode;
+  verification: "verified_public" | "unverified";
+  summary: Omit<DemoRunSummary, "runId" | "mode">;
+  events: Array<Omit<DemoEvent, "ts" | "mode">>;
 }
 
 interface RunnerStartResult {
@@ -46,6 +63,130 @@ interface RunnerSnapshot {
 const STAGE_VALUES: DemoStage[] = ["idle", "preflight", "clone", "scan", "supervise", "fix", "rescan", "pass"];
 const LANE_VALUES: DemoLane[] = ["system", "in", "out", "persist"];
 const SEVERITY_VALUES: DemoSeverity[] = ["info", "warning", "error", "success"];
+const DEFAULT_GUIDED_REPO = "https://github.com/alibaba/OpenSandbox";
+
+const GUIDED_SCENARIOS: Record<string, GuidedScenario> = {
+  breach_stop: {
+    id: "breach_stop",
+    owner: "guided",
+    name: "credential-breach",
+    repoUrl: process.env.GUIDED_SCENARIO_BREACH_REPO?.trim() || DEFAULT_GUIDED_REPO,
+    mode: "fallback",
+    verification: "unverified",
+    summary: {
+      beforeScore: 27,
+      afterScore: 91,
+      aiHealth: 22,
+      structuralScore: 41,
+      blockedCount: 4,
+      fixedCount: 4,
+      gatesPassed: 23,
+      gatesFailed: 4,
+      firstScanMs: 1800,
+      secondScanMs: 140,
+      cached: true,
+      durationMs: 4200,
+      scanMeta: { mode: "guided", preset: "credential-breach", stack: "TypeScript" },
+      severityBreakdown: { critical: 1, high: 2, medium: 1 },
+      provenanceBreakdown: { ai_generated: 3, traditional: 1 },
+      failures: [
+        { id: "security-patterns", title: "Production token committed in client bundle", severity: "critical" },
+        { id: "hallucinated-imports", title: "Fake SDK import would crash deployment", severity: "high" },
+        { id: "promise-safety", title: "Async write silently drops rollback errors", severity: "high" },
+        { id: "memory-governance", title: "Unsafe memory write attempted with credential context", severity: "medium" },
+      ],
+      notes: "Scripted guided scenario. No public repo is scanned until you explicitly opt into live proof mode.",
+    },
+    events: [
+      { stage: "preflight", lane: "system", message: "Guided scenario loaded: AI agent attempts unsafe production hotfix", severity: "info" },
+      { stage: "scan", lane: "in", message: "IN blocked a live credential before model ingress", severity: "error", metric: { label: "Secret", value: "prod token" } },
+      { stage: "supervise", lane: "out", message: "OUT stopped a hallucinated dependency and unsafe async path", severity: "warning", metric: { label: "Blocked", value: "2 critical paths" } },
+      { stage: "supervise", lane: "persist", message: "PERSIST denied agent memory write containing sensitive context", severity: "warning", metric: { label: "Memory", value: "denied" } },
+      { stage: "fix", lane: "system", message: "Fix packet generated with governed remediation steps", severity: "info", metric: { label: "Fix packet", value: "v2" } },
+      { stage: "rescan", lane: "system", message: "Recovery proven: score jumps from 27 to 91", severity: "success", metric: { label: "Recovered", value: "+64" } },
+      { stage: "pass", lane: "system", message: "Unsafe release contained before merge", severity: "success" },
+    ],
+  },
+  hallucination_stop: {
+    id: "hallucination_stop",
+    owner: "guided",
+    name: "hallucination-stop",
+    repoUrl: process.env.GUIDED_SCENARIO_HALLUCINATION_REPO?.trim() || DEFAULT_GUIDED_REPO,
+    mode: "fallback",
+    verification: "unverified",
+    summary: {
+      beforeScore: 33,
+      afterScore: 89,
+      aiHealth: 29,
+      structuralScore: 52,
+      blockedCount: 4,
+      fixedCount: 4,
+      gatesPassed: 23,
+      gatesFailed: 4,
+      firstScanMs: 1900,
+      secondScanMs: 160,
+      cached: true,
+      durationMs: 4300,
+      scanMeta: { mode: "guided", preset: "hallucination-stop", stack: "TypeScript + SDK" },
+      severityBreakdown: { critical: 1, high: 2, medium: 1 },
+      provenanceBreakdown: { ai_generated: 3, hybrid: 1 },
+      failures: [
+        { id: "hallucinated-imports", title: "AI introduced a fake SDK dependency", severity: "critical" },
+        { id: "phantom-apis", title: "Code called a non-existent vendor method", severity: "high" },
+        { id: "logic-drift", title: "Patch diverged from the task intent and bypassed validation", severity: "high" },
+        { id: "deprecated-apis", title: "Generated code depended on a removed API surface", severity: "medium" },
+      ],
+      notes: "This scenario keeps the focus on Rigour itself: real AI code drift, deterministic interception, and proof before production.",
+    },
+    events: [
+      { stage: "preflight", lane: "system", message: "Guided scenario loaded: AI patch attempts to add a fake dependency path", severity: "info" },
+      { stage: "scan", lane: "out", message: "OUT detected a hallucinated package and phantom API call before review", severity: "error", metric: { label: "Blocked", value: "2 runtime failures" } },
+      { stage: "supervise", lane: "out", message: "Rigour halted the patch because the generated code could not exist in the real SDK", severity: "warning", metric: { label: "Confidence", value: "deterministic fail" } },
+      { stage: "fix", lane: "system", message: "Fix packet replaced the fake dependency path with a real implementation plan", severity: "info", metric: { label: "Fix packet", value: "generated" } },
+      { stage: "rescan", lane: "system", message: "Patch revalidated with real dependencies and governed logic", severity: "success", metric: { label: "Recovered", value: "+56" } },
+      { stage: "pass", lane: "system", message: "Hallucinated runtime failure removed before production", severity: "success" },
+    ],
+  },
+  memory_guard: {
+    id: "memory_guard",
+    owner: "guided",
+    name: "memory-guard",
+    repoUrl: process.env.GUIDED_SCENARIO_MEMORY_REPO?.trim() || DEFAULT_GUIDED_REPO,
+    mode: "fallback",
+    verification: "unverified",
+    summary: {
+      beforeScore: 38,
+      afterScore: 94,
+      aiHealth: 36,
+      structuralScore: 61,
+      blockedCount: 3,
+      fixedCount: 3,
+      gatesPassed: 24,
+      gatesFailed: 3,
+      firstScanMs: 1700,
+      secondScanMs: 120,
+      cached: true,
+      durationMs: 3900,
+      scanMeta: { mode: "guided", preset: "memory-guard", stack: "Agent memory governance" },
+      severityBreakdown: { high: 2, medium: 1 },
+      provenanceBreakdown: { policy: 2, ai_generated: 1 },
+      failures: [
+        { id: "memory-governance", title: "Agent attempted to persist secret-bearing context to long-term memory", severity: "high" },
+        { id: "memory-governance", title: "Unsafe prior state would have been replayed into future coding sessions", severity: "high" },
+        { id: "policy", title: "Persistence request lacked governed justification", severity: "medium" },
+      ],
+      notes: "This is Rigour's memory-control story: governance does not stop at code generation, it also controls what agents are allowed to remember.",
+    },
+    events: [
+      { stage: "preflight", lane: "system", message: "Guided scenario loaded: agent tries to save poisoned memory and secret context", severity: "info" },
+      { stage: "scan", lane: "persist", message: "PERSIST flagged an unauthorized long-term memory write", severity: "error", metric: { label: "Memory", value: "blocked" } },
+      { stage: "supervise", lane: "in", message: "IN scrubbed sensitive context before it could be replayed into future sessions", severity: "warning", metric: { label: "Context", value: "sanitized" } },
+      { stage: "fix", lane: "system", message: "Rigour issued a governed memory policy patch with explicit allow/deny boundaries", severity: "info", metric: { label: "Policy", value: "tightened" } },
+      { stage: "rescan", lane: "system", message: "Memory policy revalidated and unsafe persistence was removed", severity: "success", metric: { label: "Recovered", value: "+56" } },
+      { stage: "pass", lane: "system", message: "Agent memory is now governed and safe to reuse", severity: "success" },
+    ],
+  },
+};
 
 function nowIso(): string {
   return new Date().toISOString();
@@ -107,6 +248,36 @@ function toSummary(runId: string, mode: DemoMode, overrides?: Partial<DemoRunSum
     fixedCount: null,
     durationMs: 0,
     ...overrides,
+  };
+}
+
+function toTimedScenarioEvents(scenario: GuidedScenario): DemoEvent[] {
+  return scenario.events.map((event, index) => ({
+    ...event,
+    mode: scenario.mode,
+    ts: new Date(Date.now() + index * LOCAL_EVENT_INTERVAL_MS).toISOString(),
+  }));
+}
+
+function buildScenarioRun(scenario: GuidedScenario): DemoRunData {
+  const runId = randomUUID();
+  return {
+    id: runId,
+    repoUrl: null,
+    owner: scenario.owner,
+    name: scenario.name,
+    scenarioId: scenario.id,
+    mode: scenario.mode,
+    verification: scenario.verification,
+    startedAt: Date.now(),
+    execution: "local",
+    status: "running",
+    events: toTimedScenarioEvents(scenario),
+    summary: {
+      runId,
+      mode: scenario.mode,
+      ...scenario.summary,
+    },
   };
 }
 
@@ -226,7 +397,12 @@ async function fetchGithubMeta(repo: ParsedRepo): Promise<GitHubRepoMeta | null>
   }
 }
 
-async function triggerRunner(repo: ParsedRepo, runId: string, mode: DemoMode): Promise<RunnerStartResult> {
+async function triggerRunner(
+  repo: ParsedRepo,
+  runId: string,
+  mode: DemoMode,
+  scenarioId?: string
+): Promise<RunnerStartResult> {
   const baseUrl = runnerBaseUrl();
 
   if (!baseUrl) {
@@ -243,7 +419,12 @@ async function triggerRunner(repo: ParsedRepo, runId: string, mode: DemoMode): P
         "Content-Type": "application/json",
         ...(process.env.DEMO_RUNNER_TOKEN ? { Authorization: `Bearer ${process.env.DEMO_RUNNER_TOKEN}` } : {}),
       },
-      body: JSON.stringify({ runId, repoUrl: repo.url, mode }),
+      body: JSON.stringify({
+        runId,
+        repoUrl: repo.url,
+        mode,
+        ...(scenarioId ? { scenarioId } : {}),
+      }),
       signal: controller.signal,
       cache: "no-store",
     });
@@ -362,10 +543,50 @@ function toTimedEvents(mode: DemoMode, repoLabel: string): DemoEvent[] {
   }));
 }
 
-export async function createDemoRun(repoUrl: string): Promise<DemoRunData> {
+export async function createDemoRun(repoUrl?: string, scenarioId?: string): Promise<DemoRunData> {
   cleanupRuns();
 
-  const parsed = parseGitHubRepoUrl(repoUrl);
+  if (scenarioId && GUIDED_SCENARIOS[scenarioId]) {
+    const scenario = GUIDED_SCENARIOS[scenarioId];
+    const parsedScenarioRepo = parseGitHubRepoUrl(scenario.repoUrl);
+    const run = buildScenarioRun(scenario);
+
+    if (parsedScenarioRepo) {
+      const meta = await fetchGithubMeta(parsedScenarioRepo);
+      let verification: "verified_public" | "unverified" = "unverified";
+      if (meta) {
+        if (meta.private) {
+          throw new Error("Guided scenario repositories must remain public.");
+        }
+        verification = "verified_public";
+      }
+
+      run.repoUrl = parsedScenarioRepo.url;
+      run.owner = parsedScenarioRepo.owner;
+      run.name = parsedScenarioRepo.name;
+      run.verification = verification;
+
+      const isQuickScope = Boolean(meta && meta.sizeKb >= QUICK_SCOPE_SIZE_THRESHOLD_KB);
+      const preferredMode: DemoMode = isQuickScope ? "quick_scope" : "live";
+      const runner = await triggerRunner(parsedScenarioRepo, run.id, preferredMode, scenario.id);
+
+      if (runner.ok) {
+        run.execution = "runner";
+        run.mode = runner.mode;
+        run.events = [];
+        run.summary = toSummary(run.id, run.mode, {
+          notes: "Running real guided Rigour scenario on a persistent repo workspace.",
+        });
+        runs.set(run.id, run);
+        return run;
+      }
+    }
+
+    runs.set(run.id, run);
+    return run;
+  }
+
+  const parsed = parseGitHubRepoUrl(repoUrl || "");
   if (!parsed) {
     throw new Error("Please provide a valid public GitHub repository URL (https://github.com/owner/repo).");
   }
@@ -375,13 +596,13 @@ export async function createDemoRun(repoUrl: string): Promise<DemoRunData> {
   let verification: "verified_public" | "unverified" = "unverified";
   if (meta) {
     if (meta.private) {
-      throw new Error("Private repositories are not supported in summit demo mode.");
+      throw new Error("Private repositories are not supported in guided demo mode.");
     }
     verification = "verified_public";
   }
 
   const isQuickScope = Boolean(meta && meta.sizeKb >= QUICK_SCOPE_SIZE_THRESHOLD_KB);
-  const preferredMode: DemoMode = verification === "verified_public" ? (isQuickScope ? "quick_scope" : "live") : "fallback";
+  const preferredMode: DemoMode = isQuickScope ? "quick_scope" : "live";
 
   const runId = randomUUID();
   const summary = toSummary(runId, preferredMode);
@@ -391,6 +612,7 @@ export async function createDemoRun(repoUrl: string): Promise<DemoRunData> {
     repoUrl: parsed.url,
     owner: parsed.owner,
     name: parsed.name,
+    scenarioId,
     mode: preferredMode,
     verification,
     startedAt: Date.now(),
@@ -400,15 +622,13 @@ export async function createDemoRun(repoUrl: string): Promise<DemoRunData> {
     summary,
   };
 
-  if (preferredMode !== "fallback") {
-    const runner = await triggerRunner(parsed, runId, preferredMode);
-    if (runner.ok) {
-      run.execution = "runner";
-      run.mode = runner.mode;
-      run.summary = toSummary(runId, run.mode);
-      runs.set(run.id, run);
-      return run;
-    }
+  const runner = await triggerRunner(parsed, runId, preferredMode);
+  if (runner.ok) {
+    run.execution = "runner";
+    run.mode = runner.mode;
+    run.summary = toSummary(runId, run.mode);
+    runs.set(run.id, run);
+    return run;
   }
 
   run.mode = "fallback";
