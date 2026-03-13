@@ -6,6 +6,8 @@ import {
   ArrowRight,
   BadgeCheck,
   ExternalLink,
+  Maximize2,
+  Minimize2,
   Play,
   RotateCcw,
   TerminalSquare,
@@ -364,7 +366,9 @@ export function DemoExperience() {
   const [error, setError] = useState<string | null>(null);
   const [startedAt, setStartedAt] = useState<number | null>(null);
   const [elapsedMs, setElapsedMs] = useState(0);
+  const [isAdFullscreen, setIsAdFullscreen] = useState(false);
   const streamRef = useRef<EventSource | null>(null);
+  const adFrameRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     if (status !== "running" || !startedAt) {
@@ -384,6 +388,15 @@ export function DemoExperience() {
         streamRef.current.close();
       }
     };
+  }, []);
+
+  useEffect(() => {
+    const onFullscreenChange = () => {
+      setIsAdFullscreen(document.fullscreenElement === adFrameRef.current);
+    };
+
+    document.addEventListener("fullscreenchange", onFullscreenChange);
+    return () => document.removeEventListener("fullscreenchange", onFullscreenChange);
   }, []);
 
   const progressPct = useMemo(() => {
@@ -565,16 +578,44 @@ export function DemoExperience() {
     setElapsedMs(0);
   }
 
+  async function toggleAdFullscreen() {
+    const frame = adFrameRef.current;
+    if (!frame) return;
+
+    if (document.fullscreenElement === frame) {
+      await document.exitFullscreen();
+      return;
+    }
+
+    await frame.requestFullscreen();
+  }
+
   return (
     <section className="pt-32 pb-16">
-      <div className="relative left-1/2 right-1/2 mb-10 w-screen -translate-x-1/2">
+      <div
+        ref={adFrameRef}
+        className={
+          isAdFullscreen
+            ? "fixed inset-0 z-[120] m-0 h-screen w-screen isolate bg-black"
+            : "relative left-1/2 right-1/2 mb-10 w-screen -translate-x-1/2 isolate"
+        }
+      >
         <iframe
           src="/rigovo-ad.html?v=20260313e&tv=1"
           title="Rigovo product ad"
           allowFullScreen
-          className="block aspect-video w-full border-0"
+          className={isAdFullscreen ? "relative z-0 block h-full w-full border-0" : "relative z-0 block aspect-video w-full border-0"}
         />
       </div>
+      <button
+        type="button"
+        onClick={toggleAdFullscreen}
+        className="fixed right-5 top-24 z-[140] inline-flex h-10 w-10 items-center justify-center rounded-full border border-zinc-700/80 bg-zinc-950/85 text-zinc-100 shadow-lg backdrop-blur transition hover:border-zinc-500 hover:bg-zinc-900/90"
+        aria-label={isAdFullscreen ? "Exit ad fullscreen" : "Enter ad fullscreen"}
+        title={isAdFullscreen ? "Exit fullscreen" : "Fullscreen"}
+      >
+        {isAdFullscreen ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
+      </button>
 
       <div className="mx-auto max-w-6xl px-6">
       <div className="flex flex-col">
