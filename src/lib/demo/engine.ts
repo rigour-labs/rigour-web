@@ -5,6 +5,7 @@ import type {
   DemoMode,
   DemoRunData,
   DemoRunSummary,
+  DemoScanDepth,
   DemoSeverity,
   DemoStage,
 } from "@/lib/demo/types";
@@ -49,10 +50,12 @@ interface GuidedScenario {
 interface RunnerStartResult {
   ok: boolean;
   mode: DemoMode;
+  scanDepth: DemoScanDepth;
 }
 
 interface RunnerSnapshot {
   mode?: string;
+  scanDepth?: string;
   status?: string;
   error?: string;
   finishedAt?: string | null;
@@ -213,6 +216,13 @@ function normalizeMode(input: string | undefined, fallback: DemoMode): DemoMode 
   return fallback;
 }
 
+function normalizeScanDepth(input: string | undefined, fallback: DemoScanDepth): DemoScanDepth {
+  if (input === "fast" || input === "deep" || input === "deep_pro") {
+    return input;
+  }
+  return fallback;
+}
+
 function coerceStage(input: unknown): DemoStage {
   if (typeof input === "string" && (STAGE_VALUES as string[]).includes(input)) {
     return input as DemoStage;
@@ -268,6 +278,7 @@ function buildScenarioRun(scenario: GuidedScenario): DemoRunData {
     name: scenario.name,
     scenarioId: scenario.id,
     mode: scenario.mode,
+    scanDepth: "fast",
     verification: scenario.verification,
     startedAt: Date.now(),
     execution: "local",
@@ -401,12 +412,13 @@ async function triggerRunner(
   repo: ParsedRepo,
   runId: string,
   mode: DemoMode,
+  scanDepth: DemoScanDepth,
   scenarioId?: string
 ): Promise<RunnerStartResult> {
   const baseUrl = runnerBaseUrl();
 
   if (!baseUrl) {
-    return { ok: false, mode: "fallback" };
+    return { ok: false, mode: "fallback", scanDepth };
   }
 
   const controller = new AbortController();
@@ -423,6 +435,7 @@ async function triggerRunner(
         runId,
         repoUrl: repo.url,
         mode,
+        scanDepth,
         ...(scenarioId ? { scenarioId } : {}),
       }),
       signal: controller.signal,
@@ -430,13 +443,17 @@ async function triggerRunner(
     });
 
     if (!response.ok) {
-      return { ok: false, mode: "fallback" };
+      return { ok: false, mode: "fallback", scanDepth };
     }
 
-    const payload = (await response.json()) as { mode?: string };
-    return { ok: true, mode: normalizeMode(payload.mode, mode) };
+    const payload = (await response.json()) as { mode?: string; scanDepth?: string };
+    return {
+      ok: true,
+      mode: normalizeMode(payload.mode, mode),
+      scanDepth: normalizeScanDepth(payload.scanDepth, scanDepth),
+    };
   } catch {
-    return { ok: false, mode: "fallback" };
+    return { ok: false, mode: "fallback", scanDepth };
   } finally {
     clearTimeout(timeout);
   }
@@ -543,13 +560,18 @@ function toTimedEvents(mode: DemoMode, repoLabel: string): DemoEvent[] {
   }));
 }
 
-export async function createDemoRun(repoUrl?: string, scenarioId?: string): Promise<DemoRunData> {
+export async function createDemoRun(
+  repoUrl?: string,
+  scenarioId?: string,
+  requestedScanDepth: DemoScanDepth = "fast"
+): Promise<DemoRunData> {
   cleanupRuns();
 
   if (scenarioId && GUIDED_SCENARIOS[scenarioId]) {
     const scenario = GUIDED_SCENARIOS[scenarioId];
     const parsedScenarioRepo = parseGitHubRepoUrl(scenario.repoUrl);
     const run = buildScenarioRun(scenario);
+    run.scanDepth = requestedScanDepth;
 
     if (parsedScenarioRepo) {
       const meta = await fetchGithubMeta(parsedScenarioRepo);
@@ -568,11 +590,12 @@ export async function createDemoRun(repoUrl?: string, scenarioId?: string): Prom
 
       const isQuickScope = Boolean(meta && meta.sizeKb >= QUICK_SCOPE_SIZE_THRESHOLD_KB);
       const preferredMode: DemoMode = isQuickScope ? "quick_scope" : "live";
-      const runner = await triggerRunner(parsedScenarioRepo, run.id, preferredMode, scenario.id);
+      const runner = await triggerRunner(parsedScenarioRepo, run.id, preferredMode, requestedScanDepth, scenario.id);
 
       if (runner.ok) {
         run.execution = "runner";
         run.mode = runner.mode;
+        run.scanDepth = runner.scanDepth;
         run.events = [];
         run.summary = toSummary(run.id, run.mode, {
           notes: "Running real guided Rigour scenario on a persistent repo workspace.",
@@ -614,6 +637,7 @@ export async function createDemoRun(repoUrl?: string, scenarioId?: string): Prom
     name: parsed.name,
     scenarioId,
     mode: preferredMode,
+    scanDepth: requestedScanDepth,
     verification,
     startedAt: Date.now(),
     execution: "local",
@@ -622,10 +646,11 @@ export async function createDemoRun(repoUrl?: string, scenarioId?: string): Prom
     summary,
   };
 
-  const runner = await triggerRunner(parsed, runId, preferredMode);
+  const runner = await triggerRunner(parsed, runId, preferredMode, requestedScanDepth);
   if (runner.ok) {
     run.execution = "runner";
     run.mode = runner.mode;
+    run.scanDepth = runner.scanDepth;
     run.summary = toSummary(runId, run.mode);
     runs.set(run.id, run);
     return run;
@@ -667,6 +692,7 @@ export async function getDemoResult(runId: string): Promise<DemoRunSummary | nul
   }
 
   run.mode = normalizeMode(snapshot.mode, run.mode);
+  run.scanDepth = normalizeScanDepth(snapshot.scanDepth, run.scanDepth);
   run.summary = summaryFromRunner(run, snapshot);
   run.status = snapshot.status === "failed" ? "failed" : snapshot.status === "done" ? "done" : "running";
 
@@ -684,7 +710,9 @@ function buildLocalSseStream(run: DemoRunData): ReadableStream<Uint8Array> {
   return new ReadableStream<Uint8Array>({
     start(controller) {
       controller.enqueue(
-        encoder.encode(`event: meta\ndata: ${JSON.stringify({ runId: run.id, mode: run.mode, startedAt: nowIso() })}\n\n`)
+        encoder.encode(
+          `event: meta\ndata: ${JSON.stringify({ runId: run.id, mode: run.mode, scanDepth: run.scanDepth, startedAt: nowIso() })}\n\n`
+        )
       );
 
       run.events.forEach((event, idx) => {
@@ -718,7 +746,9 @@ function buildRunnerSseStream(run: DemoRunData): ReadableStream<Uint8Array> {
   return new ReadableStream<Uint8Array>({
     start(controller) {
       controller.enqueue(
-        encoder.encode(`event: meta\ndata: ${JSON.stringify({ runId: run.id, mode: run.mode, startedAt: nowIso() })}\n\n`)
+        encoder.encode(
+          `event: meta\ndata: ${JSON.stringify({ runId: run.id, mode: run.mode, scanDepth: run.scanDepth, startedAt: nowIso() })}\n\n`
+        )
       );
 
       const tick = async () => {

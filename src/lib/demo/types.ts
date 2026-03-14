@@ -1,4 +1,5 @@
 export type DemoMode = "live" | "quick_scope" | "fallback";
+export type DemoScanDepth = "fast" | "deep" | "deep_pro";
 
 export type DemoStage =
   | "idle"
@@ -64,11 +65,13 @@ export interface DemoRunSummary {
 export interface DemoStartRequest {
   repoUrl?: string;
   scenarioId?: string;
+  scanDepth?: DemoScanDepth;
 }
 
 export interface DemoStartResponse {
   runId: string;
   mode: DemoMode;
+  scanDepth: DemoScanDepth;
   streamUrl: string;
   resultUrl: string;
   repo?: {
@@ -87,6 +90,7 @@ export interface DemoRunData {
   name: string;
   scenarioId?: string;
   mode: DemoMode;
+  scanDepth: DemoScanDepth;
   verification: "verified_public" | "unverified";
   startedAt: number;
   execution: "runner" | "local";

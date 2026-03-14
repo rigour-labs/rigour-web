@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import {
   ArrowRight,
   BadgeCheck,
@@ -23,6 +23,7 @@ import type {
   DemoEvent,
   DemoMode,
   DemoRunSummary,
+  DemoScanDepth,
   DemoSeverity,
   DemoStage,
   DemoStartResponse,
@@ -70,6 +71,12 @@ const SCENARIOS = [
     proof: "Best for proving Rigour is more than a scanner",
   },
 ] as const;
+
+const DEPTH_OPTIONS: Array<{ value: DemoScanDepth; label: string; hint: string }> = [
+  { value: "fast", label: "Fast", hint: "Best for stage reveal" },
+  { value: "deep", label: "Deep", hint: "More evidence and checks" },
+  { value: "deep_pro", label: "Deep Pro", hint: "Maximum depth and rescans" },
+];
 
 function toneClass(tone: string): string {
   switch (tone) {
@@ -366,6 +373,8 @@ export function DemoExperience() {
   const [error, setError] = useState<string | null>(null);
   const [startedAt, setStartedAt] = useState<number | null>(null);
   const [elapsedMs, setElapsedMs] = useState(0);
+  const [scanDepth, setScanDepth] = useState<DemoScanDepth>("fast");
+  const [showcaseTab, setShowcaseTab] = useState<"story" | "evidence" | "logs">("story");
   const [isAdFullscreen, setIsAdFullscreen] = useState(false);
   const streamRef = useRef<EventSource | null>(null);
   const adFrameRef = useRef<HTMLDivElement | null>(null);
@@ -429,6 +438,7 @@ export function DemoExperience() {
       scenario: selectedScenario.id,
       repo_url: useCustomRepo ? repoUrl : "",
       source: useCustomRepo ? "custom_repo" : "guided_scenario",
+      scan_depth: scanDepth,
     });
 
     setStatus("running");
@@ -436,6 +446,7 @@ export function DemoExperience() {
     setEvents([]);
     setSummary(null);
     setStage("idle");
+    setShowcaseTab("story");
     setStartedAt(Date.now());
     setElapsedMs(0);
 
@@ -445,8 +456,8 @@ export function DemoExperience() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(
           useCustomRepo
-            ? { repoUrl }
-            : { scenarioId: selectedScenario.id }
+            ? { repoUrl, scanDepth }
+            : { scenarioId: selectedScenario.id, scanDepth }
         ),
       });
 
@@ -457,12 +468,14 @@ export function DemoExperience() {
 
       const data = (await response.json()) as DemoStartResponse;
       setMode(data.mode);
+      setScanDepth(data.scanDepth);
       setVerification(data.verification);
       setError(null);
 
       track("demo_started", {
         scenario: selectedScenario.id,
         mode: data.mode,
+        scan_depth: data.scanDepth,
         verification: data.verification,
         repo_owner: data.repo?.owner ?? "",
         repo_name: data.repo?.name ?? "",
@@ -493,6 +506,7 @@ export function DemoExperience() {
         track("demo_completed", {
           scenario: selectedScenario.id,
           mode: payload.mode,
+          scan_depth: scanDepth,
           before_score: payload.beforeScore ?? -1,
           findings: payload.blockedCount ?? -1,
           cached: payload.cached ?? false,
@@ -509,10 +523,15 @@ export function DemoExperience() {
               status?: "running" | "done" | "failed";
               summary?: DemoRunSummary;
               mode?: DemoMode;
+              scanDepth?: DemoScanDepth;
             };
 
             if (result.mode) {
               setMode(result.mode);
+            }
+
+            if (result.scanDepth) {
+              setScanDepth(result.scanDepth);
             }
 
             if (result.status === "done" && result.summary) {
@@ -576,6 +595,7 @@ export function DemoExperience() {
     setError(null);
     setStartedAt(null);
     setElapsedMs(0);
+    setShowcaseTab("story");
   }
 
   async function toggleAdFullscreen() {
@@ -623,15 +643,15 @@ export function DemoExperience() {
       <div className="bento-card mb-6">
         <div className="mb-5 flex flex-wrap items-start justify-between gap-4">
           <div>
-            <h2 className="text-3xl md:text-4xl font-bold font-outfit mb-3">Choose the Rigour failure to stop</h2>
+            <h2 className="text-3xl md:text-4xl font-bold font-outfit mb-3">Watch Rigour stop a real AI failure</h2>
             <p className="text-zinc-400 max-w-2xl">
-              Start with a guided Rigour scenario. It is instant, dramatic, and keeps the focus on what Rigour itself prevents before code ships. If you need proof afterward, trigger a live public-repo scan separately.
+              Start with one guided incident for a 15-second reveal, then switch to a public repo for live proof. This keeps the story clear: detect, intercept, recover.
             </p>
           </div>
           <div className="rounded-2xl border border-zinc-800 bg-zinc-950/70 px-4 py-3 text-right">
             <p className="text-[10px] uppercase tracking-[0.2em] text-zinc-500">Primary narrative</p>
-            <p className="mt-1 text-sm font-semibold text-zinc-100">{selectedScenario.title}</p>
-            <p className="mt-1 text-xs text-zinc-500">{selectedScenario.proof}</p>
+            <p className="mt-1 text-sm font-semibold text-zinc-100">{selectedScenario.label}: {selectedScenario.title}</p>
+            <p className="mt-1 text-xs text-zinc-500">Depth: {DEPTH_OPTIONS.find((item) => item.value === scanDepth)?.label}</p>
           </div>
         </div>
 
@@ -659,11 +679,32 @@ export function DemoExperience() {
                   {active && <BadgeCheck className="h-4 w-4 text-accent" />}
                 </div>
                 <p className="text-base font-semibold text-zinc-100">{scenario.title}</p>
-                <p className="mt-2 text-sm text-zinc-400">{scenario.description}</p>
-                <p className="mt-3 text-[11px] text-zinc-500">{scenario.proof}</p>
+                <p className="mt-2 text-xs text-zinc-400">{scenario.description}</p>
               </button>
             );
           })}
+        </div>
+
+        <div className="mb-5 rounded-2xl border border-zinc-800 bg-zinc-950/50 p-3">
+          <p className="mb-2 text-[10px] uppercase tracking-[0.24em] text-zinc-500">Run Depth</p>
+          <div className="grid gap-2 md:grid-cols-3">
+            {DEPTH_OPTIONS.map((depth) => {
+              const active = depth.value === scanDepth;
+              return (
+                <button
+                  key={depth.value}
+                  type="button"
+                  onClick={() => setScanDepth(depth.value)}
+                  className={`rounded-xl border px-3 py-2 text-left transition ${
+                    active ? "border-accent bg-accent/10 text-accent" : "border-zinc-700 bg-zinc-900/70 text-zinc-300 hover:border-zinc-500"
+                  }`}
+                >
+                  <p className="text-sm font-semibold">{depth.label}</p>
+                  <p className="text-[11px] text-zinc-500">{depth.hint}</p>
+                </button>
+              );
+            })}
+          </div>
         </div>
 
         <div className="grid gap-3 md:grid-cols-[1fr_auto]">
@@ -674,7 +715,7 @@ export function DemoExperience() {
             className="inline-flex items-center justify-center gap-2 rounded-xl bg-accent px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-accent-bright disabled:opacity-50"
           >
             <Play className="h-4 w-4" />
-            Play
+            Start 15s Reveal
           </button>
           <button
             type="button"
@@ -689,8 +730,8 @@ export function DemoExperience() {
         <div className="mt-5 rounded-2xl border border-zinc-800 bg-zinc-950/40 p-4">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
-              <p className="text-sm font-semibold text-zinc-200">Run your public repo</p>
-              <p className="text-xs text-zinc-500">Use this for real proof. The scan and results will appear below on the same page.</p>
+              <p className="text-sm font-semibold text-zinc-200">Run your public repo (live proof)</p>
+              <p className="text-xs text-zinc-500">Use this after the guided reveal. Results stay on this page.</p>
             </div>
             <button
               type="button"
@@ -755,15 +796,6 @@ export function DemoExperience() {
           <p className="mt-2 text-sm text-zinc-200">Failure is contained, fix packet is generated, and the team gets measurable recovery instead of hope.</p>
         </div>
       </div>
-
-      {/* ── Results Panel (aha moment) — shown when scan is done ── */}
-      <AnimatePresence>
-        {status === "done" && summary && (
-          <div className="mb-6">
-            <ResultsPanel summary={summary} />
-          </div>
-        )}
-      </AnimatePresence>
 
       </div>
 
@@ -881,6 +913,27 @@ export function DemoExperience() {
             </div>
           </div>
 
+          <div className="mb-4 flex flex-wrap gap-2">
+            {[
+              { id: "story", label: "Story" },
+              { id: "evidence", label: "Evidence" },
+              { id: "logs", label: "Raw Logs" },
+            ].map((tab) => (
+              <button
+                key={tab.id}
+                type="button"
+                onClick={() => setShowcaseTab(tab.id as "story" | "evidence" | "logs")}
+                className={`rounded-full border px-3 py-1.5 text-xs font-semibold transition ${
+                  showcaseTab === tab.id
+                    ? "border-accent bg-accent/15 text-accent"
+                    : "border-zinc-700 bg-zinc-900/70 text-zinc-300 hover:border-zinc-500"
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
+
           <div className="mb-6 grid gap-3 md:grid-cols-5">
             {stageTimeline.map(({ stage: item }) => {
               const reached = getStageIndex(stage) >= getStageIndex(item);
@@ -903,10 +956,11 @@ export function DemoExperience() {
             })}
           </div>
 
+          {showcaseTab === "story" && (
           <div className={`rounded-[1.5rem] border p-6 ${stageTone(latestEvent?.stage ?? "idle")} shadow-2xl`}>
             <div className="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
               <div>
-              <p className="text-[10px] uppercase tracking-[0.3em] opacity-70">Active Moment</p>
+              <p className="text-[10px] uppercase tracking-[0.3em] opacity-70">Result Board</p>
               <h3 className="mt-3 text-4xl font-bold font-outfit">
                 {latestEvent ? stageLabel(latestEvent.stage) : selectedScenario.title}
               </h3>
@@ -968,6 +1022,37 @@ export function DemoExperience() {
               </div>
             </div>
           </div>
+          )}
+
+          {showcaseTab === "evidence" && (
+            <div className="rounded-[1.5rem] border border-zinc-700 bg-zinc-950/60 p-5">
+              {status === "done" && summary ? (
+                <ResultsPanel summary={summary} />
+              ) : (
+                <p className="text-sm text-zinc-400">Run a scenario to populate structured evidence.</p>
+              )}
+            </div>
+          )}
+
+          {showcaseTab === "logs" && (
+            <div className="rounded-[1.5rem] border border-zinc-700 bg-zinc-950/60 p-5">
+              {events.length === 0 ? (
+                <p className="text-sm text-zinc-400">No live events yet.</p>
+              ) : (
+                <div className="max-h-[420px] space-y-2 overflow-auto">
+                  {[...events].reverse().map((event, index) => (
+                    <div key={`${event.ts}-${index}`} className="rounded-xl border border-zinc-800 bg-zinc-900/70 p-3">
+                      <div className="flex items-center justify-between gap-3">
+                        <p className="text-xs uppercase tracking-[0.2em] text-zinc-500">{stageLabel(event.stage)}</p>
+                        <p className="text-xs text-zinc-500">{new Date(event.ts).toLocaleTimeString()}</p>
+                      </div>
+                      <p className={`mt-2 text-sm ${severityClass(event.severity)}`}>{event.message}</p>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
       </div>

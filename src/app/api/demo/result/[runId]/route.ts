@@ -26,6 +26,7 @@ export async function GET(
       : {}),
     scenarioId: run.scenarioId,
     mode: run.mode,
+    scanDepth: run.scanDepth,
     status: run.status,
     verification: run.verification,
     summary,
