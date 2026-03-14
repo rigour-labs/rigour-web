@@ -4,8 +4,6 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import {
   ArrowRight,
-  BadgeCheck,
-  ExternalLink,
   Maximize2,
   Minimize2,
   Play,
@@ -44,52 +42,6 @@ const LANES: LaneState[] = [
   { lane: "out", title: "OUT", subtitle: "Quality Gates" },
   { lane: "persist", title: "PERSIST", subtitle: "Memory Governance" },
 ];
-
-const SCENARIOS = [
-  {
-    id: "breach_stop",
-    label: "Incident 01",
-    title: "Credential breach stopped before merge",
-    accent: "emerald",
-    description: "An AI hotfix tries to ship a real secret, a fake dependency, and a silent async failure in one change.",
-    proof: "Best for the first 15-second wow moment",
-  },
-  {
-    id: "hallucination_stop",
-    label: "Incident 02",
-    title: "Hallucinated dependency blocked",
-    accent: "violet",
-    description: "An AI patch introduces a fake package and a phantom API call that would pass review but fail in production.",
-    proof: "Best for showing deterministic code supervision",
-  },
-  {
-    id: "memory_guard",
-    label: "Incident 03",
-    title: "Unsafe memory persistence denied",
-    accent: "sky",
-    description: "An agent attempts to persist secrets and poisoned context into long-term memory, and governance stops it.",
-    proof: "Best for proving Rigour is more than a scanner",
-  },
-] as const;
-
-const DEPTH_OPTIONS: Array<{ value: DemoScanDepth; label: string; hint: string }> = [
-  { value: "fast", label: "Fast", hint: "Best for stage reveal" },
-  { value: "deep", label: "Deep", hint: "More evidence and checks" },
-  { value: "deep_pro", label: "Deep Pro", hint: "Maximum depth and rescans" },
-];
-
-function toneClass(tone: string): string {
-  switch (tone) {
-    case "emerald":
-      return "border-emerald-500/30 bg-emerald-500/10 text-emerald-300";
-    case "violet":
-      return "border-violet-500/30 bg-violet-500/10 text-violet-300";
-    case "sky":
-      return "border-sky-500/30 bg-sky-500/10 text-sky-300";
-    default:
-      return "border-zinc-700 bg-zinc-800 text-zinc-300";
-  }
-}
 
 function severityClass(severity?: DemoSeverity): string {
   switch (severity) {
@@ -165,17 +117,10 @@ function stageTone(stage: DemoStage): string {
   }
 }
 
-function scenarioOutcomeCopy(id: (typeof SCENARIOS)[number]["id"]): string {
-  switch (id) {
-    case "breach_stop":
-      return "Rigour proves that the secret is blocked, the fake dependency never lands, and the unsafe patch is recovered before merge.";
-    case "hallucination_stop":
-      return "Rigour shows deterministic control over hallucinated packages, phantom APIs, and broken generated logic before runtime.";
-    case "memory_guard":
-      return "Rigour shows that AI safety continues after generation by controlling what agents are allowed to remember and replay.";
-    default:
-      return "Rigour detects, intercepts, governs, and recovers as one controlled story.";
-  }
+function depthLabel(depth: DemoScanDepth): string {
+  if (depth === "deep_pro") return "Deep Pro";
+  if (depth === "deep") return "Deep";
+  return "Fast";
 }
 
 /* ── Results Panel (the "aha moment") ── */
@@ -361,20 +306,18 @@ function ResultsPanel({ summary }: { summary: DemoRunSummary }) {
 
 /* ── Main Component ── */
 export function DemoExperience() {
-  const [selectedScenario, setSelectedScenario] = useState<(typeof SCENARIOS)[number]>(SCENARIOS[0]);
   const [repoUrl, setRepoUrl] = useState("");
-  const [useCustomRepo, setUseCustomRepo] = useState(false);
   const [status, setStatus] = useState<RunStatus>("idle");
   const [stage, setStage] = useState<DemoStage>("idle");
   const [, setMode] = useState<DemoMode | null>(null);
   const [, setVerification] = useState<"verified_public" | "unverified" | null>(null);
   const [events, setEvents] = useState<DemoEvent[]>([]);
   const [summary, setSummary] = useState<DemoRunSummary | null>(null);
+  const [showEvidence, setShowEvidence] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [startedAt, setStartedAt] = useState<number | null>(null);
   const [elapsedMs, setElapsedMs] = useState(0);
   const [scanDepth, setScanDepth] = useState<DemoScanDepth>("fast");
-  const [showcaseTab, setShowcaseTab] = useState<"story" | "evidence" | "logs">("story");
   const [isAdFullscreen, setIsAdFullscreen] = useState(false);
   const streamRef = useRef<EventSource | null>(null);
   const adFrameRef = useRef<HTMLDivElement | null>(null);
@@ -424,20 +367,19 @@ export function DemoExperience() {
   }, [events]);
 
   const latestEvent = events.length > 0 ? events[events.length - 1] : null;
-  const stageTimeline = STAGES.filter((item) => item !== "idle").map((item) => {
-    const event = [...events].reverse().find((entry) => entry.stage === item) ?? null;
-    return { stage: item, event };
-  });
-
   async function startRun() {
     if (streamRef.current) {
       streamRef.current.close();
     }
+    if (!repoUrl.trim()) {
+      setError("Please enter a public GitHub repo URL.");
+      return;
+    }
 
     track("demo_start_clicked", {
-      scenario: selectedScenario.id,
-      repo_url: useCustomRepo ? repoUrl : "",
-      source: useCustomRepo ? "custom_repo" : "guided_scenario",
+      scenario: "live_public_repo",
+      repo_url: repoUrl,
+      source: "custom_repo",
       scan_depth: scanDepth,
     });
 
@@ -445,8 +387,8 @@ export function DemoExperience() {
     setError(null);
     setEvents([]);
     setSummary(null);
+    setShowEvidence(false);
     setStage("idle");
-    setShowcaseTab("story");
     setStartedAt(Date.now());
     setElapsedMs(0);
 
@@ -454,11 +396,7 @@ export function DemoExperience() {
       const response = await fetch("/api/demo/start", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(
-          useCustomRepo
-            ? { repoUrl, scanDepth }
-            : { scenarioId: selectedScenario.id, scanDepth }
-        ),
+        body: JSON.stringify({ repoUrl, scanDepth }),
       });
 
       if (!response.ok) {
@@ -473,18 +411,14 @@ export function DemoExperience() {
       setError(null);
 
       track("demo_started", {
-        scenario: selectedScenario.id,
+        scenario: "live_public_repo",
         mode: data.mode,
         scan_depth: data.scanDepth,
         verification: data.verification,
         repo_owner: data.repo?.owner ?? "",
         repo_name: data.repo?.name ?? "",
-        source: useCustomRepo ? "custom_repo" : "guided_scenario",
+        source: "custom_repo",
       });
-
-      if (useCustomRepo) {
-        setUseCustomRepo(false);
-      }
 
       const source = new EventSource(data.streamUrl);
       streamRef.current = source;
@@ -504,7 +438,7 @@ export function DemoExperience() {
         setStatus("done");
         setError(null);
         track("demo_completed", {
-          scenario: selectedScenario.id,
+          scenario: "live_public_repo",
           mode: payload.mode,
           scan_depth: scanDepth,
           before_score: payload.beforeScore ?? -1,
@@ -548,7 +482,7 @@ export function DemoExperience() {
               setError(result.summary?.notes || "Live run failed.");
               source.close();
               track("demo_stream_error", {
-                scenario: selectedScenario.id,
+                scenario: "live_public_repo",
                 stage,
                 status: "failed",
               });
@@ -563,7 +497,7 @@ export function DemoExperience() {
           setStatus("error");
           setError("Live stream disconnected. Retry to continue.");
           track("demo_stream_error", {
-            scenario: selectedScenario.id,
+            scenario: "live_public_repo",
             stage,
             status: "closed",
           });
@@ -576,7 +510,7 @@ export function DemoExperience() {
       setStatus("error");
       setError(err instanceof Error ? err.message : "Unknown error");
       track("demo_start_error", {
-        scenario: selectedScenario.id,
+        scenario: "live_public_repo",
         message: err instanceof Error ? err.message : "Unknown error",
       });
     }
@@ -592,10 +526,10 @@ export function DemoExperience() {
     setVerification(null);
     setEvents([]);
     setSummary(null);
+    setShowEvidence(false);
     setError(null);
     setStartedAt(null);
     setElapsedMs(0);
-    setShowcaseTab("story");
   }
 
   async function toggleAdFullscreen() {
@@ -621,7 +555,7 @@ export function DemoExperience() {
         }
       >
         <iframe
-          src="/rigovo-ad.html?v=20260313e&tv=1"
+          src="/rigovo-ad.html?v=20260314a&tv=1"
           title="Rigovo product ad"
           allowFullScreen
           className={isAdFullscreen ? "relative z-0 block h-full w-full border-0" : "relative z-0 block aspect-video w-full border-0"}
@@ -641,81 +575,40 @@ export function DemoExperience() {
       <div className="flex flex-col">
       <div className="order-2">
       <div className="bento-card mb-6">
-        <div className="mb-5 flex flex-wrap items-start justify-between gap-4">
+        <div className="mb-5">
           <div>
-            <h2 className="text-3xl md:text-4xl font-bold font-outfit mb-3">Watch Rigour stop a real AI failure</h2>
+            <h2 className="text-3xl md:text-4xl font-bold font-outfit mb-3">Run a live public repo scan</h2>
             <p className="text-zinc-400 max-w-2xl">
-              Start with one guided incident for a 15-second reveal, then switch to a public repo for live proof. This keeps the story clear: detect, intercept, recover.
+              No scripted incidents. Enter any public GitHub repository and run Rigour live.
             </p>
           </div>
-          <div className="rounded-2xl border border-zinc-800 bg-zinc-950/70 px-4 py-3 text-right">
-            <p className="text-[10px] uppercase tracking-[0.2em] text-zinc-500">Primary narrative</p>
-            <p className="mt-1 text-sm font-semibold text-zinc-100">{selectedScenario.label}: {selectedScenario.title}</p>
-            <p className="mt-1 text-xs text-zinc-500">Depth: {DEPTH_OPTIONS.find((item) => item.value === scanDepth)?.label}</p>
-          </div>
         </div>
-
-        <div className="mb-5 grid gap-3 md:grid-cols-3">
-          {SCENARIOS.map((scenario) => {
-            const active = scenario.id === selectedScenario.id;
-            return (
-              <button
-                key={scenario.id}
-                type="button"
-                onClick={() => {
-                  setSelectedScenario(scenario);
-                  track("demo_scenario_selected", { scenario: scenario.id });
-                }}
-                className={`rounded-2xl border p-4 text-left transition-all ${
-                  active
-                    ? "border-accent bg-accent/10 shadow-lg shadow-accent/10"
-                    : "border-zinc-800 bg-zinc-950/60 hover:border-zinc-600"
-                }`}
-              >
-                <div className="mb-3 flex items-center justify-between">
-                  <span className={`rounded-full border px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide ${toneClass(scenario.accent)}`}>
-                    {scenario.label}
-                  </span>
-                  {active && <BadgeCheck className="h-4 w-4 text-accent" />}
-                </div>
-                <p className="text-base font-semibold text-zinc-100">{scenario.title}</p>
-                <p className="mt-2 text-xs text-zinc-400">{scenario.description}</p>
-              </button>
-            );
-          })}
-        </div>
-
-        <div className="mb-5 rounded-2xl border border-zinc-800 bg-zinc-950/50 p-3">
-          <p className="mb-2 text-[10px] uppercase tracking-[0.24em] text-zinc-500">Run Depth</p>
-          <div className="grid gap-2 md:grid-cols-3">
-            {DEPTH_OPTIONS.map((depth) => {
-              const active = depth.value === scanDepth;
-              return (
-                <button
-                  key={depth.value}
-                  type="button"
-                  onClick={() => setScanDepth(depth.value)}
-                  className={`rounded-xl border px-3 py-2 text-left transition ${
-                    active ? "border-accent bg-accent/10 text-accent" : "border-zinc-700 bg-zinc-900/70 text-zinc-300 hover:border-zinc-500"
-                  }`}
-                >
-                  <p className="text-sm font-semibold">{depth.label}</p>
-                  <p className="text-[11px] text-zinc-500">{depth.hint}</p>
-                </button>
-              );
-            })}
-          </div>
-        </div>
-
-        <div className="grid gap-3 md:grid-cols-[1fr_auto]">
+        <div className="grid gap-3 md:grid-cols-[1fr_auto_auto_auto]">
+          <input
+            value={repoUrl}
+            onChange={(e) => setRepoUrl(e.target.value)}
+            aria-label="GitHub repository URL"
+            placeholder="https://github.com/owner/repo"
+            className="w-full rounded-xl border border-zinc-700 bg-zinc-900/70 px-4 py-3 text-sm text-zinc-100 outline-none focus:border-accent"
+          />
+          <select
+            value={scanDepth}
+            onChange={(e) => setScanDepth(e.target.value as DemoScanDepth)}
+            aria-label="Scan depth"
+            className="rounded-xl border border-zinc-700 bg-zinc-900/70 px-3 py-3 text-sm text-zinc-100 outline-none focus:border-accent"
+          >
+            <option value="fast">Fast</option>
+            <option value="deep">Deep</option>
+            <option value="deep_pro">Deep Pro</option>
+          </select>
           <button
             type="button"
             onClick={startRun}
-            disabled={status === "running"}
+            disabled={status === "running" || repoUrl.trim().length === 0}
             className="inline-flex items-center justify-center gap-2 rounded-xl bg-accent px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-accent-bright disabled:opacity-50"
           >
             <Play className="h-4 w-4" />
-            Start 15s Reveal
+            Run Live Scan
           </button>
           <button
             type="button"
@@ -726,47 +619,6 @@ export function DemoExperience() {
             Reset
           </button>
         </div>
-
-        <div className="mt-5 rounded-2xl border border-zinc-800 bg-zinc-950/40 p-4">
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <div>
-              <p className="text-sm font-semibold text-zinc-200">Run your public repo (live proof)</p>
-              <p className="text-xs text-zinc-500">Use this after the guided reveal. Results stay on this page.</p>
-            </div>
-            <button
-              type="button"
-              onClick={() => {
-                const next = !useCustomRepo;
-                setUseCustomRepo(next);
-                track("demo_custom_repo_toggle", { enabled: next });
-              }}
-              className="inline-flex items-center gap-2 rounded-xl border border-zinc-700 px-4 py-2 text-sm font-medium text-zinc-300 transition-colors hover:bg-white/5"
-            >
-              <ExternalLink className="h-4 w-4" />
-              {useCustomRepo ? "Hide Public Repo Input" : "Show Public Repo Input"}
-            </button>
-          </div>
-          {useCustomRepo && (
-            <div className="mt-4 grid gap-3 md:grid-cols-[1fr_auto]">
-              <input
-                value={repoUrl}
-                onChange={(e) => setRepoUrl(e.target.value)}
-                aria-label="GitHub repository URL"
-                placeholder="https://github.com/owner/repo"
-                className="w-full rounded-xl border border-zinc-700 bg-zinc-900/70 px-4 py-3 text-sm text-zinc-100 outline-none focus:border-accent"
-              />
-              <button
-                type="button"
-                onClick={startRun}
-                disabled={status === "running" || repoUrl.trim().length === 0}
-                className="inline-flex items-center justify-center gap-2 rounded-xl border border-accent/40 bg-accent/10 px-5 py-3 text-sm font-semibold text-accent transition-colors hover:bg-accent/20 disabled:opacity-50"
-              >
-                <Play className="h-4 w-4" />
-                Run Public Repo
-              </button>
-            </div>
-          )}
-        </div>
         {/* Progress bar — no hardcoded time limit */}
         <div className="mt-4 h-2 w-full overflow-hidden rounded bg-zinc-800">
           <motion.div
@@ -776,25 +628,10 @@ export function DemoExperience() {
           />
         </div>
         <div className="mt-2 flex items-center justify-between text-xs text-zinc-500">
-          <span>Stage: {stage.toUpperCase()}</span>
+          <span>Stage: {stage.toUpperCase()} · Depth: {depthLabel(scanDepth).toUpperCase()}</span>
           <span>{Math.round(elapsedMs / 1000)}s elapsed</span>
         </div>
         {error && <p className="mt-3 text-sm text-red-300">{error}</p>}
-      </div>
-
-      <div className="mb-6 grid gap-3 md:grid-cols-3">
-        <div className="rounded-2xl border border-red-500/20 bg-red-500/10 p-4">
-          <p className="text-[10px] uppercase tracking-[0.2em] text-red-300">Without Rigour</p>
-          <p className="mt-2 text-sm text-zinc-200">Secret reaches repo, hallucinated import ships, and agent memory keeps the bad state alive.</p>
-        </div>
-        <div className="rounded-2xl border border-amber-500/20 bg-amber-500/10 p-4">
-          <p className="text-[10px] uppercase tracking-[0.2em] text-amber-300">During Supervision</p>
-          <p className="mt-2 text-sm text-zinc-200">IN stops ingress, OUT blocks unsafe code, PERSIST denies unsafe memory writes.</p>
-        </div>
-        <div className="rounded-2xl border border-emerald-500/20 bg-emerald-500/10 p-4">
-          <p className="text-[10px] uppercase tracking-[0.2em] text-emerald-300">With Rigour</p>
-          <p className="mt-2 text-sm text-zinc-200">Failure is contained, fix packet is generated, and the team gets measurable recovery instead of hope.</p>
-        </div>
       </div>
 
       </div>
@@ -903,6 +740,9 @@ export function DemoExperience() {
             </div>
             <div className="flex items-center gap-2 text-xs text-zinc-500">
               <span className="rounded-full border border-zinc-700 px-2.5 py-1 uppercase tracking-[0.2em]">
+                {depthLabel(scanDepth)}
+              </span>
+              <span className="rounded-full border border-zinc-700 px-2.5 py-1 uppercase tracking-[0.2em]">
                 {latestEvent ? stageLabel(latestEvent.stage) : "Ready"}
               </span>
               {latestEvent?.severity && (
@@ -913,59 +753,15 @@ export function DemoExperience() {
             </div>
           </div>
 
-          <div className="mb-4 flex flex-wrap gap-2">
-            {[
-              { id: "story", label: "Story" },
-              { id: "evidence", label: "Evidence" },
-              { id: "logs", label: "Raw Logs" },
-            ].map((tab) => (
-              <button
-                key={tab.id}
-                type="button"
-                onClick={() => setShowcaseTab(tab.id as "story" | "evidence" | "logs")}
-                className={`rounded-full border px-3 py-1.5 text-xs font-semibold transition ${
-                  showcaseTab === tab.id
-                    ? "border-accent bg-accent/15 text-accent"
-                    : "border-zinc-700 bg-zinc-900/70 text-zinc-300 hover:border-zinc-500"
-                }`}
-              >
-                {tab.label}
-              </button>
-            ))}
-          </div>
-
-          <div className="mb-6 grid gap-3 md:grid-cols-5">
-            {stageTimeline.map(({ stage: item }) => {
-              const reached = getStageIndex(stage) >= getStageIndex(item);
-              const active = stage === item;
-              return (
-                <div
-                  key={item}
-                  className={`rounded-2xl border px-4 py-3 transition-all ${
-                    active
-                      ? stageTone(item)
-                      : reached
-                        ? "border-emerald-500/20 bg-emerald-500/5 text-zinc-100"
-                        : "border-zinc-800 bg-zinc-950/60 text-zinc-500"
-                  }`}
-                >
-                  <p className="text-[10px] uppercase tracking-[0.24em]">{stageLabel(item)}</p>
-                  <p className="mt-2 text-sm">{active ? "Live now" : reached ? "Complete" : "Queued"}</p>
-                </div>
-              );
-            })}
-          </div>
-
-          {showcaseTab === "story" && (
           <div className={`rounded-[1.5rem] border p-6 ${stageTone(latestEvent?.stage ?? "idle")} shadow-2xl`}>
             <div className="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
               <div>
               <p className="text-[10px] uppercase tracking-[0.3em] opacity-70">Result Board</p>
               <h3 className="mt-3 text-4xl font-bold font-outfit">
-                {latestEvent ? stageLabel(latestEvent.stage) : selectedScenario.title}
+                {latestEvent ? stageLabel(latestEvent.stage) : "Live Scan Ready"}
               </h3>
               <p className="mt-4 max-w-2xl text-lg leading-relaxed text-current/90">
-                {latestEvent ? latestEvent.message : scenarioOutcomeCopy(selectedScenario.id)}
+                {latestEvent ? latestEvent.message : "Run a public repo scan to see live detection, interception, and recovery."}
               </p>
               <div className="mt-5 flex flex-wrap gap-3">
                 {latestEvent?.metric ? (
@@ -975,13 +771,17 @@ export function DemoExperience() {
                   </div>
                 ) : (
                   <div className="inline-flex items-center gap-2 rounded-full border border-current/20 px-4 py-2 text-sm">
-                    <span className="opacity-70">Scenario</span>
-                    <span className="font-semibold">{selectedScenario.label}</span>
+                    <span className="opacity-70">Source</span>
+                    <span className="font-semibold">Live Public Repo</span>
                   </div>
                 )}
                 <div className="inline-flex items-center gap-2 rounded-full border border-current/20 px-4 py-2 text-sm">
                   <span className="opacity-70">Outcome</span>
                   <span className="font-semibold">{summary?.beforeScore ?? "Live governance proof"}</span>
+                </div>
+                <div className="inline-flex items-center gap-2 rounded-full border border-current/20 px-4 py-2 text-sm">
+                  <span className="opacity-70">Depth</span>
+                  <span className="font-semibold">{depthLabel(scanDepth)}</span>
                 </div>
               </div>
               </div>
@@ -1022,33 +822,19 @@ export function DemoExperience() {
               </div>
             </div>
           </div>
-          )}
 
-          {showcaseTab === "evidence" && (
-            <div className="rounded-[1.5rem] border border-zinc-700 bg-zinc-950/60 p-5">
-              {status === "done" && summary ? (
-                <ResultsPanel summary={summary} />
-              ) : (
-                <p className="text-sm text-zinc-400">Run a scenario to populate structured evidence.</p>
-              )}
-            </div>
-          )}
-
-          {showcaseTab === "logs" && (
-            <div className="rounded-[1.5rem] border border-zinc-700 bg-zinc-950/60 p-5">
-              {events.length === 0 ? (
-                <p className="text-sm text-zinc-400">No live events yet.</p>
-              ) : (
-                <div className="max-h-[420px] space-y-2 overflow-auto">
-                  {[...events].reverse().map((event, index) => (
-                    <div key={`${event.ts}-${index}`} className="rounded-xl border border-zinc-800 bg-zinc-900/70 p-3">
-                      <div className="flex items-center justify-between gap-3">
-                        <p className="text-xs uppercase tracking-[0.2em] text-zinc-500">{stageLabel(event.stage)}</p>
-                        <p className="text-xs text-zinc-500">{new Date(event.ts).toLocaleTimeString()}</p>
-                      </div>
-                      <p className={`mt-2 text-sm ${severityClass(event.severity)}`}>{event.message}</p>
-                    </div>
-                  ))}
+          {status === "done" && summary && (
+            <div className="mt-5">
+              <button
+                type="button"
+                onClick={() => setShowEvidence((prev) => !prev)}
+                className="inline-flex items-center gap-2 rounded-xl border border-zinc-700 bg-zinc-900/70 px-4 py-2 text-sm font-semibold text-zinc-200 transition hover:border-zinc-500 hover:bg-zinc-800"
+              >
+                {showEvidence ? "Hide Detailed Evidence" : "Show Detailed Evidence"}
+              </button>
+              {showEvidence && (
+                <div className="mt-3 rounded-[1.5rem] border border-zinc-700 bg-zinc-950/60 p-5">
+                  <ResultsPanel summary={summary} />
                 </div>
               )}
             </div>

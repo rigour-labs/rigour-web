@@ -66,7 +66,7 @@ interface RunnerSnapshot {
 const STAGE_VALUES: DemoStage[] = ["idle", "preflight", "clone", "scan", "supervise", "fix", "rescan", "pass"];
 const LANE_VALUES: DemoLane[] = ["system", "in", "out", "persist"];
 const SEVERITY_VALUES: DemoSeverity[] = ["info", "warning", "error", "success"];
-const DEFAULT_GUIDED_REPO = "https://github.com/alibaba/OpenSandbox";
+const DEFAULT_GUIDED_REPO = "";
 
 const GUIDED_SCENARIOS: Record<string, GuidedScenario> = {
   breach_stop: {

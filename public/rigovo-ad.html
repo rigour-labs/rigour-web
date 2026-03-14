@@ -8,8 +8,8 @@
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
   --bk:#01010a;--sf:#090b1a;--pn:#0c0e20;
-  --br:#1a1c36;--mt:#f2f2ff;--dm:#565878;
-  --tx:#a8acd0;--wt:#ecedff;
+  --br:#e3e4ee;--mt:#f2f2ff;--dm:#fff;
+  --tx:#f7f7f7;--wt:#ecedff;
   --gn:#3dffa0;--rd:#ff2d50;--rdb:#1a020a;
   --ab:#ffb830;--pp:#a855ff;--tl:#2ee8cc;
   --bar-h:44px;
@@ -65,6 +65,10 @@ html,body{
 #ctrl{
   position:absolute;bottom:14px;right:28px;
   display:flex;gap:10px;z-index:800;
+  opacity:0;
+  pointer-events:none;
+  transform:translateY(6px);
+  transition:opacity .22s ease, transform .22s ease;
 }
 .cb{
   font-family:var(--M);font-size:11px;letter-spacing:.08em;color:var(--mt);
@@ -73,6 +77,21 @@ html,body{
   transition:color .2s,border-color .2s;
 }
 .cb:hover{color:var(--wt);border-color:var(--dm)}
+
+#root:hover #ctrl,
+#root:focus-within #ctrl{
+  opacity:1;
+  pointer-events:auto;
+  transform:translateY(0);
+}
+
+@media (hover: none) {
+  #ctrl{
+    opacity:1;
+    pointer-events:auto;
+    transform:none;
+  }
+}
 
 /* ── BASE SCENE ────────────────────────────────── */
 .scene{
@@ -814,7 +833,7 @@ html,body{
         <div class="t3fi"><span>✓</span> OUTPUT VALIDATED</div>
         <div class="t3fi"><span>✓</span> MEMORY GOVERNED</div>
       </div>
-      <div class="t3fs">Trinity gate cleared · all 8 agents verified · Rigour v5.2.1</div>
+      <div class="t3fs">Rigour gate cleared · all 8 agents verified · Rigour v5.2.1</div>
     </div>
   </div>
 </div>
@@ -1178,11 +1197,9 @@ if (params.get('tv') === '1') {
   document.documentElement.style.setProperty('--bar-h', '0px');
   const barTop = document.getElementById('bar-t');
   const barBottom = document.getElementById('bar-b');
-  const ctrl = document.getElementById('ctrl');
   const slabel = document.getElementById('slabel');
   if (barTop) barTop.style.display = 'none';
   if (barBottom) barBottom.style.display = 'none';
-  if (ctrl) ctrl.style.display = 'none';
   if (slabel) slabel.style.display = 'none';
 }
 
