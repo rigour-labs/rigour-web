@@ -210,34 +210,40 @@ const PROVENANCE_ZERO_HINTS: Record<string, string> = {
 
 /* ── Brain Learning Card ── */
 function BrainLearningCard({ learning }: { learning: DemoLearningState }) {
+  const hasMultipleRuns = learning.priorRuns > 1;
   const TrendIcon = learning.trend === "improving" ? TrendingUp : learning.trend === "degrading" ? TrendingDown : Minus;
-  const trendColor = learning.trend === "improving" ? "text-emerald-400" : learning.trend === "degrading" ? "text-red-400" : "text-zinc-400";
-  const trendBorder = learning.trend === "improving" ? "border-emerald-500/30" : learning.trend === "degrading" ? "border-red-500/30" : "border-violet-500/30";
-  const trendBg = learning.trend === "improving" ? "bg-emerald-500/5" : learning.trend === "degrading" ? "bg-red-500/5" : "bg-violet-500/5";
+  const trendColor = learning.trend === "improving" ? "text-emerald-400" : learning.trend === "degrading" ? "text-red-400" : "text-violet-400";
   const history = learning.scoreHistory ?? [];
   const maxTotal = Math.max(...history.map((h) => h.total), 1);
+  const lr = learning.latestRun;
+  const totalFindings = lr ? lr.aiDrift + lr.structural + lr.security : 0;
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay: 0.2 }}
-      className={`rounded-xl border ${trendBorder} ${trendBg} p-3`}
+      className="rounded-xl border border-violet-500/30 bg-violet-500/5 p-3"
     >
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-1.5">
           <Brain className="h-3.5 w-3.5 text-violet-400" />
           <span className="text-xs font-semibold text-zinc-300">Rigour Brain</span>
-          <span className="text-[10px] text-zinc-600">({learning.priorRuns} prior scans)</span>
         </div>
-        <div className="flex items-center gap-1">
-          <TrendIcon className={`h-3 w-3 ${trendColor}`} />
-          <span className={`text-[10px] font-semibold uppercase tracking-wider ${trendColor}`}>{learning.trend}</span>
-        </div>
+        {hasMultipleRuns ? (
+          <div className="flex items-center gap-1">
+            <TrendIcon className={`h-3 w-3 ${trendColor}`} />
+            <span className={`text-[10px] font-semibold uppercase tracking-wider ${trendColor}`}>
+              {learning.trend} ({learning.priorRuns} scans)
+            </span>
+          </div>
+        ) : (
+          <span className="text-[10px] text-violet-400 font-semibold uppercase tracking-wider">Provenance Split</span>
+        )}
       </div>
 
-      {/* Mini sparkline of failure counts */}
-      {history.length > 1 && (
+      {/* Multi-scan sparkline */}
+      {hasMultipleRuns && history.length > 1 && (
         <div className="flex items-end gap-px h-8 mb-2">
           {history.map((h, i) => {
             const height = Math.max(4, (h.total / maxTotal) * 100);
@@ -257,29 +263,60 @@ function BrainLearningCard({ learning }: { learning: DemoLearningState }) {
         </div>
       )}
 
-      <div className="grid grid-cols-3 gap-2 text-center">
-        <div>
-          <p className="text-[10px] text-zinc-600">Early avg</p>
-          <p className="text-xs font-mono text-zinc-400">{learning.earlyAvgFailures}</p>
+      {/* Provenance split bar — always shows */}
+      {lr && totalFindings > 0 && (
+        <div className="mb-2">
+          <div className="h-2.5 w-full overflow-hidden rounded-full bg-zinc-800 flex">
+            {lr.aiDrift > 0 && (
+              <div className="h-full bg-amber-500/70" style={{ width: `${(lr.aiDrift / totalFindings) * 100}%` }} />
+            )}
+            {lr.structural > 0 && (
+              <div className="h-full bg-violet-500/60" style={{ width: `${(lr.structural / totalFindings) * 100}%` }} />
+            )}
+            {lr.security > 0 && (
+              <div className="h-full bg-red-500/70" style={{ width: `${(lr.security / totalFindings) * 100}%` }} />
+            )}
+          </div>
+          <div className="flex items-center justify-between mt-1">
+            <div className="flex items-center gap-3">
+              <span className="flex items-center gap-1 text-[10px] text-zinc-500">
+                <span className="inline-block h-1.5 w-1.5 rounded-full bg-amber-500/70" /> AI drift {lr.aiDrift}
+              </span>
+              <span className="flex items-center gap-1 text-[10px] text-zinc-500">
+                <span className="inline-block h-1.5 w-1.5 rounded-full bg-violet-500/60" /> Structural {lr.structural}
+              </span>
+              <span className="flex items-center gap-1 text-[10px] text-zinc-500">
+                <span className="inline-block h-1.5 w-1.5 rounded-full bg-red-500/70" /> Security {lr.security}
+              </span>
+            </div>
+          </div>
         </div>
-        <div>
-          <p className="text-[10px] text-zinc-600">Recent avg</p>
-          <p className={`text-xs font-mono ${trendColor}`}>{learning.recentAvgFailures}</p>
-        </div>
-        {learning.latestRun && (
+      )}
+
+      {/* Multi-scan trend stats */}
+      {hasMultipleRuns && (
+        <div className="grid grid-cols-3 gap-2 text-center mb-1">
+          <div>
+            <p className="text-[10px] text-zinc-600">Early avg</p>
+            <p className="text-xs font-mono text-zinc-400">{learning.earlyAvgFailures}</p>
+          </div>
+          <div>
+            <p className="text-[10px] text-zinc-600">Recent avg</p>
+            <p className={`text-xs font-mono ${trendColor}`}>{learning.recentAvgFailures}</p>
+          </div>
           <div>
             <p className="text-[10px] text-zinc-600">AI drift ratio</p>
             <p className="text-xs font-mono text-amber-400">
-              {learning.latestRun.aiDrift > 0
-                ? `${Math.round((learning.latestRun.aiDrift / (learning.latestRun.aiDrift + learning.latestRun.structural + learning.latestRun.security || 1)) * 100)}%`
-                : "0%"}
+              {lr && totalFindings > 0 ? `${Math.round((lr.aiDrift / totalFindings) * 100)}%` : "0%"}
             </p>
           </div>
-        )}
-      </div>
+        </div>
+      )}
 
-      <p className="text-[10px] text-zinc-600 mt-2">
-        Adaptive thresholds use EWMA + Z-score anomaly detection to tighten gates where quality degrades.
+      <p className="text-[10px] text-zinc-600 mt-1">
+        {hasMultipleRuns
+          ? "Adaptive thresholds use EWMA + Z-score to tighten gates where quality degrades."
+          : "Rigour separates AI-generated findings from traditional code issues — enabling targeted governance."}
       </p>
     </motion.div>
   );
