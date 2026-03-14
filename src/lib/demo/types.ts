@@ -29,6 +29,19 @@ export interface DemoEvent {
   metric?: DemoMetric;
   file?: string;
   mode: DemoMode;
+  data?: {
+    score?: number | null;
+    aiHealth?: number | null;
+    structuralScore?: number | null;
+    failureCount?: number;
+    gatesPassed?: number;
+    gatesFailed?: number;
+    durationMs?: number;
+    cached?: boolean;
+    depth?: string;
+    passes?: number;
+    failures?: DemoFailure[];
+  };
 }
 
 export interface DemoFailure {
@@ -37,6 +50,29 @@ export interface DemoFailure {
   severity: string;
   provenance?: string;
   files?: string[];
+}
+
+export interface DemoLearningState {
+  priorRuns: number;
+  trend: "improving" | "degrading" | "stable";
+  recentAvgFailures: number;
+  earlyAvgFailures: number;
+  latestRun?: {
+    passed: number;
+    failed: number;
+    aiDrift: number;
+    structural: number;
+    security: number;
+  } | null;
+  scoreHistory?: Array<{
+    ts: string;
+    passed: number;
+    failed: number;
+    total: number;
+    aiDrift: number;
+    structural: number;
+    security: number;
+  }>;
 }
 
 export interface DemoRunSummary {
@@ -60,6 +96,8 @@ export interface DemoRunSummary {
   failures?: DemoFailure[];
   notes?: string;
   outputTail?: string;
+  learningState?: DemoLearningState | null;
+  deepPassFailures?: number | null;
 }
 
 export interface DemoStartRequest {

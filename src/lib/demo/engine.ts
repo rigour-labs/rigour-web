@@ -294,7 +294,7 @@ function buildScenarioRun(scenario: GuidedScenario): DemoRunData {
 
 function mapRunnerEvent(raw: unknown, mode: DemoMode): DemoEvent {
   const event = (raw ?? {}) as Record<string, unknown>;
-  return {
+  const mapped: DemoEvent = {
     ts: typeof event.ts === "string" ? event.ts : nowIso(),
     stage: coerceStage(event.stage),
     lane: coerceLane(event.lane),
@@ -312,6 +312,10 @@ function mapRunnerEvent(raw: unknown, mode: DemoMode): DemoEvent {
     file: typeof event.file === "string" ? event.file : undefined,
     mode,
   };
+  if (event.data && typeof event.data === "object") {
+    mapped.data = event.data as DemoEvent["data"];
+  }
+  return mapped;
 }
 
 function summaryFromRunner(run: DemoRunData, snapshot: RunnerSnapshot): DemoRunSummary {
@@ -341,6 +345,8 @@ function summaryFromRunner(run: DemoRunData, snapshot: RunnerSnapshot): DemoRunS
     failures: Array.isArray(summary.failures) ? summary.failures as DemoRunSummary["failures"] : undefined,
     notes: typeof summary.notes === "string" ? summary.notes : undefined,
     outputTail: typeof summary.outputTail === "string" ? summary.outputTail : undefined,
+    learningState: summary.learningState && typeof summary.learningState === "object" ? summary.learningState as DemoRunSummary["learningState"] : null,
+    deepPassFailures: typeof summary.deepPassFailures === "number" ? summary.deepPassFailures : null,
   };
 }
 
