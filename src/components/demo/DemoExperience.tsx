@@ -342,6 +342,9 @@ function ResultsPanel({ summary }: { summary: DemoRunSummary }) {
   const firstScanMs = summary.firstScanMs;
   const secondScanMs = summary.secondScanMs;
   const cached = summary.cached;
+  const severityEntries = summary.severityBreakdown
+    ? Object.entries(summary.severityBreakdown).sort((a, b) => severityRank(b[0]) - severityRank(a[0]))
+    : [];
   const prioritizedFindings = (() => {
     const source = summary.failures ?? [];
     const deduped: typeof source = [];
@@ -471,14 +474,14 @@ function ResultsPanel({ summary }: { summary: DemoRunSummary }) {
       {/* Severity & provenance breakdown */}
       {(summary.severityBreakdown || summary.provenanceBreakdown) && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-          {summary.severityBreakdown && Object.keys(summary.severityBreakdown).length > 0 && (
+          {summary.severityBreakdown && severityEntries.length > 0 && (
             <div className="rounded-xl border border-zinc-800 bg-zinc-900/70 p-3">
               <div className="flex items-center gap-1.5 mb-2">
                 <BarChart3 className="h-3.5 w-3.5 text-zinc-400" />
                 <span className="text-xs font-semibold text-zinc-300">By Severity</span>
               </div>
               <div className="space-y-1.5">
-                {Object.entries(summary.severityBreakdown).map(([key, count]) => (
+                {severityEntries.map(([key, count]) => (
                   <div key={key} className="flex items-center justify-between">
                     <span className={`text-xs ${key === "critical" || key === "high" ? "text-red-400" : key === "medium" ? "text-amber-400" : "text-zinc-400"}`}>
                       {key}
