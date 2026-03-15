@@ -54,9 +54,9 @@ interface LaneDef {
 }
 
 const LANES: LaneDef[] = [
-  { lane: "in", title: "IN", subtitle: "DLP Pre-Hook", icon: Lock, description: "Secrets & credential interception" },
-  { lane: "out", title: "OUT", subtitle: "Quality Gates", icon: Eye, description: "AI drift, hallucinations & code quality" },
-  { lane: "persist", title: "PERSIST", subtitle: "Memory Governance", icon: Database, description: "Agent memory & state governance" },
+  { lane: "in", title: "Prompt Firewall", subtitle: "Credential & Secret Filter", icon: Lock, description: "Secrets & credential interception" },
+  { lane: "out", title: "Execution Guardrails", subtitle: "Quality & AI Drift Gates", icon: Eye, description: "AI drift, hallucinations & code quality" },
+  { lane: "persist", title: "Persistence Control", subtitle: "Memory Governance", icon: Database, description: "Agent memory & state governance" },
 ];
 
 /** Map provenance/finding-id to the lane it belongs to */
@@ -574,6 +574,11 @@ function LaneFindingCard({
   isDone: boolean;
 }) {
   const LaneIcon = laneDef.icon;
+  const sortedFindings = [...findings].sort((a, b) => {
+    const severityDelta = severityRank(b.severity) - severityRank(a.severity);
+    if (severityDelta !== 0) return severityDelta;
+    return a.title.localeCompare(b.title);
+  });
   const hasCritical = findings.some((f) => f.severity === "critical" || f.severity === "high");
   const hasFindings = findings.length > 0;
 
@@ -631,7 +636,7 @@ function LaneFindingCard({
       {/* After scan — show categorized findings */}
       {isDone && hasFindings && (
         <div className="mt-3 space-y-1.5">
-          {findings.slice(0, 4).map((f, i) => (
+          {sortedFindings.slice(0, 4).map((f, i) => (
             <motion.div
               key={i}
               initial={{ opacity: 0, x: -10 }}
