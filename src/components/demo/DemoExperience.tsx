@@ -347,16 +347,18 @@ function ResultsPanel({ summary }: { summary: DemoRunSummary }) {
     : [];
   const prioritizedFindings = (() => {
     const source = summary.failures ?? [];
+    // Dedup by gate id + title to keep distinct findings from different gates
     const deduped: typeof source = [];
     const seen = new Set<string>();
     for (const item of source) {
-      const key = item.title.trim().toLowerCase();
+      const key = `${(item.id ?? "").toLowerCase()}::${item.title.trim().toLowerCase()}`;
       if (!seen.has(key)) {
         seen.add(key);
         deduped.push(item);
       }
     }
 
+    // Sort: critical → high → medium → low → info, then USP findings first, then alphabetical
     const sorted = [...deduped].sort((a, b) => {
       const severityDelta = severityRank(b.severity) - severityRank(a.severity);
       if (severityDelta !== 0) return severityDelta;
@@ -499,7 +501,9 @@ function ResultsPanel({ summary }: { summary: DemoRunSummary }) {
                 <span className="text-xs font-semibold text-zinc-300">By Provenance</span>
               </div>
               <div className="space-y-1.5">
-                {Object.entries(summary.provenanceBreakdown).map(([key, count]) => {
+                {Object.entries(summary.provenanceBreakdown)
+                  .sort(([, a], [, b]) => b - a)
+                  .map(([key, count]) => {
                   const label = PROVENANCE_LABELS[key] ?? key.replace(/[-_]/g, " ");
                   const isZero = count === 0;
                   const hint = isZero ? PROVENANCE_ZERO_HINTS[key] : undefined;
